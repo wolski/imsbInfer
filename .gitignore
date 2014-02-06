@@ -2,7 +2,6 @@
 *.r~
 *~
 .gitignore~
-yeast
 *.png
 .Rhistory
 *#
@@ -20,4 +19,6 @@ yeast
 .Rproj.user
 .Rbuildignore
 findMFDIA.Rproj
-
+inst
+man
+.roxygen
