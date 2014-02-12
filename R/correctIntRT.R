@@ -1,13 +1,14 @@
 #' correct Intensity RT
 #' Computes difference between aref and data and adjust data
 #'  that the median of differences is equal 0
-#' @param aref - reference data - ordered by retention time
+#' @param aref  reference data - ordered by retention time
 #' @param data to correct
-#' @param rto - retention time
+#' @param rto  retention time
+#' @param k  smoothing with
 #' @return corrected data
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
-correctIntRT = function(aref, data, rto , plot=TRUE){
+correctIntRT = function(aref, data, rto , plot=TRUE,k=501){
   a1=data
   #remove missing values
   idxref = is.na(aref) |is.infinite(aref)
@@ -17,17 +18,67 @@ correctIntRT = function(aref, data, rto , plot=TRUE){
   arefw = aref[idx]
   rtow = rto[idx]
   
-  diffa1ref  = a1w - arefw
-  mediandiff = runmed( diffa1ref , k=501 )
-  ac1w = ( a1w - mediandiff )
+  #diffa1ref  = a1w - arefw
+  medianref = runmed( arefw , k=k ,endrule="constant")
+  mediana1w = runmed( a1w ,k = k,endrule="constant")
+  # adjust intensities
+  scalefactor = medianref/mediana1w
+  a1wc = a1w * scalefactor
+  
   if(plot){
-    plot(rtow , diffa1ref , pch="." , cex=0.4 , col=1 )
-    points( rtow , ac1w - arefw ,pch=".",cex=0.4,col=4)
-    lines(rtow,mediandiff,col=3,lwd=2)
+    plot(rtow , arefw , pch=".", cex=0.4 , col=1 )
+    points( rtow , a1w ,pch=".",cex=0.4,col=4)
+    lines(rtow , medianref,col="red",lwd=2)
+    lines(rtow , mediana1w,col="blue",lwd=2)
     abline(h=0,col=2)
+    print("black")
+    mediana1wc = runmed( a1wc ,k = k,endrule="constant")
+    print("clack")
+    #points( rtow , a1wc ,pch=".",cex=0.4,col="green")
+    lines(rtow,mediana1wc,col="black",lwd=2)
+    legend("topleft",legend=c("ref","before","after"),col=c("red","blue","black"),lty=c(1,1,1))
   }
   bb  = rep(NA, length(idxs))
-  #introduce back missing values
-  bb[!idxs] = ac1w
+  bb[!idxs] = a1wc
   return(bb)
+}
+#' correct intensity over RT for entire msexperiment
+#' 
+#' @note reorders all entries in experiment according to RT, finds sample with fewest NA's if there are many picks that one
+#' with largest median as reference.
+#' @param experiment - object of class msexperiment
+#' @param k - smoothing with
+#' @return msexperiment object with RT normalized intensities
+#' @export
+#' @author Witold Wolski \email{wolski@@gmail.com}
+correctIntRT.msexperiment<-function(experiment,k=501){
+  #order dataset by RT
+  ord = order(experiment$RT)
+  rto = experiment$RT[ord]
+  swathpeplev = experiment$peplev[ord,]
+  #as reference choose run with fewest NA's
+  nas = apply(swathpeplev,2,function(x){sum(is.na(x))})
+  idx = which(nas == min(nas))
+  # if more than on NA than choose dataset with max median
+  if(length(idx) > 1){
+    ma = apply(swathpeplev[,idx],2,median)
+    id <-which(ma == max(ma))
+    idx <- idx[id]
+  }
+  print(idx)
+  reference=swathpeplev[,idx]
+  res = swathpeplev
+  for(i in 1:dim(swathpeplev)[2]){
+    data = swathpeplev[,i]
+    cor = correctIntRT(reference,data,rto,plot=F,k=k)
+    res[,i] = cor
+  }
+  #return(res)
+  expRes=experiment
+  expRes$RT = rto
+  expRes$peplev = res
+  expRes$peakscore = experiment$peakscore[ord,]
+  expRes$pepinfo=experiment$pepinfo[ord,]
+  expRes$protnam = experiment$protnam[ord]
+  return(expRes)
 }

@@ -7,6 +7,6 @@ Author: Witold Wolski
 Description: More about what it does (maybe more than one line)
 Version: 1.0
 Date: 2013-06-06
-Depends: igraph, RColorBrewer
+Depends: igraph, RColorBrewer, R.methodsS3, roxygen
 Collate: 'bootstrapping.R' 'correctIntRT.R' 'graphPlotting.R' 'hello.R'
     'normalization.R' 'plotting.R' 'swathDataUtils.R' 'utilities.R'

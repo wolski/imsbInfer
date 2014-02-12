@@ -51,7 +51,7 @@ pairsRatio = function(dataframesel,RT,main=""){
 mypairs = function(dataframesel){
   pairs(dataframesel, panel = function(x,y){
     points(x, y, pch=".")
-    abline(0,1)
+    abline(0,1,col=2)
   }
         , lower.panel=NULL
   )

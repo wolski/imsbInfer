@@ -1,14 +1,24 @@
+filter.default = filter
+filter <- function(obj, ...){
+  UseMethod('filter')
+}
+#' filter data given idx vector
+#'
+#' @export
+filter.msexperiment<- function(data,idx){
+  SwathDat$peplev = SwathDat$peplev[idx,]
+  SwathDat$pepscore = SwathDat$pepscore[idx,]
+  SwathDat$pepinfo = SwathDat$pepinfo[idx, ]
+  SwathDat$protnam = SwathDat$protnam[idx]
+  SwathDat$RT = SwathDat$RT[idx ]
+  return(SwathDat)
+}
 #' filter data given RT range
 #'
 #' @export
 removeRTRanges<- function(data,rtrange=c(1000,7000)){
   idx = SwathDat$RT > rtrange[1] &  SwathDat$RT < rtrange[2]
-  SwathDat$peplev = SwathDat$peplev[idx,]
-  SwathDat$score = SwathDat$score[idx,]
-  SwathDat$newid2 = SwathDat$newid2[idx ]
-  SwathDat$newid = SwathDat$newid[idx ]
-  SwathDat$protnam = SwathDat$protnam[idx]
-  SwathDat$RT = SwathDat$RT[idx ]
+  return(filter.msexperiment(data,idx))
 }
 #' read 2 matrix export return msExperiment
 #' 
@@ -27,6 +37,10 @@ read2matrixExport=function(filename){
   colnames(swathscore) = nams
   colnames(swathpeplev) = nams
 
+  ord = order(nams)
+  swathscore = swathscore[,ord]
+  swathpeplev = swathpeplev[,ord]
+  
   #remove decoys
   decoys = grep("DECOY",swathpep[,1])
   swathpeplev = swathpeplev[-decoys,]
@@ -54,4 +68,22 @@ read2matrixExport=function(filename){
   )
   class(res) <- "msexperiment"
   return(res)
+}
+#' dimension
+#'
+#' @export
+dim.msexperiment<-function(x){
+  return(dim(x$peplev))
+}
+#' length
+#'
+#' @export
+length.msexperiment<-function(x){
+  return(length(x$RT))
+}
+#' show colnames (it does'nt let you set the columns)
+#' 
+#' @export
+colnames.msexperiment<-function(x){
+  return(colnames(x$peplev))
 }
