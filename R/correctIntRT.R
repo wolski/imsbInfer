@@ -26,15 +26,12 @@ correctIntRT = function(aref, data, rto , plot=TRUE,k=501){
   a1wc = a1w * scalefactor
   
   if(plot){
-    plot(rtow , arefw , pch=".", cex=0.4 , col=1 )
-    points( rtow , a1w ,pch=".",cex=0.4,col=4)
+    plot(rtow , arefw , pch=".", cex=0.4 , col="gray" )
+    points( rtow , a1w ,pch=".",cex=0.4,col="gray")
     lines(rtow , medianref,col="red",lwd=2)
     lines(rtow , mediana1w,col="blue",lwd=2)
     abline(h=0,col=2)
-    print("black")
     mediana1wc = runmed( a1wc ,k = k,endrule="constant")
-    print("clack")
-    #points( rtow , a1wc ,pch=".",cex=0.4,col="green")
     lines(rtow,mediana1wc,col="black",lwd=2)
     legend("topleft",legend=c("ref","before","after"),col=c("red","blue","black"),lty=c(1,1,1))
   }
@@ -53,32 +50,23 @@ correctIntRT = function(aref, data, rto , plot=TRUE,k=501){
 #' @author Witold Wolski \email{wolski@@gmail.com}
 correctIntRT.msexperiment<-function(experiment,k=501){
   #order dataset by RT
-  ord = order(experiment$RT)
-  rto = experiment$RT[ord]
-  swathpeplev = experiment$peplev[ord,]
+  experiment = orderByRT.msexperiment(experiment)
   #as reference choose run with fewest NA's
-  nas = apply(swathpeplev,2,function(x){sum(is.na(x))})
+  nas = apply(experiment$peplev,2,function(x){sum(is.na(x))})
   idx = which(nas == min(nas))
   # if more than on NA than choose dataset with max median
   if(length(idx) > 1){
-    ma = apply(swathpeplev[,idx],2,median)
+    ma = apply(experiment$peplev[,idx],2,median,na.rm=TRUE)
     id <-which(ma == max(ma))
     idx <- idx[id]
   }
   print(idx)
-  reference=swathpeplev[,idx]
-  res = swathpeplev
-  for(i in 1:dim(swathpeplev)[2]){
-    data = swathpeplev[,i]
-    cor = correctIntRT(reference,data,rto,plot=F,k=k)
-    res[,i] = cor
+  reference=experiment$peplev[,idx]
+  res = experiment
+  for(i in 1:dim(experiment$peplev)[2]){
+    data = experiment$peplev[,i]
+    corrected = correctIntRT(reference,data,experiment$RT,plot=F,k=k)
+    res$peplev[,i] = corrected
   }
-  #return(res)
-  expRes=experiment
-  expRes$RT = rto
-  expRes$peplev = res
-  expRes$peakscore = experiment$peakscore[ord,]
-  expRes$pepinfo=experiment$pepinfo[ord,]
-  expRes$protnam = experiment$protnam[ord]
-  return(expRes)
+  return(res)
 }

@@ -11,7 +11,7 @@ NormalizeTotalSumOfPQMatrix = function(ProtQuantMatrix){
 #' @export
 NormalizeWithMedianPQMatrix = function(ProtQuantMatrix){
   maxMedian <- max(apply(na.omit(ProtQuantMatrix),2,median))
-  ScaleFactors <- 1/(apply(na.omit(ProtQuantMatrix),2,median)/maxMedian)
+  ScaleFactors <- maxMedian/(apply(na.omit(ProtQuantMatrix),2,median))
   nPQmatrix <- sweep(ProtQuantMatrix,2,ScaleFactors,"*")
   return(list(matrix=nPQmatrix, scalefactors=ScaleFactors ))
   

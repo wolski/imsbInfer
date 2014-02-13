@@ -1,10 +1,22 @@
-filter.default = filter
+#' filter
+#'
+#' @export
 filter <- function(obj, ...){
   UseMethod('filter')
 }
+#' order by rt
+#' 
+#' @export
+#'
+orderByRT.msexperiment<-function(experiment){
+  ord <- order(experiment$RT)
+  experiment = filter.msexperiment(experiment,ord)
+  return(experiment)
+}
 #' filter data given idx vector
 #'
-#' @export
+#' @export filter
+#' @S3method filter msexperiment
 filter.msexperiment<- function(data,idx){
   SwathDat$peplev = SwathDat$peplev[idx,]
   SwathDat$pepscore = SwathDat$pepscore[idx,]
