@@ -47,13 +47,15 @@ pairsRatio = function(dataframesel,RT,main=""){
   )
 }
 #' normal pairs plot with different pch and plus abline
+#' @param pln data matrix or data.frame as normally passed to pairs
+#' @param ... params usually passed to pairs
 #' @export
-mypairs = function(dataframesel){
+mypairs = function(dataframesel,...){
   pairs(dataframesel, panel = function(x,y){
     points(x, y, pch=".")
     abline(0,1,col=2)
   }
-        , lower.panel=NULL
+        , lower.panel=NULL,...
   )
 }
 #' heatmap2 to wrapper

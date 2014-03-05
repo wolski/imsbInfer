@@ -1,3 +1,9 @@
+#' correctIntRT
+#'
+#' @export
+correctIntRT <- function(obj, ...){
+  UseMethod('correctIntRT')
+}
 #' correct Intensity RT
 #' Computes difference between aref and data and adjust data
 #'  that the median of differences is equal 0
@@ -7,8 +13,9 @@
 #' @param k  smoothing with
 #' @return corrected data
 #' @export
+#' @S3method correctIntRT default
 #' @author Witold Wolski \email{wolski@@gmail.com}
-correctIntRT = function(aref, data, rto , plot=TRUE,k=501){
+correctIntRT.default = function(aref, data, rto , plot=TRUE,k=501){
   a1=data
   #remove missing values
   idxref = is.na(aref) |is.infinite(aref)
@@ -47,6 +54,7 @@ correctIntRT = function(aref, data, rto , plot=TRUE,k=501){
 #' @param k - smoothing with
 #' @return msexperiment object with RT normalized intensities
 #' @export
+#' @S3method correctIntRT msexperiment
 #' @author Witold Wolski \email{wolski@@gmail.com}
 correctIntRT.msexperiment<-function(experiment,k=501){
   #order dataset by RT

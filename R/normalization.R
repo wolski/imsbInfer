@@ -9,11 +9,11 @@ NormalizeTotalSumOfPQMatrix = function(ProtQuantMatrix){
 #' Normalization by total sum
 #' The bla an the blo
 #' @export
-NormalizeWithMedianPQMatrix = function(ProtQuantMatrix){
-  maxMedian <- max(apply(na.omit(ProtQuantMatrix),2,median))
-  ScaleFactors <- maxMedian/(apply(na.omit(ProtQuantMatrix),2,median))
-  nPQmatrix <- sweep(ProtQuantMatrix,2,ScaleFactors,"*")
-  return(list(matrix=nPQmatrix, scalefactors=ScaleFactors ))
+NormalizeWithMedianPQMatrix = function(datamatrix){
+  meds=apply( datamatrix , 2 , median , na.rm=TRUE )
+  params = max( meds )/meds
+  mednorm = sweep(tmp,2,params,"*")
+  return(list(matrix=mednorm, scalefactors=params ))
   
 }
 #' Normalization by total sum
