@@ -31,10 +31,11 @@ removeRTRanges<- function(data,rtrange=c(1000,7000)){
   idx = SwathDat$RT > rtrange[1] &  SwathDat$RT < rtrange[2]
   return(filter.msexperiment(data,idx))
 }
-#' read 2 matrix export return msExperiment
-#' 
+#' read 2 matrix export return msExperiment (must contain score columns)
+#' @param filename output of feature aligner
+#' @param decoy.rm
 #' @export
-read2matrixExport=function(filename,decoy.rm=TRUE){
+read2msExperiment=function(filename,decoy.rm=TRUE){
   swathpep = read.table(filename,header=T,stringsAsFactors=FALSE)
   #split into intensities and scores
   swathpeplev = swathpep[,grep("Intensity",colnames(swathpep))]

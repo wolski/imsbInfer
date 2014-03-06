@@ -60,6 +60,11 @@ mypairs = function(dataframesel,...){
 }
 #' heatmap2 to wrapper
 #' @export
+#' @param matrix or dataframe with numerical values
+#' @param distf distance function
+#' @param hclustf clustering function
+#' @param mypalette
+#' @param mycol
 myheat = function(pln,main="",distf=dist,hclustf=hclust,mypalette,mycol){
   tmp <- heatmap.2( as.matrix(pln) , trace="none" , scale="none" , col=mypalette ,
                     ColSideColors=mycol ,

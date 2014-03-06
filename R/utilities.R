@@ -28,3 +28,9 @@ split2table <- function(names,split="\\||\\_")
   }
   return(protnam)
 }
+#' getupper triangle from matrix 
+#' @export
+uppertriang <- function(mat){
+  res<-mat[upper.tri(mat,diag=FALSE)] 
+  return( c(unlist(res)) )
+}
