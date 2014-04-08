@@ -56,25 +56,40 @@ correctIntRT.default = function(aref, data, rto , plot=TRUE,k=501){
 #' @export
 #' @S3method correctIntRT msexperiment
 #' @author Witold Wolski \email{wolski@@gmail.com}
-correctIntRT.msexperiment<-function(experiment,k=501){
-  #order dataset by RT
-  experiment = orderByRT.msexperiment(experiment)
+#' 
+correctIntRT.msexperiment = function(experiment,k=501){
+  experiment = removeDecoys(experiment)
+  dim(experiment)
+  
   #as reference choose run with fewest NA's
-  nas = apply(experiment$peplev,2,function(x){sum(is.na(x))})
+  firstDataColumn = 2
+
+  # select reference dataset
+  nas = apply( experiment$intensity, 2 , function(x){sum(is.na(x))} )
   idx = which(nas == min(nas))
-  # if more than on NA than choose dataset with max median
+  # if more than one with few NA's than choose dataset with max median
   if(length(idx) > 1){
-    ma = apply(experiment$peplev[,idx],2,median,na.rm=TRUE)
+    ma = apply(experiment$intensity[,idx],2,median,na.rm=TRUE)
     id <-which(ma == max(ma))
     idx <- idx[id]
   }
-  print(idx)
-  reference=experiment$peplev[,idx]
-  res = experiment
-  for(i in 1:dim(experiment$peplev)[2]){
-    data = experiment$peplev[,i]
-    corrected = correctIntRT(reference,data,experiment$RT,plot=F,k=k)
-    res$peplev[,i] = corrected
+  reference=intens[,idx]
+  
+  #compute median retention time
+  RT = apply(experiment$rt,1,median)
+  #order relevant data by retention time
+  rto = order(RT)
+  reference = reference[rto]
+  RT = RT[rto]
+  experiment$intensity = experiment$intensity[rto,]
+  experiment$score = experiment$score[rto,]
+  experiment$rt = experiment$rt[rto,]
+  
+  for(i in 1:experiment$intensity)
+  {
+    intensV = intens[[i]]
+    corrected = correctIntRT( unlist(reference), unlist(intensV) , (RT) , plot=F , k=k )
+    intens[[i]] = corrected
   }
-  return(res)
+  experiment$intensity = intens
 }

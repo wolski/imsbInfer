@@ -11,4 +11,5 @@ Depends:
     igraph,
     RColorBrewer,
     R.methodsS3,
-    roxygen2
+    roxygen2,
+    data.table

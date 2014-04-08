@@ -5,9 +5,9 @@
 #' @param cex.axis - size of axis lables
 #' @param cex - size of labels
 #' @export
-imagelabels = function(x, labels=colnames(x),cex=1,cex.axis=0.5)
+imagelabels = function(x, labels=colnames(x),cex=1,cex.axis=0.5,main=NULL)
 {
-  image(x, axes = F )
+  image(x, axes = F, main =main)
   axis( 1, at=seq(0,1,length=length((labels))) , labels=labels,cex.axis=cex.axis, las=2, cex=cex )
   axis( 2, at=seq(0,1,length=length((labels))) , labels=labels,cex.axis=cex.axis, las=1, cex=cex )
 }
@@ -29,21 +29,21 @@ pairsQQ = function(dataframesel,main=""){
     points(r,pch=".",cex=2)
     abline(0,1,col=2)
   }
-        , lower.panel=NULL
-        ,main = main
+  , lower.panel=NULL
+  ,main = main
   )
 }
 #' plot ratios against retention time
 #' @export
-pairsRatio = function(dataframesel,RT,main=""){
+pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
   pairs(dataframesel, panel = function(x,y,...){
     r <- points(RT , log2(x / y),pch=".",... )
     abline(h = 0,col=2)
   }
-        ,xlim=range(RT)
-        ,ylim=range(log2(x/y),na.rm=TRUE)
-        , lower.panel=NULL
-        ,main = main
+  ,xlim=range(RT)
+  ,ylim=ylim
+  , lower.panel=NULL
+  ,main = main
   )
 }
 #' normal pairs plot with different pch and plus abline
@@ -55,7 +55,7 @@ mypairs = function(dataframesel,...){
     points(x, y, pch=".")
     abline(0,1,col=2)
   }
-        , lower.panel=NULL,...
+  , lower.panel=NULL,...
   )
 }
 #' heatmap2 to wrapper
@@ -79,9 +79,15 @@ myheat = function(pln,main="",distf=dist,hclustf=hclust,mypalette,mycol){
 #' volcano plot
 #' @param foldchange - fold change values
 #' @param pvals - pvalues
+#' @export
 myvolcanoplot = function(foldchange, pvals , pthresh = 0.05, ratiothresh = 2, xlab ="log2(T/N)" ,ylab = "-log10(P)"){
   d <- data.frame(ratio = foldchange, pvals = pvals )
-  plot(d$ratio,-log10(d$pvals),col="#00000033",pch=19,xlab=xlab, ylab=ylab)
+  bla = tryCatch( plot(d$ratio,-log10(d$pvals),col="#00000033",pch=19,xlab=xlab, ylab=ylab),
+                  warning=function(bla){ dev.off(); return(1)} 
+  )
+  if(!is.null(bla)){
+    plot(d$ratio,-log10(d$pvals),col=1,pch=19,xlab=xlab, ylab=ylab)
+  }
   upsubset<-subset(d,pvals < pthresh & ratio > ratiothresh)
   points(upsubset$ratio,-log10(upsubset$pvals),col=2,pch=19)
   points(upsubset$ratio,-log10(upsubset$pvals),col=1,pch=1)
@@ -89,8 +95,10 @@ myvolcanoplot = function(foldchange, pvals , pthresh = 0.05, ratiothresh = 2, xl
   downsubset<-subset(d,pvals<pthresh & ratio < -ratiothresh)
   points(downsubset$ratio,-log10(downsubset$pvals),col=3,pch=19)
   points(downsubset$ratio,-log10(downsubset$pvals),col=1,pch=1)
-  abline(v=c(-ratiothresh,ratiothresh))
+  abline(v=c(-ratiothresh,ratiothresh),lty=2)
+  abline(v =0,lty=2,lwd=1.5)
   return(list(upsubset=upsubset,downsubset=downsubset))
 }
+
 
 

@@ -22,6 +22,6 @@ NormalizeWithMedianPQMatrix = function(datamatrix){
 NormalizePQMatrixWithHouseKeepingProtein = function(ProtQuantMatrix, hk){
   MaxValueOfHK <- max(ProtQuantMatrix[hk,])
   ScaleFactorsHK <- 1/(ProtQuantMatrix[hk,]/MaxValueOfHK)
-  nPQmatrix <- sweep(ProtQuantMatrix,2,ScaleFactors,"*")
-  return(list(matrix=nPQmatrix, scalefactors=ScaleFactors ))
+  nPQmatrix <- sweep(ProtQuantMatrix,2,ScaleFactorsHK,"*")
+  return(list(matrix=nPQmatrix, scalefactors=ScaleFactorsHK ))
 }

@@ -21,10 +21,11 @@ rmNarows <- function(plev, thresh=0 )
 split2table <- function(names,split="\\||\\_")
 {
   cnamessplit <- strsplit(names,split)
-  protnam <- NULL
-  for(i in cnamessplit)
+  protnam <- matrix(NA, ncol=length(cnamessplit[[1]]),nrow=length(cnamessplit))
+  print(dim(protnam))
+  for(i in 1:length(cnamessplit))
   {
-    protnam <- rbind(protnam,i)
+    protnam[i,] <- cnamessplit[[i]]
   }
   return(protnam)
 }
