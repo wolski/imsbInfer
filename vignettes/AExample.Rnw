@@ -1,0 +1,132 @@
+\documentclass{article}
+
+\title{imsbInfer}
+\author { W.E. Wolski }
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+
+\section{Load the data}
+
+This is how you would read your data
+<<eval=FALSE>>=
+filename2="/home/witold/Analysis/data/feature_alignment_requant20131217184604152-909562.tsv"
+xx = fread(filename2)
+
+@
+
+
+<<readdata>>=
+library(imsbInfer)
+data(feature_alignment_requant)
+xx = feature_alignment_requant
+@
+
+<<readdataremovedecoys>>=
+SwathDat = read2msExperiment(xx)
+SwathDat = removeDecoys(SwathDat)
+@
+
+<<>>=
+dim(SwathDat)
+names(SwathDat)
+sum(is.na(SwathDat$intensity))
+colnames(SwathDat$intensity)
+colnames(SwathDat$pepinfo)
+
+@
+
+pairsplot
+
+<<fig=TRUE>>=
+mypairs(SwathDat$intensity,log="xy",main="pairsplot")
+
+@
+
+<<fig=TRUE>>=
+pairsQQ(SwathDat$intensity,main="qqplot")
+
+@
+
+<<fig=TRUE>>=
+SwathDat = orderByRT(SwathDat)
+class(SwathDat)
+pairsRatio(SwathDat$intensity,SwathDat$RT,ylim=c(-8,8),main="ratio vs RT")
+@
+
+Remove low and high RT ranges
+<<fig=TRUE>>=
+SwathDatT = subset(SwathDat, SwathDat$RT < 7000 & SwathDat$RT > 1000)
+pairsRatio(SwathDatT$intensity,SwathDatT$RT,ylim=c(-8,8),main="ratio vs RT")
+
+@
+
+
+<<fig=TRUE>>=
+cors = cor(SwathDatT$intensity, use="na.or.complete",method="spearman")
+dim(cors)
+par(mar = c(7,7,1,1))
+imagelabels(cors)
+@
+
+
+<<fig=TRUE>>=
+hist(cors[upper.tri(cors)],main="histogram of correlations")
+@
+
+
+\section{RT normalization}
+
+\subsection{doing it for two samples}
+<<fig=TRUE,width=10, height=10>>=
+par(mfrow=c(1,3))
+SwathDatT$intensityasinh = asinh(SwathDatT$intensity)
+
+aref = SwathDatT$intensityasinh[,1]
+data = SwathDatT$intensityasinh[,3]
+
+plot(SwathDatT$RT,aref -  data,pch=".",ylim=c(-4,4))
+abline(h=0,col=2,lwd=2)
+
+tmp = correctIntRT(aref, data, SwathDatT$RT,k=101)
+plot(SwathDatT$RT,aref -  tmp,pch=".",ylim=c(-4,4))
+abline( h=0 , col=2 , lwd=2 )
+
+@
+
+\subsection{Doing it for a dataset}
+
+<<wholeDataset,fig=TRUE>>=
+SwathDatT$intensity = asinh(SwathDatT$intensity)
+tmp = correctIntRT(SwathDatT,k=301)
+tmp$intensity = sinh(tmp$intensity)
+pairsRatio(tmp$intensity,tmp$RT,ylim=c(-1,1),main="ratio vs RT")
+
+@
+
+
+<<fig=TRUE>>=
+cors2 = cor(tmp$intensity, use="na.or.complete",method="spearman")
+par(mar = c(7,7,1,1))
+imagelabels(cors2)
+
+@
+
+
+<<fig=TRUE>>=
+hist(cors2[upper.tri(cors2)],add=F,main="histogram of correlations")
+hist(cors[upper.tri(cors)],add=T,density=10,angle = 45, col = NULL)
+@
+
+
+\section{Analysing Peptides with various charge states}
+
+
+<<>>=
+head(SwathDat$pepinfo)
+sum(duplicated(SwathDat$pepinfo$sequence))
+
+@
+
+\end{document}

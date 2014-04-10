@@ -4,7 +4,7 @@
 #' @param filename output of feature aligner
 #' @param decoy.rm
 #' @export
-deprec.read2msExperiment=function(filename,decoy.rm=TRUE){
+deprec.read2msExperiment = function(filename,decoy.rm=TRUE){
   swathpep = read.table(filename,header=T,stringsAsFactors=FALSE)
   #split into intensities and scores
   swathpeplev = swathpep[,grep("Intensity",colnames(swathpep))]

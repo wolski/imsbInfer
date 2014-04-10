@@ -16,7 +16,9 @@ rmNarows <- function(plev, thresh=0 )
   plev <- plev[-which(x>thresh),]
 }
 #' splits names and binds into matrix
-#' 
+#' @examples
+#' dat = c("bla_ra0/2_run0","bla_ra1/2_run0","bla_ra2/2_run0")
+#' split2table(dat,split="\\_|\\/")
 #' @export
 split2table <- function(names,split="\\||\\_")
 {

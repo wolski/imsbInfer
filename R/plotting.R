@@ -13,7 +13,8 @@ imagelabels = function(x, labels=colnames(x),cex=1,cex.axis=0.5,main=NULL)
 }
 #' altman bland
 #' @export
-altmanbland = function(x,y,main=""){
+altmanbland = function(x,y,main="",pch="."){
+  
   idx<-apply(cbind(x,y),1,function(x){sum(x==0)==0})
   mean  = (x+y)/2
   absdiff = abs( x-y )
@@ -37,7 +38,8 @@ pairsQQ = function(dataframesel,main=""){
 #' @export
 pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
   pairs(dataframesel, panel = function(x,y,...){
-    r <- points(RT , log2(x / y),pch=".",... )
+    y = log2(x / y)
+    r <- points(RT[!is.na(y)] , y[!is.na(y)],pch=".",... )
     abline(h = 0,col=2)
   }
   ,xlim=range(RT)

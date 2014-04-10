@@ -1,7 +1,7 @@
 #' correctIntRT
 #'
 #' @export
-correctIntRT <- function(obj, ...){
+correctIntRT <- function(obj, ... ){
   UseMethod('correctIntRT')
 }
 #' correct Intensity RT
@@ -57,13 +57,10 @@ correctIntRT.default = function(aref, data, rto , plot=TRUE,k=501){
 #' @S3method correctIntRT msexperiment
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' 
-correctIntRT.msexperiment = function(experiment,k=501){
+correctIntRT.msexperiment = function(experiment,k=501,plot=F){
   experiment = removeDecoys(experiment)
-  dim(experiment)
+  experiment = orderByRT(experiment)
   
-  #as reference choose run with fewest NA's
-  firstDataColumn = 2
-
   # select reference dataset
   nas = apply( experiment$intensity, 2 , function(x){sum(is.na(x))} )
   idx = which(nas == min(nas))
@@ -73,23 +70,14 @@ correctIntRT.msexperiment = function(experiment,k=501){
     id <-which(ma == max(ma))
     idx <- idx[id]
   }
-  reference=intens[,idx]
-  
-  #compute median retention time
-  RT = apply(experiment$rt,1,median)
-  #order relevant data by retention time
-  rto = order(RT)
-  reference = reference[rto]
-  RT = RT[rto]
-  experiment$intensity = experiment$intensity[rto,]
-  experiment$score = experiment$score[rto,]
-  experiment$rt = experiment$rt[rto,]
-  
-  for(i in 1:experiment$intensity)
+
+  reference=experiment$intensity[,idx]
+  for(i in 1:dim(experiment$intensity)[2])
   {
-    intensV = intens[[i]]
-    corrected = correctIntRT( unlist(reference), unlist(intensV) , (RT) , plot=F , k=k )
-    intens[[i]] = corrected
+    intensV = experiment$intensity[,i]
+    corrected = correctIntRT( unlist(reference), unlist(intensV) , (experiment$RT) , plot=plot , k=k )
+    experiment$intensity[,i] = corrected
   }
-  experiment$intensity = intens
+  return(experiment)
 }
+

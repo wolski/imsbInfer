@@ -15,7 +15,7 @@ orderByRT = function(obj){
 #' SDat=orderByRT(SDat)
 #' head(SDat$rt)
 orderByRT.msexperiment = function(experiment){
-  RT = apply(experiment$rt , 1 , median )
+  RT = apply(experiment$rt , 1 , median, na.rm=TRUE )
   #order relevant data by retention time
   rto = order(RT)
   experiment$intensity = experiment$intensity[rto,]
@@ -86,7 +86,10 @@ subset.msexperiment<- function(data,idx){
   data$intensity = data$intensity[idx,]
   data$score = data$score[idx,]
   data$rt = data$rt[idx,]
-  data$pepinfo = data$pepinfo[idx]
+  data$pepinfo = data$pepinfo[idx,]
+  if(!is.null(data$RT)){
+    data$RT = data$RT[idx]
+  }
   return(data)
 }
 #' convert LF 2 wide format
@@ -134,7 +137,6 @@ convert2msExperiment = function(data){
   setnames(data$score,nams)
   setnames(data$rt, nams)
   
-  library(imsbInfer)
   nams = data$protmapping$transition_group_id
   
   idxDecoy<-grep("^DECOY\\_",nams)
@@ -143,14 +145,10 @@ convert2msExperiment = function(data){
   
   nams = sub("^DECOY\\_","",nams)
   
-  library(imsbInfer)
-  pepinfo=split2table(nams,split="\\_")
+  pepinfo=split2table(nams,split="\\_|\\/")
   pepinfo = pepinfo[,-dim(pepinfo)[2]]
   colnames(pepinfo)=c("id","sequence","charge")
   pepinfo = as.data.table(pepinfo)
-  
-  #pepinfo$id = as.integer(pepinfo$id)
-  #pepinfo$charge = as.integer(pepinfo$charge)
   
   nametable = data.table(transition_group_id=data$protmapping$transition_group_id,
                          pepinfo,
@@ -213,9 +211,12 @@ dim.msexperiment<-function(x){
 }
 #' show colnames (it does'nt let you set the columns)
 #' 
-#' To set colnames use need to access peplev and peakscore
+#' @examples
+#' data(feature_alignment_requant)
+#' SDat = read2msExperiment(feature_alignment_requant)
+#' colnames(SDat)
 #' @export
 #' @S3method colnames msexperiment
 colnames.msexperiment<-function(x){
-  return(colnames(x$peplev))
+  return(colnames(x$intensity))
 }

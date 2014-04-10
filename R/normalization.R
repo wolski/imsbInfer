@@ -1,13 +1,12 @@
 #' Normalization by total sum
-#' The bla an the blo
+#' @export
 NormalizeTotalSumOfPQMatrix = function(ProtQuantMatrix){
   maxSum <- max(colSums(ProtQuantMatrix))
   ScaleFactors <- 1/(apply(na.omit(ProtQuantMatrix),2,sum)/maxSum)
   nPQmatrix <- sweep(ProtQuantMatrix,2,ScaleFactors,"*")
   return(list(matrix=nPQmatrix, scalefactors=ScaleFactors))
 }
-#' Normalization by total sum
-#' The bla an the blo
+#' Normalization by median
 #' @export
 NormalizeWithMedianPQMatrix = function(datamatrix){
   meds=apply( datamatrix , 2 , median , na.rm=TRUE )
@@ -17,7 +16,6 @@ NormalizeWithMedianPQMatrix = function(datamatrix){
   
 }
 #' Normalization by total sum
-#' The bla an the blo
 #' @export 
 NormalizePQMatrixWithHouseKeepingProtein = function(ProtQuantMatrix, hk){
   MaxValueOfHK <- max(ProtQuantMatrix[hk,])
