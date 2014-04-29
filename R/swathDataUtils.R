@@ -1,3 +1,4 @@
+if(getRversion() >= "3.1.0") utils::suppressForeignCheck("localvariable")
 #' order by RT
 #' @param obj obj
 #' @export

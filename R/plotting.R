@@ -11,6 +11,15 @@ imagelabels = function(x, labels=colnames(x),cex=1,cex.axis=0.5,main=NULL)
   axis( 1, at=seq(0,1,length=length((labels))) , labels=labels,cex.axis=cex.axis, las=2, cex=cex )
   axis( 2, at=seq(0,1,length=length((labels))) , labels=labels,cex.axis=cex.axis, las=1, cex=cex )
 }
+#' if you need an colorscale to you imagelables use this
+#' @param data the data matrix
+#' @param colors used 
+colorscale = function(data,colors=heat.colors(12)){
+  nrc = length(colors)
+  z  = seq( min(data) , max(data) , length=nrc)
+  image(1, seq(0,1,length=nrc), matrix(z,1,nrc) ,axes=F,ylab="",xlab="")
+  axis( 2, at=seq(0,1,length=nrc) , labels=round(z,digits=2), las=2 )
+}
 #' altman bland
 #' @export
 altmanbland = function(x,y,main="",pch="."){
@@ -45,6 +54,20 @@ pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
   ,xlim=range(RT)
   ,ylim=ylim
   , lower.panel=NULL
+  ,main = main
+  )
+}
+#' plot difference against retention time
+#' @export
+pairsDifference = function(dataframesel,RT,main="",ylim=c(-2,2)){
+  pairs(dataframesel, panel = function(x,y,...){
+    y = x - y
+    r <- points(RT[!is.na(y)] , y[!is.na(y)],pch=".",... )
+    abline(h = 0,col=2)
+  }
+  ,xlim=range(RT)
+  ,ylim=ylim
+  ,lower.panel=NULL
   ,main = main
   )
 }

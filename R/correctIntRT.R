@@ -1,8 +1,8 @@
-#' correctIntRT
+#' correctIntRTv1
 #'
 #' @export
-correctIntRT <- function(obj, ... ){
-  UseMethod('correctIntRT')
+correctIntRTv1 <- function(obj, ... ){
+  UseMethod('correctIntRTv1')
 }
 #' correct Intensity RT
 #' Computes difference between aref and data and adjust data
@@ -13,9 +13,9 @@ correctIntRT <- function(obj, ... ){
 #' @param k  smoothing with
 #' @return corrected data
 #' @export
-#' @S3method correctIntRT default
+#' @S3method correctIntRTv1 default
 #' @author Witold Wolski \email{wolski@@gmail.com}
-correctIntRT.default = function(aref, data, rto , plot=TRUE,k=501){
+correctIntRTv1.default = function(aref, data, rto , plot=TRUE,k=501){
   a1=data
   #remove missing values
   idxref = is.na(aref) |is.infinite(aref)
@@ -54,10 +54,10 @@ correctIntRT.default = function(aref, data, rto , plot=TRUE,k=501){
 #' @param k - smoothing with
 #' @return msexperiment object with RT normalized intensities
 #' @export
-#' @S3method correctIntRT msexperiment
+#' @S3method correctIntRTv1 msexperiment
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' 
-correctIntRT.msexperiment = function(experiment,k=501,plot=F){
+correctIntRTv1.msexperiment = function(experiment,k=501,plot=F){
   experiment = removeDecoys(experiment)
   experiment = orderByRT(experiment)
   
@@ -75,7 +75,7 @@ correctIntRT.msexperiment = function(experiment,k=501,plot=F){
   for(i in 1:dim(experiment$intensity)[2])
   {
     intensV = experiment$intensity[,i]
-    corrected = correctIntRT( unlist(reference), unlist(intensV) , (experiment$RT) , plot=plot , k=k )
+    corrected = correctIntRTv1( unlist(reference), unlist(intensV) , (experiment$RT) , plot=plot , k=k )
     experiment$intensity[,i] = corrected
   }
   return(experiment)

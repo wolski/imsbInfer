@@ -5,11 +5,8 @@ Title: Helper functions for analysing proteomics data
 Type: Package
 Author: Witold Wolski
 Description: More about what it does (maybe more than one line)
-Version: 1.0.1
+Version: 1.0.3
 Date: 2013-06-06
 Depends:
-    igraph,
-    RColorBrewer,
-    R.methodsS3,
     roxygen2,
     data.table
