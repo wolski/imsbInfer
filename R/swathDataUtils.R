@@ -153,14 +153,17 @@ convert2msExperiment = function(data){
   
   nametable = data.table(transition_group_id=data$protmapping$transition_group_id,
                          pepinfo,
-                         decoy=decoy)
+                         decoy=decoy,
+                         seqchid = paste(pepinfo$sequence, pepinfo$charge, sep="_")
+                         )
   
   setkey(nametable,transition_group_id)
   nrcol = dim(data$ints)[2]
   SwathDat = list(intensity = as.matrix(data$ints[,2:nrcol,with=F] ) ,
                   score = as.matrix(data$score[,2:nrcol,with=F] ) ,
                   rt  = as.matrix(data$rt[,2:nrcol,with=F]) ,
-                  pepinfo = as.data.frame(nametable) )
+                  pepinfo = as.data.frame(nametable)
+                  )
   
   rownames(SwathDat$intensity) = data$ints$transition_group_id
   rownames(SwathDat$score) = data$ints$transition_group_id
