@@ -5,11 +5,24 @@
 #' @param cex.axis - size of axis lables
 #' @param cex - size of labels
 #' @export
-imagelabels = function(x, labels=colnames(x),cex=1,cex.axis=0.5,main=NULL)
+#' @examples
+#' x = matrix(rnorm(20*20),ncol=20)
+#' imagelabels(x)
+imagelabels = function(x, labels=colnames(x),cex=1,cex.axis=0.5,main=NULL,col = heat.colors(12))
 {
-  image(x, axes = F, main =main)
+  layout(matrix(data=c(1,2), nrow=1, ncol=2), widths=c(4,1), heights=c(1,1))
+  
+  image(x, axes = F, main =main, col=col)
   axis( 1, at=seq(0,1,length=length((labels))) , labels=labels,cex.axis=cex.axis, las=2, cex=cex )
   axis( 2, at=seq(0,1,length=length((labels))) , labels=labels,cex.axis=cex.axis, las=1, cex=cex )
+  
+  colorlevels = seq(min(x),max(x),length=length(col))
+  image(1, seq(0,1,length=length(colorlevels)),
+        matrix(data=colorlevels, nrow=1),
+        col=col,xlab="",ylab="",
+        axes=FALSE)
+  axis( 2, at=seq(0,1,length=length((colorlevels))) , labels=round(colorlevels,digits=2),cex.axis=cex.axis, las=1, cex=cex )
+  layout(1)
 }
 #' if you need an colorscale to you imagelables use this
 #' @param data the data matrix
