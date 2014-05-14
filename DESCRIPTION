@@ -1,7 +1,7 @@
 Package: imsbInfer
 Maintainer: Witold Wolski <wewolski@gmail.com>
 License: GPL
-Title: Helper functions for analysing proteomics data
+Title: Visualization, normalization and QC of proteomics SWATH-MS data
 Type: Package
 Author: Witold Wolski
 Description: More about what it does (maybe more than one line)

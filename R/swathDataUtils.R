@@ -138,8 +138,10 @@ convert2msExperiment = function(data){
   setnames(data$score,nams)
   setnames(data$rt, nams)
   
+  #setnames(data$protmapping,nams)
   nams = data$protmapping$transition_group_id
   
+    
   idxDecoy<-grep("^DECOY\\_",nams)
   decoy = rep(FALSE,length(nams))
   decoy[idxDecoy] <- TRUE
@@ -149,20 +151,21 @@ convert2msExperiment = function(data){
   pepinfo=split2table(nams,split="\\_|\\/")
   pepinfo = pepinfo[,-dim(pepinfo)[2]]
   colnames(pepinfo)=c("id","sequence","charge")
-  pepinfo = as.data.table(pepinfo)
+  pepinfo = as.data.frame(pepinfo,stringsAsFactors = FALSE)
   
-  nametable = data.table(transition_group_id=data$protmapping$transition_group_id,
+  nametable = data.frame(transition_group_id=data$protmapping$transition_group_id,
                          pepinfo,
                          decoy=decoy,
-                         seqchid = paste(pepinfo$sequence, pepinfo$charge, sep="_")
+                         seqchid = paste(pepinfo$sequence, pepinfo$charge, sep="_"),
+                         stringsAsFactors = FALSE
                          )
-  
-  setkey(nametable,transition_group_id)
+
+  #nametable  = nametable[order(nametable$transition_group_id),]
   nrcol = dim(data$ints)[2]
   SwathDat = list(intensity = as.matrix(data$ints[,2:nrcol,with=F] ) ,
                   score = as.matrix(data$score[,2:nrcol,with=F] ) ,
                   rt  = as.matrix(data$rt[,2:nrcol,with=F]) ,
-                  pepinfo = as.data.frame(nametable)
+                  pepinfo = nametable
                   )
   
   rownames(SwathDat$intensity) = data$ints$transition_group_id
@@ -172,10 +175,10 @@ convert2msExperiment = function(data){
   colnames(SwathDat$intensity) = colnames(data$ints)[2:nrcol]
   colnames(SwathDat$score) = colnames(data$ints)[2:nrcol]
   colnames(SwathDat$rt) = colnames(data$ints)[2:nrcol]
-  
   class(SwathDat) = "msexperiment"
   return(SwathDat)
 }
+
 #' read 2 matrix export return msExperiment 
 #' @param obj object
 #' @export
@@ -223,4 +226,16 @@ dim.msexperiment<-function(x){
 #' @S3method colnames msexperiment
 colnames.msexperiment<-function(x){
   return(colnames(x$intensity))
+}
+#'
+#' allows to set colnames for all the matrices in msexperiment
+#'
+#' @export
+mycolnames  = function(data,newNames)
+{
+  for(i in 1:(length(data)-1))
+  {
+    colnames(data[[i]]) = newNames
+  }
+  return(data)
 }
