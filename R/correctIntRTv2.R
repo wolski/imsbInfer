@@ -1,5 +1,3 @@
-#' correctIntRTv2
-#'
 #' @export
 correctIntRTv2 <- function(obj, ... ){
   UseMethod('correctIntRTv2')
@@ -7,13 +5,13 @@ correctIntRTv2 <- function(obj, ... ){
 #' correct Intensity RT
 #' Computes difference between aref and data and adjust data
 #'  that the median of differences is equal 0
+#' @aliases correctIntRTv2
 #' @param aref  reference data - ordered by retention time
 #' @param data to correct
 #' @param rto  retention time
 #' @param k  smoothing with
 #' @return corrected data
 #' @export
-#' @S3method correctIntRTv2 default
 #' @author Witold Wolski \email{wolski@@gmail.com}
 correctIntRTv2.default = function(aref, rto , scale=FALSE, plot=TRUE, k=501){
   idxref = is.na(aref) | is.infinite(aref)
@@ -50,7 +48,6 @@ correctIntRTv2.default = function(aref, rto , scale=FALSE, plot=TRUE, k=501){
 #' @param k - smoothing with
 #' @return msexperiment object with RT normalized intensities
 #' @export
-#' @S3method correctIntRTv2 msexperiment
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' 
 correctIntRTv2.msexperiment = function(experiment , k=501,plot=FALSE , scale=FALSE)

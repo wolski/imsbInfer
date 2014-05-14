@@ -8,7 +8,7 @@ orderByRT = function(obj){
 #' order by RT
 #' @param experiment obj
 #' @export
-#' @S3method orderByRT msexperiment
+#@S3method orderByRT msexperiment
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
@@ -26,7 +26,6 @@ orderByRT.msexperiment = function(experiment){
   experiment$RT = RT[rto]
   return(experiment)
 }
-
 #' remove decoys
 #' @param obj object
 #' @export
@@ -36,7 +35,7 @@ removeDecoys = function(obj,...){
 #' remove decoys from msexperiment
 #' @param data msexperiment
 #' @export
-#' @S3method removeDecoys msexperiment
+#@S3method removeDecoys msexperiment
 #' 
 #' @examples
 #' data(feature_alignment_requant)
@@ -58,7 +57,7 @@ keepRTRange <- function(obj, ...){
 #' @param data msexperiment
 #' @param rtrange rt range to keep default 1000 - 7000
 #' @export
-#' @S3method keepRTRange msexperiment
+#@S3method keepRTRange msexperiment
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
@@ -70,19 +69,16 @@ keepRTRange.msexperiment<- function(data,rtrange=c(1000,7000)){
   idx = RT > rtrange[1] &  RT < rtrange[2]
   return( subset( data , idx ) )
 }
-#' subset
-#' @param obj object
-#'
 #' @export
 subset <- function(obj, ...){
   UseMethod('subset')
 }
 #' subset data given idx vector
-#'
+#' @aliases subset
 #' @param data msexperiment
 #' @param idx row indices to keep or of TRUE, FALSE vector
 #' @export
-#' @S3method subset msexperiment
+#@S3method subset msexperiment
 subset.msexperiment<- function(data,idx){
   data$intensity = data$intensity[idx,]
   data$score = data$score[idx,]
@@ -119,7 +115,11 @@ convertLF2Wideformat=function(aligtable){
   #extract scor's
   score = aligtable[,as.list(m_score),by=transition_group_id]
   setnames(rt,c("Peptide",paste("score", unique(aligtable$align_origfilename ), sep="_")))
-  return(list(protmapping=unique(protmapping), ints=ints, rt=rt,score=score, aligtable=aligtable))
+  #extract masses
+  mz = aligtable[,as.list(m.z),by=transition_group_id]
+  setnames(rt,c("Peptide",paste("score", unique(aligtable$align_origfilename ), sep="_")))
+  
+  return(list(protmapping=unique(protmapping), ints=ints, rt=rt,score=score,mz=mz, aligtable=aligtable))
 }
 #' converts to msExperiment (exported more for debugging purpose)
 #' @param data output of convertLF2Wideformat
@@ -137,11 +137,10 @@ convert2msExperiment = function(data){
   setnames(data$ints,nams)
   setnames(data$score,nams)
   setnames(data$rt, nams)
+  setnames(data$mz, nams)
   
   #setnames(data$protmapping,nams)
   nams = data$protmapping$transition_group_id
-  
-    
   idxDecoy<-grep("^DECOY\\_",nams)
   decoy = rep(FALSE,length(nams))
   decoy[idxDecoy] <- TRUE
@@ -157,6 +156,7 @@ convert2msExperiment = function(data){
                          pepinfo,
                          decoy=decoy,
                          seqchid = paste(pepinfo$sequence, pepinfo$charge, sep="_"),
+                         ProteinName = data$protmapping$ProteinName,
                          stringsAsFactors = FALSE
                          )
 
@@ -165,30 +165,33 @@ convert2msExperiment = function(data){
   SwathDat = list(intensity = as.matrix(data$ints[,2:nrcol,with=F] ) ,
                   score = as.matrix(data$score[,2:nrcol,with=F] ) ,
                   rt  = as.matrix(data$rt[,2:nrcol,with=F]) ,
+                  mz  = as.matrix(data$mz[,2:nrcol,with=F]) ,
                   pepinfo = nametable
                   )
   
   rownames(SwathDat$intensity) = data$ints$transition_group_id
   rownames(SwathDat$score) = data$ints$transition_group_id
   rownames(SwathDat$rt) = data$ints$transition_group_id
+  rownames(SwathDat$mz) = data$ints$transition_group_id
   
   colnames(SwathDat$intensity) = colnames(data$ints)[2:nrcol]
   colnames(SwathDat$score) = colnames(data$ints)[2:nrcol]
   colnames(SwathDat$rt) = colnames(data$ints)[2:nrcol]
+  colnames(SwathDat$mz) = colnames(data$ints)[2:nrcol]
+  
   class(SwathDat) = "msexperiment"
   return(SwathDat)
 }
 
-#' read 2 matrix export return msExperiment 
-#' @param obj object
 #' @export
 read2msExperiment=function(obj,...){
   UseMethod('read2msExperiment')
 }
-#' read 2 feature alginer long format and generate an msexperiment 
+#' read 2 feature alginer long format and generate an msexperiment
+#' @aliases read2msExperiment
 #' @param filename filename to read (can't be compressed)
 #' @return msexperiment
-#' @S3method read2msExperiment default
+#' @export
 read2msExperiment.default=function(filename){
   print("read2msExperiment.default")
   aligtable=fread(filename)
@@ -199,7 +202,7 @@ read2msExperiment.default=function(filename){
 #' convert data.frame 2 msexperiment
 #' @param data a data.frame in long format
 #' @return msexperiment
-#' @S3method read2msExperiment data.frame
+#' @export
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
@@ -212,7 +215,7 @@ read2msExperiment.data.frame=function(data){
 #' dimension
 #'
 #' @export
-#' @S3method dim msexperiment
+#@S3method dim msexperiment
 dim.msexperiment<-function(x){
   return(dim(x$intensity))
 }
@@ -223,7 +226,7 @@ dim.msexperiment<-function(x){
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' colnames(SDat)
 #' @export
-#' @S3method colnames msexperiment
+#@S3method colnames msexperiment
 colnames.msexperiment<-function(x){
   return(colnames(x$intensity))
 }
