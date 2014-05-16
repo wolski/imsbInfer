@@ -3,9 +3,13 @@
 \title{imsbInfer - testing Normalization nr 2}
 \author { W.E. Wolski }
 
+
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 \maketitle
+
+
+%\VignetteIndexEntry{No clue what this is good for}
 
 \section{Load the data}
 
@@ -13,21 +17,27 @@ This is how you would read your data
 <<eval=TRUE,results=hide>>=
 rm(list=ls())
 library(imsbInfer)
-filename2="/home/witold/Analysis/data/feature_alignment_requant20131217184604152-909562.tsv"
-xx = fread(filename2)
-
 @
 
 
 <<readdataremovedecoys>>=
-SwathDat = read2msExperiment(xx)
+data(feature_alignment_requant)
+SwathDat = read2msExperiment(feature_alignment_requant)
 SwathDat = removeDecoys(SwathDat)
 
 @
 
 <<>>=
+xx<-colnames(SwathDat$intensity)
+xx<-sub("chludwig_","",xx)
+xx<-sub("_SW$","",xx)
+SwathDat = mycolnames(SwathDat,xx)
+head(SwathDat$intensity)
+@
+
+<<>>=
 SwathDat = orderByRT(SwathDat)
-pairsRatio(SwathDat$intensity[,1:7],SwathDat$RT,ylim=c(-8,8),main="ratio vs RT")
+pairsRatio(SwathDat$intensity[,1:3],SwathDat$RT,ylim=c(-8,8),main="ratio vs RT")
 
 @
 
@@ -37,36 +47,33 @@ names(SwathDat)
 sum(is.na(SwathDat$intensity))
 colnames(SwathDat$intensity)
 colnames(SwathDat$pepinfo)
-
 @
 
 pairsplot
 
 <<fig=TRUE>>=
-mypairs(SwathDat$intensity[,1:7],log="xy",main="pairsplot")
+mypairs(SwathDat$intensity[,1:3],log="xy",main="pairsplot")
 
 @
 
 <<fig=TRUE>>=
-pairsQQ(SwathDat$intensity[,1:7],main="qqplot")
+pairsQQ(SwathDat$intensity[,1:3],main="qqplot")
 
 @
 
 Remove low and high RT ranges
+
 <<fig=TRUE>>=
-
 SwathDatT = subset(SwathDat, SwathDat$RT < 7000 & SwathDat$RT > 1000)
-pairsRatio(SwathDatT$intensity[,1:7],SwathDatT$RT,ylim=c(-8,8),main="ratio vs RT")
-
+pairsRatio(SwathDatT$intensity[,1:3],SwathDatT$RT,ylim=c(-8,8),main="ratio vs RT")
 @
 
 
-<<fig=TRUE>>=
+<<fig=TRUE,width=9,height=6>>=
 cors = cor(SwathDatT$intensity, use="na.or.complete",method="spearman")
 dim(cors)
 par(mar = c(7,7,1,1))
 imagelabels(cors)
-#myImagePlot(cors)
 
 @
 
@@ -89,6 +96,7 @@ SwathDatT$intensityasinh = asinh(SwathDatT$intensity)
 aref = SwathDatT$intensityasinh[,1]
 data = SwathDatT$intensityasinh[,3]
 
+par(mfrow=c(2,2))
 plot(SwathDatT$RT,aref -  data,pch=".",ylim=c(-4,4))
 abline(h=0,col=2,lwd=2)
 
@@ -104,8 +112,7 @@ plot(SwathDatT$RT, tmp2r-tmp2d,pch=".")
 abline(h=0,col=2,lwd=2)
 
 tmp = correctIntRTv2(aref, SwathDatT$RT ,scale=FALSE, k=101,plot=F)
-plot(SwathDatT$RT,aref -  tmp,pch=".")
-abline( h=0 , col=2 , lwd=2 )
+plot(SwathDatT$RT,aref -  tmp,type="l",pch=".")
 
 @
 
@@ -117,12 +124,12 @@ SwathDatT$intensity = asinh(SwathDatT$intensity)
 
 tmp = correctIntRTv2(SwathDatT,k=301,scale=TRUE)
 tmp$intensity = sinh(tmp$intensity)
-pairsRatio(tmp$intensity[,1:4],tmp$RT,ylim=c(-6,6),main="ratio vs RT")
+pairsRatio(tmp$intensity[,1:3],tmp$RT,ylim=c(-6,6),main="ratio vs RT")
 
 @
 
 
-<<fig=TRUE>>=
+<<fig=TRUE,width=9,height=5>>=
 cors2 = cor(tmp$intensity, use="na.or.complete",method="spearman")
 par(mar = c(7,7,1,1))
 imagelabels(cors2)

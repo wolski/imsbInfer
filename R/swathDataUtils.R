@@ -5,16 +5,16 @@ if(getRversion() >= "3.1.0") utils::suppressForeignCheck("localvariable")
 orderByRT = function(obj){
   UseMethod('orderByRT')
 }
-#' order by RT
+#' orders rows by retention time of peptide
 #' @param experiment obj
 #' @export
 #@S3method orderByRT msexperiment
 #' @examples
-#' data(feature_alignment_requant)
-#' SDat = read2msExperiment(feature_alignment_requant)
+#' data(SDat)
 #' head(SDat$rt)
 #' SDat=orderByRT(SDat)
 #' head(SDat$rt)
+#' SDat$RT[1:10] 
 orderByRT.msexperiment = function(experiment){
   RT = apply(experiment$rt , 1 , median, na.rm=TRUE )
   #order relevant data by retention time
@@ -78,7 +78,13 @@ subset <- function(obj, ...){
 #' @param data msexperiment
 #' @param idx row indices to keep or of TRUE, FALSE vector
 #' @export
-#@S3method subset msexperiment
+#' @examples
+#' data(SDat)
+#' # keep only peakgroups with mass less than 800
+#' mass = apply(SDat$mz,1,median)
+#' dim(SDat)
+#' SDatr = subset(SDat, mass < 800)
+#' dim(SDatr)
 subset.msexperiment<- function(data,idx){
   data$intensity = data$intensity[idx,]
   data$score = data$score[idx,]
@@ -155,11 +161,11 @@ convert2msExperiment = function(data){
   colnames(pepinfo)=c("id","sequence","charge")
   pepinfo = as.data.frame(pepinfo,stringsAsFactors = FALSE)
   
-  nametable = data.frame(transition_group_id=data$protmapping$transition_group_id,
+  nametable = data.frame(transition_group_id=as.character(data$protmapping$transition_group_id),
                          pepinfo,
                          decoy=decoy,
                          seqchid = paste(pepinfo$sequence, pepinfo$charge, sep="_"),
-                         ProteinName = data$protmapping$ProteinName,
+                         ProteinName = as.character(data$protmapping$ProteinName),
                          stringsAsFactors = FALSE
                          )
 

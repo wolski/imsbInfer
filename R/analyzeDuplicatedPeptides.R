@@ -1,15 +1,23 @@
 #' analyse duplicated peptides
 #'
 #' @export
-analyzeDuplicatedPeptides = function(dups,data){
+#' @examples
+#' data(SDat)
+#' rownames = SDat$pepinfo$sequence
+#' dups = rownames[which(duplicated(rownames))]
+#' res = analyzeDuplicatedPeptides(dups, rownames, SDat)
+#' res[1,]
+#' hist(res$cor)
+#' plot(res$medianRTDiff,res$cor)
+#' #same for proteins
+#' rownames = as.character(SDat$pepinfo$ProteinName)
+analyzeDuplicatedPeptides = function(dups, rownames, data){
   res = NULL
   count = 1
   nameshead = c("p1","p2","cor","rt1","rt2","medianRTDiff","madDiffRT")
   res = matrix(NA ,nrow = length(dups)*3 ,ncol=length(nameshead) )
-  dim(res)
   
   for(dup in dups){
-    #dup = dups[1]
     duplicated <- which(data$pepinfo$sequence %in% dup)
     ld =length(duplicated)
     print(dup)
@@ -32,7 +40,7 @@ analyzeDuplicatedPeptides = function(dups,data){
       }
     }
   }
-  res2= as.data.frame(res[1:count,],stringsAsFactors=FALSE)
+  res2= as.data.frame(res[1:(count-1),],stringsAsFactors=FALSE)
   colnames(res2) = nameshead
   res2$cor=as.numeric(res2$cor)
   res2$rt1=as.numeric(res2$rt1)
@@ -40,3 +48,8 @@ analyzeDuplicatedPeptides = function(dups,data){
   res2$madDiffRT=as.numeric(res2$madDiffRT)
   return(res2)
 }
+#' analyse duplicated peptides
+#'
+#' @export
+
+
