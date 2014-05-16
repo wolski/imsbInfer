@@ -97,7 +97,10 @@ subset.msexperiment<- function(data,idx){
 #' SDat =  convertLF2Wideformat(  feature_alignment_requant  ) 
 #'
 convertLF2Wideformat=function(aligtable){
+  
   aligtable = as.data.table(aligtable)
+  idx = grep("m*z" , colnames(aligtable) )
+  setnames(aligtable,  idx, "mz")
   #fix orignal filename
   aligtable$align_origfilename = basename(as.character(aligtable$align_origfilename))
   protmapping = aligtable[,list(transition_group_id,ProteinName)]
@@ -114,10 +117,10 @@ convertLF2Wideformat=function(aligtable){
   setnames(rt,c("Peptide",paste("RT", unique(aligtable$align_origfilename ), sep="_")))
   #extract scor's
   score = aligtable[,as.list(m_score),by=transition_group_id]
-  setnames(rt,c("Peptide",paste("score", unique(aligtable$align_origfilename ), sep="_")))
+  setnames(score,c("Peptide",paste("score", unique(aligtable$align_origfilename ), sep="_")))
   #extract masses
-  mz = aligtable[,as.list(m.z),by=transition_group_id]
-  setnames(rt,c("Peptide",paste("score", unique(aligtable$align_origfilename ), sep="_")))
+  mz = aligtable[,as.list(mz),by=transition_group_id]
+  setnames(mz,c("Peptide",paste("mz", unique(aligtable$align_origfilename ), sep="_")))
   
   return(list(protmapping=unique(protmapping), ints=ints, rt=rt,score=score,mz=mz, aligtable=aligtable))
 }
@@ -230,7 +233,6 @@ dim.msexperiment<-function(x){
 colnames.msexperiment<-function(x){
   return(colnames(x$intensity))
 }
-#'
 #' allows to set colnames for all the matrices in msexperiment
 #'
 #' @export
@@ -242,3 +244,21 @@ mycolnames  = function(data,newNames)
   }
   return(data)
 }
+#' reorders all the matrices by the columnnames
+#' @param msexperiment to reorder
+#' @param ord new ordering - if null then use ordering by column names
+#' @export
+reordercolumns  = function( data, ord = NULL )
+{
+  for(i in 1:(length(data)-1))
+  {
+    if(length(ord)==0){
+      ord= order(colnames(data[[i]]))
+    }
+    data[[i]] = data[[i]][,ord]
+  }
+  return(data)
+}
+
+
+
