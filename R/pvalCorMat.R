@@ -41,10 +41,11 @@ pvalCorMat = function(x, alternative = "two.sided", method = "spearman"){
 #' @param func function taking 2 arrays x, y
 #' @param how to initialize the output matrix
 #' @export
+#' @examples
 #' mat = matrix(rnorm(10*20),ncol=10)
-#' dist = distmy(mat,function(x,y){mean(abs(x-y))},init=0)
-#' image(dist)
-distmy = function(x, func, init=NA){
+#' redist = distmy(mat,function(x,y){mean(abs(x-y))},init=0)
+#' image(redist)
+distmy = function( x, func, init=NA ){
   nout = dim(x)[2]
   resP = matrix(init,nrow=nout,ncol=nout)
   for(i in 1:nout){

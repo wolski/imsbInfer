@@ -4,12 +4,13 @@
 \author { W.E. Wolski }
 
 
+%\VignetteIndexEntry{Getting started}
+
+
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 \maketitle
 
-
-%\VignetteIndexEntry{No clue what this is good for}
 
 \section{Load the data}
 

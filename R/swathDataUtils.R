@@ -198,9 +198,11 @@ read2msExperiment=function(obj,...){
 }
 #' read 2 feature alginer long format and generate an msexperiment
 #' @aliases read2msExperiment
-#' @param filename filename to read (can't be compressed)
+#' @param filename filename to an openswath feature alignment output.
 #' @return msexperiment
 #' @export
+#' @examples
+#' \dontrun{res = read2msExperiment("path/to/feature_alignment_requant.tsv")}
 read2msExperiment.default=function(filename){
   print("read2msExperiment.default")
   aligtable=fread(filename)
