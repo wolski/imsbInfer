@@ -7,10 +7,14 @@
 #' res = getUniquePeptides(rownames)
 #' res[1:10]
 #' sum(duplicated(res))
+#' res2 = analyzeDuplicated( data , list(res[1:10] ))
+#' dim(res2)
 #' @seealso \code{\link{analyzeDuplicated}} for contex
-getUniquePeptides = function(  rownames ){
+getUniquePeptides = function(  rownames )
+{
   dups = rownames[which(duplicated(rownames))]
   res = setdiff(rownames,dups)
+  res = which( rownames %in% res)
   return(res)
 }
 #' randomly match peptides
@@ -18,7 +22,10 @@ getUniquePeptides = function(  rownames ){
 #' @examples
 #' data(SDat)
 #' res = randomPeptidePairs(1000,dim(SDat)[1])
+#' res2 = analyzeDuplicated( data , res)
+#' dim(res2)
 #' @param number of pairs
+#' @seealso \code{\link{analyzeDuplicated}}
 randomPeptidePairs = function(n, dsize){
   res = list(n)
   tmp = 1:dsize
@@ -89,6 +96,12 @@ analyzeDuplicatedProteins = function(data){
 #' res[1,]
 #' hist(res$cor)
 #' plot(res$medianRTDiff,res$cor)
+#' 
+#' rownames = SDat$pepinfo$sequence
+#' nondups = getUniquePeptides(rownames)
+#' length(nondups)
+#' res = analyzeDuplicated(SDat , list(nondups[1:25]))
+#' 
 #' @seealso \code{\link{getListOfMatches}} \code{\link{analyzeDuplicatedPeptides}}
 #' @export
 #' @param data - msExperiment
@@ -99,16 +112,19 @@ analyzeDuplicated = function(data, dups){
   nameshead = c("p1","p2","cor","rt1","rt2","medianRTDiff","madDiffRT")
   # determine size of output matrix
   tmp = lapply(dups,function(x){d=length(x);return((d*d - d)/2) })
-  res = matrix( NA , nrow = sum( unlist(tmp) ) ,ncol=length( nameshead ) )
+  nrrow = sum( unlist(tmp) )
+  cat("nr rows", nrrow , "to process")
+  res = matrix( NA , nrow = nrrow ,ncol=length( nameshead ) )
   for(dup in dups)
   {
     duplicated <- dup
     ld =length(duplicated)
-#    print(dup)
-#    print((ld))
+    #    print(dup)
+    cat("nrdup ", (ld),"\n")
     for(i in 1:ld){
       for(j in i:ld){
         if(i!=j){
+          cat("count:",count, " i:",i," j:",j,"\n")
           tmp=cor(t(data$intensity[duplicated[c(i,j)],]))
           cors = tmp[upper.tri(tmp)]
           x<-which(upper.tri(tmp),arr.ind=T)
