@@ -7,7 +7,7 @@
 #' res = getUniquePeptides(rownames)
 #' res[1:10]
 #' sum(duplicated(res))
-#' res2 = analyzeDuplicated( data , list(res[1:10] ))
+#' res2 = analyzeDuplicated( SDat , list(res[1:10] ))
 #' dim(res2)
 #' @seealso \code{\link{analyzeDuplicated}} for contex
 getUniquePeptides = function(  rownames )
@@ -62,29 +62,32 @@ getListOfMatches = function(  rownames ){
 #' #same for proteins
 #' rownames = as.character(SDat$pepinfo$ProteinName)
 #' @seealso \code{\link{getListOfMatches}} \code{\link{analyzeDuplicatedProteins}}
-analyzeDuplicatedPeptides = function(data){
+#' @param data msExperiment
+#' @param maxcount maximum number of duplicate comparisons
+analyzeDuplicatedPeptides = function(data,maxcount = 1000){
   rownames = data$pepinfo$sequence
   dups=getListOfMatches( rownames )
-  analyzeDuplicated( data ,dups )
+  analyzeDuplicated( data ,dups, maxcount = 1000 )
 }
 #' analyse duplicated protein - same protein id different peptide
 #'
 #' @export
 #' @examples
 #' data(SDat)
-#' res = analyzeDuplicatedProtein(SDat)
+#' res = analyzeDuplicatedProteins(SDat)
 #' res[1,]
 #' hist(res$cor)
 #' plot(res$medianRTDiff,res$cor)
 #' #same for proteins
 #' rownames = as.character(SDat$pepinfo$ProteinName)
 #' @seealso \code{\link{getListOfMatches}} \code{\link{analyzeDuplicatedPeptides}}
-#' @seealso analyzeDuplicated
+#' @seealso  \code{\link{analyzeDuplicated}}
 #' @param data
-analyzeDuplicatedProteins = function(data){
+#' @param maxount maximum number of duplicate comparisons
+analyzeDuplicatedProteins = function(data,maxcount = 1000){
   rownames = data$pepinfo$ProteinName
   dups=getListOfMatches( rownames )
-  analyzeDuplicated( data ,dups )
+  analyzeDuplicated( data ,dups , max= 3,maxcount=maxcount)
 }
 #' analyse duplicated peptides/proteins/lines
 #' @examples
@@ -106,25 +109,26 @@ analyzeDuplicatedProteins = function(data){
 #' @export
 #' @param data - msExperiment
 #' @param dups - list as returned by function \code{\link{getListOfMatches}}
-analyzeDuplicated = function(data, dups){
+#' @param maxpep - limit the number of duplicated peptides
+analyzeDuplicated = function(data, dups, maxpep=3, maxcount = 1000){
   res = NULL
   count = 1
   nameshead = c("p1","p2","cor","rt1","rt2","medianRTDiff","madDiffRT")
   # determine size of output matrix
-  tmp = lapply(dups,function(x){d=length(x);return((d*d - d)/2) })
+  tmp = lapply(dups,function(x){d=min(maxpep,length(x));return((d*d - d)/2) })
   nrrow = sum( unlist(tmp) )
-  cat("nr rows", nrrow , "to process")
+  cat("nr rows", nrrow , "to process\n")
   res = matrix( NA , nrow = nrrow ,ncol=length( nameshead ) )
-  for(dup in dups)
-  {
+  print(dim(res))
+  
+  for(dup in dups){
     duplicated <- dup
-    ld =length(duplicated)
-    #    print(dup)
-    cat("nrdup ", (ld),"\n")
+    ld = min(maxpep, length(duplicated))
+    cat("nrdup ", (ld), " count " , count, "\n")
     for(i in 1:ld){
       for(j in i:ld){
         if(i!=j){
-          cat("count:",count, " i:",i," j:",j,"\n")
+          #cat("count:",count, " i:",i," j:",j,"\n")
           tmp=cor(t(data$intensity[duplicated[c(i,j)],]))
           cors = tmp[upper.tri(tmp)]
           x<-which(upper.tri(tmp),arr.ind=T)
@@ -136,6 +140,9 @@ analyzeDuplicated = function(data, dups){
           #names(tmp) = nameshead
           res[count,] = tmp
           count = count + 1
+          if(count > maxcount){
+            break()
+          }
         }
       }
     }

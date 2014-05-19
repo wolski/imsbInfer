@@ -37,13 +37,13 @@ uppertriang <- function(mat){
   res<-mat[upper.tri(mat,diag=FALSE)] 
   return( c(unlist(res)) )
 }
-#' running median absolute deviation
+#' running median absolute deviation (not quite efficient)
 #'
 #' @examples
 #' x = rnorm(5000)
 #' y = runMAD(x,k=501)
 #' @export
-#' @seealso runmed
+#' @seealso  \code{\link{runmed}}
 #' 
 runMAD <- function(aref,k=301){
   m = k %/% 2

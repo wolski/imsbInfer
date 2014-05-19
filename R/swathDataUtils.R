@@ -8,7 +8,6 @@ orderByRT = function(obj){
 #' orders rows by retention time of peptide
 #' @param experiment obj
 #' @export
-#@S3method orderByRT msexperiment
 #' @examples
 #' data(SDat)
 #' head(SDat$rt)
@@ -35,7 +34,6 @@ removeDecoys = function(obj,...){
 #' remove decoys from msexperiment
 #' @param data msexperiment
 #' @export
-#@S3method removeDecoys msexperiment
 #' 
 #' @examples
 #' data(feature_alignment_requant)
@@ -57,7 +55,6 @@ keepRTRange <- function(obj, ...){
 #' @param data msexperiment
 #' @param rtrange rt range to keep default 1000 - 7000
 #' @export
-#@S3method keepRTRange msexperiment
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
@@ -226,7 +223,6 @@ read2msExperiment.data.frame=function(data){
 #' dimension
 #'
 #' @export
-#@S3method dim msexperiment
 dim.msexperiment<-function(x){
   return(dim(x$intensity))
 }
@@ -237,7 +233,6 @@ dim.msexperiment<-function(x){
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' colnames(SDat)
 #' @export
-#@S3method colnames msexperiment
 colnames.msexperiment<-function(x){
   return(colnames(x$intensity))
 }

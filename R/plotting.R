@@ -58,6 +58,11 @@ pairsQQ = function(dataframesel,main=""){
 }
 #' plot ratios against retention time
 #' @export
+#' @examples
+#' data(SDat)
+#' rtord = orderByRT(SDat)
+#' pairsRatio( rtord$intensity, rtord$RT )
+#' 
 pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
   pairs(dataframesel, panel = function(x,y,...){
     y = log2(x / y)
@@ -72,6 +77,10 @@ pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
 }
 #' plot difference against retention time
 #' @export
+#' @examples
+#' data(SDat)
+#' rtord = orderByRT(SDat)
+#' pairsDifference( asinh(rtord$intensity), rtord$RT , ylim=c(-2,2))
 pairsDifference = function(dataframesel,RT,main="",ylim=c(-2,2)){
   pairs(dataframesel, panel = function(x,y,...){
     y = x - y
