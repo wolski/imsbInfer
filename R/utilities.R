@@ -10,16 +10,16 @@ getMolfun <- function(pfilename){
 }
 #' Removes rows with nas from matrix
 #' @export
-rmNarows <- function(plev, thresh=0 )
+rmNArows <- function(plev, thresh=0 )
 {
   x <- apply(plev,1,function(x){sum(is.na(x))})
   plev <- plev[-which(x>thresh),]
 }
 #' splits names and binds into matrix
+#' @export
 #' @examples
 #' dat = c("bla_ra0/2_run0","bla_ra1/2_run0","bla_ra2/2_run0")
 #' split2table(dat,split="\\_|\\/")
-#' @export
 split2table <- function(names,split="\\||\\_")
 {
   cnamessplit <- strsplit(names,split)
@@ -31,17 +31,25 @@ split2table <- function(names,split="\\||\\_")
   }
   return(protnam)
 }
-#' getupper triangle from matrix 
+#' get values of upper triangle from matrix 
 #' @export
+#' @examples
+#' t = matrix(1:25,ncol=5)
+#' uppertriang(t)
 uppertriang <- function(mat){
   res<-mat[upper.tri(mat,diag=FALSE)] 
   return( c(unlist(res)) )
 }
-#' running median absolute deviation (not quite efficient)
+#' running median absolute deviation (not quite efficient) robust version of sd
 #'
 #' @examples
 #' x = rnorm(5000)
 #' y = runMAD(x,k=501)
+#' med = runmed(x,k=501)
+#' plot(x,pch="*")
+#' lines(med,col=2,lwd=3)
+#' lines(y,col=3,lwd=3)
+#' lines(-y,col=3,lwd=3)
 #' @export
 #' @seealso  \code{\link{runmed}}
 #' 

@@ -7,8 +7,9 @@
 #' res = getUniquePeptides(rownames)
 #' res[1:10]
 #' sum(duplicated(res))
-#' res2 = analyzeDuplicated( SDat , list(res[1:10] ))
+#' res2 = analyzeDuplicated( SDat , list(res[1:15] ), maxpep = 100)
 #' dim(res2)
+#' 
 #' @seealso \code{\link{analyzeDuplicated}} for contex
 getUniquePeptides = function(  rownames )
 {
@@ -21,8 +22,10 @@ getUniquePeptides = function(  rownames )
 #' @export
 #' @examples
 #' data(SDat)
-#' res = randomPeptidePairs(1000,dim(SDat)[1])
-#' res2 = analyzeDuplicated( data , res)
+#' res = randomPeptidePairs(100,dim(SDat)[1])
+#' length(res)
+#' res[[1]]
+#' res2 = analyzeDuplicated( SDat , res)
 #' dim(res2)
 #' @param number of pairs
 #' @seealso \code{\link{analyzeDuplicated}}
@@ -32,6 +35,7 @@ randomPeptidePairs = function(n, dsize){
   for(i in 1:n){
     res[[i]] <- sample(tmp,2)
   }
+  return(res)
 }
 #' get a list of duplicates
 #' 
@@ -63,11 +67,11 @@ getListOfMatches = function(  rownames ){
 #' rownames = as.character(SDat$pepinfo$ProteinName)
 #' @seealso \code{\link{getListOfMatches}} \code{\link{analyzeDuplicatedProteins}}
 #' @param data msExperiment
-#' @param maxcount maximum number of duplicate comparisons
-analyzeDuplicatedPeptides = function(data,maxcount = 1000){
+#' @param countmax maximum number of duplicate comparisons
+analyzeDuplicatedPeptides = function(data,countmax = 1000){
   rownames = data$pepinfo$sequence
   dups=getListOfMatches( rownames )
-  analyzeDuplicated( data ,dups, maxcount = 1000 )
+  analyzeDuplicated( data ,dups, countmax = 1000 )
 }
 #' analyse duplicated protein - same protein id different peptide
 #'
@@ -84,10 +88,10 @@ analyzeDuplicatedPeptides = function(data,maxcount = 1000){
 #' @seealso  \code{\link{analyzeDuplicated}}
 #' @param data
 #' @param maxount maximum number of duplicate comparisons
-analyzeDuplicatedProteins = function(data,maxcount = 1000){
+analyzeDuplicatedProteins = function(data,maxpep=3,countmax = 1000){
   rownames = data$pepinfo$ProteinName
   dups=getListOfMatches( rownames )
-  analyzeDuplicated( data ,dups , max= 3,maxcount=maxcount)
+  analyzeDuplicated( data ,dups , maxpep= maxpep,countmax=countmax)
 }
 #' analyse duplicated peptides/proteins/lines
 #' @examples
@@ -110,7 +114,8 @@ analyzeDuplicatedProteins = function(data,maxcount = 1000){
 #' @param data - msExperiment
 #' @param dups - list as returned by function \code{\link{getListOfMatches}}
 #' @param maxpep - limit the number of duplicated peptides
-analyzeDuplicated = function(data, dups, maxpep=3, maxcount = 1000){
+#' @param countmax - limit the total number of comparisons
+analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000){
   res = NULL
   count = 1
   nameshead = c("p1","p2","cor","rt1","rt2","medianRTDiff","madDiffRT")
@@ -140,7 +145,7 @@ analyzeDuplicated = function(data, dups, maxpep=3, maxcount = 1000){
           #names(tmp) = nameshead
           res[count,] = tmp
           count = count + 1
-          if(count > maxcount){
+          if(count > countmax){
             break()
           }
         }

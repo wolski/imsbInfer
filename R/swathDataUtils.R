@@ -82,7 +82,8 @@ subset <- function(obj, ...){
 #' dim(SDat)
 #' SDatr = subset(SDat, mass < 800)
 #' dim(SDatr)
-subset.msexperiment<- function(data,idx){
+subset.msexperiment<- function(obj,idx){
+  data=obj
   data$intensity = data$intensity[idx,]
   data$score = data$score[idx,]
   data$rt = data$rt[idx,]

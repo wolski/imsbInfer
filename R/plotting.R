@@ -34,18 +34,26 @@ colorscale = function(data,colors=heat.colors(12)){
   axis( 2, at=seq(0,1,length=nrc) , labels=round(z,digits=2), las=2 )
 }
 #' altman bland
+#' 
 #' @export
-altmanbland = function(x,y,main="",pch="."){
-  
+#' @examples
+#' data(SDat)
+#' altmanbland(SDat$intensity[,1],SDat$intensity[,2],log="xy")
+#' 
+altmanbland = function(x,y,main="",pch=".",log=""){
   idx<-apply(cbind(x,y),1,function(x){sum(x==0)==0})
   mean  = (x+y)/2
   absdiff = abs( x-y )
   #scatter.smooth(mean[idx],absdiff[idx],span=1/3,col=2,pch=".",cex=2,xlab="(y+x)/2",ylab="abs(x-y)",main=main,log="xy")  
-  plot(mean,absdiff,log="xy",xlab="(y+x)/2",ylab="abs(x-y)",pch="x",cex=0.5,main=main)
+  plot(mean,absdiff,log=log,xlab="(y+x)/2",ylab="abs(x-y)",pch="x",cex=0.5,main=main)
   lines(lowess(mean,absdiff),col=2,lwd=2)
 }
 #' plot QQ plot
 #' @export
+#' @examples
+#' data(SDat)
+#' pairsQQ( SDat$intensity )
+#' @seealso \code{\link{qqplot}} and  \code{\link{pairs}}
 pairsQQ = function(dataframesel,main=""){
   pairs(dataframesel, panel = function(x,y){
     r <- qqplot(x , y , plot.it = FALSE)
@@ -62,7 +70,7 @@ pairsQQ = function(dataframesel,main=""){
 #' data(SDat)
 #' rtord = orderByRT(SDat)
 #' pairsRatio( rtord$intensity, rtord$RT )
-#' 
+#' @seealso \code{\link{pairs}} and \code{\link{pairsDifference}}
 pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
   pairs(dataframesel, panel = function(x,y,...){
     y = log2(x / y)
@@ -81,6 +89,7 @@ pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
 #' data(SDat)
 #' rtord = orderByRT(SDat)
 #' pairsDifference( asinh(rtord$intensity), rtord$RT , ylim=c(-2,2))
+#' @seealso \code{\link{pairs}} and \code{\link{pairsRatio}}
 pairsDifference = function(dataframesel,RT,main="",ylim=c(-2,2)){
   pairs(dataframesel, panel = function(x,y,...){
     y = x - y
@@ -97,6 +106,10 @@ pairsDifference = function(dataframesel,RT,main="",ylim=c(-2,2)){
 #' @param pln data matrix or data.frame as normally passed to pairs
 #' @param ... params usually passed to pairs
 #' @export
+#' @examples
+#' data(SDat)
+#' mypairs(SDat$intensity,log="xy",main="small data")
+#' @seealso also \code{\link{pairs}}
 mypairs = function(dataframesel,...){
   pairs(dataframesel, panel = function(x,y){
     points(x, y, pch=".")
@@ -112,9 +125,18 @@ mypairs = function(dataframesel,...){
 #' @param hclustf clustering function
 #' @param mypalette
 #' @param mycol
-myheat = function(pln,main="",distf=dist,hclustf=hclust,mypalette,mycol){
-  tmp <- heatmap.2( as.matrix(pln) , trace="none" , scale="none" , col=mypalette ,
-                    ColSideColors=mycol ,
+#' @examples
+#' library(gplots)
+#' data(SDat)
+#' myheat(SDat$intensity,ColSideColors=c("red","blue","pink"))
+simpleheatmap = function(pln,main="",
+                  distf=dist,
+                  hclustf=hclust,
+                  palette=terrain.colors(12),
+                  ColSideColors=NULL)
+{
+  tmp <- heatmap.2( as.matrix(pln) , trace="none" , scale="none" , col=palette ,
+                    ColSideColors=ColSideColors ,
                     #RowSideColors=protcol,
                     labRow="",
                     cexRow=0.1 + 1/log10(dim(pln)[1]),
@@ -127,7 +149,18 @@ myheat = function(pln,main="",distf=dist,hclustf=hclust,mypalette,mycol){
 #' @param foldchange - fold change values
 #' @param pvals - pvalues
 #' @export
-myvolcanoplot = function(foldchange, pvals , pthresh = 0.05, ratiothresh = 2, xlab ="log2(T/N)" ,ylab = "-log10(P)"){
+#' @examples
+#' foldchange <- rnorm(1000) 
+#' pval <-rexp(1000)
+#' volcanoplot(foldchange, pval)
+#'
+volcanoplot = function(foldchange,
+                         pvals ,
+                         pthresh = 0.05,
+                         ratiothresh = 2,
+                         xlab ="log2(T/N)" ,
+                         ylab = "-log10(P)"
+                         ){
   d <- data.frame(ratio = foldchange, pvals = pvals )
   bla = tryCatch( plot(d$ratio,-log10(d$pvals),col="#00000033",pch=19,xlab=xlab, ylab=ylab),
                   warning=function(bla){ dev.off(); return(1)} 
@@ -146,6 +179,4 @@ myvolcanoplot = function(foldchange, pvals , pthresh = 0.05, ratiothresh = 2, xl
   abline(v =0,lty=2,lwd=1.5)
   return(list(upsubset=upsubset,downsubset=downsubset))
 }
-
-
 
