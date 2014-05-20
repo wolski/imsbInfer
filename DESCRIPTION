@@ -9,4 +9,5 @@ Version: 1.0.3
 Date: 2013-06-06
 Depends:
     roxygen2,
-    data.table
+    data.table,
+    gplots

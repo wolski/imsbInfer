@@ -69,10 +69,10 @@ keepRTRange.msexperiment<- function(obj,rtrange=c(1000,7000),...){
   idx = RT > rtrange[1] &  RT < rtrange[2]
   return( subset( data , idx ) )
 }
-#' @export
-subset <- function(obj, ...){
-  UseMethod('subset')
-}
+## @export
+#subset <- function(obj, ...){
+#  UseMethod('subset')
+#}
 #' subset data given idx vector
 #' @aliases subset
 #' @param data msexperiment
@@ -85,8 +85,8 @@ subset <- function(obj, ...){
 #' dim(SDat)
 #' SDatr = subset(SDat, mass < 800)
 #' dim(SDatr)
-subset.msexperiment<- function(obj,idx,...){
-  data=obj
+subset.msexperiment<- function(x,idx,...){
+  data=x
   data$intensity = data$intensity[idx,]
   data$score = data$score[idx,]
   data$rt = data$rt[idx,]

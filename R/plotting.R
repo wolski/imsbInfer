@@ -126,9 +126,8 @@ mypairs = function(dataframesel,...){
 #' @param mypalette
 #' @param mycol
 #' @examples
-#' library(gplots)
 #' data(SDat)
-#' myheat(SDat$intensity,ColSideColors=c("red","blue","pink"))
+#' simpleheatmap(SDat$intensity,ColSideColors=c("red","blue","pink"))
 simpleheatmap = function(pln,main="",
                   distf=dist,
                   hclustf=hclust,
