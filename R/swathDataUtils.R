@@ -14,7 +14,8 @@ orderByRT = function(obj){
 #' SDat=orderByRT(SDat)
 #' head(SDat$rt)
 #' SDat$RT[1:10] 
-orderByRT.msexperiment = function(experiment){
+orderByRT.msexperiment = function(obj){
+  experiment = obj
   RT = apply(experiment$rt , 1 , median, na.rm=TRUE )
   #order relevant data by retention time
   rto = order(RT)
@@ -41,7 +42,8 @@ removeDecoys = function(obj,...){
 #' dim(SDat)
 #' SDat = removeDecoys(SDat)
 #' dim(SDat)
-removeDecoys.msexperiment = function(data){
+removeDecoys.msexperiment = function(obj,...){
+  data = obj
   return(subset(data,!data$pepinfo$decoy))
 }
 #' removes unwanted RT ranges
@@ -61,7 +63,8 @@ keepRTRange <- function(obj, ...){
 #' dim(SDat)
 #' SD2 = keepRTRange(SDat,c(3000,4000))
 #' dim(SD2)
-keepRTRange.msexperiment<- function(data,rtrange=c(1000,7000)){
+keepRTRange.msexperiment<- function(obj,rtrange=c(1000,7000),...){
+  data = obj
   RT = apply( data$rt , 1 , median )
   idx = RT > rtrange[1] &  RT < rtrange[2]
   return( subset( data , idx ) )
@@ -82,7 +85,7 @@ subset <- function(obj, ...){
 #' dim(SDat)
 #' SDatr = subset(SDat, mass < 800)
 #' dim(SDatr)
-subset.msexperiment<- function(obj,idx){
+subset.msexperiment<- function(obj,idx,...){
   data=obj
   data$intensity = data$intensity[idx,]
   data$score = data$score[idx,]
@@ -201,7 +204,8 @@ read2msExperiment=function(obj,...){
 #' @export
 #' @examples
 #' \dontrun{res = read2msExperiment("path/to/feature_alignment_requant.tsv")}
-read2msExperiment.default=function(filename){
+read2msExperiment.default=function(obj,...){
+  filename = obj
   print("read2msExperiment.default")
   aligtable=fread(filename)
   data = convertLF2Wideformat(aligtable)
@@ -216,7 +220,8 @@ read2msExperiment.default=function(filename){
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' dim(SDat)
-read2msExperiment.data.frame=function(data){
+read2msExperiment.data.frame=function(obj,...){
+  data = obj
   data = convertLF2Wideformat(data)
   data = convert2msExperiment(data)
   return(data)

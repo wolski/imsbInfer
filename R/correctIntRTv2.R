@@ -13,7 +13,8 @@ correctIntRTv2 <- function(obj, ... ){
 #' @return corrected data
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
-correctIntRTv2.default = function(aref, rto , scale=FALSE, plot=TRUE, k=501){
+correctIntRTv2.default = function(obj, rto , scale=FALSE, plot=TRUE, k=501, ...){
+  aref= obj
   idxref = is.na(aref) | is.infinite(aref)
   arefw = aref[!idxref]
   rtow = rto[!idxref]
@@ -50,8 +51,9 @@ correctIntRTv2.default = function(aref, rto , scale=FALSE, plot=TRUE, k=501){
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' 
-correctIntRTv2.msexperiment = function(experiment , k=501,plot=FALSE , scale=FALSE)
+correctIntRTv2.msexperiment = function(obj , k=501,plot=FALSE , scale=FALSE, ...)
 {
+  experiment = obj
   experiment = removeDecoys(experiment)
   experiment = orderByRT(experiment)
   

@@ -14,7 +14,7 @@ correctIntRTv1 <- function(obj, ... ){
 #' @return corrected data
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
-correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501){
+correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
   aref = obj  
   a1=data
   #remove missing values
@@ -56,7 +56,8 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501){
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' 
-correctIntRTv1.msexperiment = function(experiment,k=501,plot=F){
+correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
+  experiment = obj
   experiment = removeDecoys(experiment)
   experiment = orderByRT(experiment)
   
