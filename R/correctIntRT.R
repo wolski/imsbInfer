@@ -14,6 +14,9 @@ correctIntRTv1 <- function(obj, ... ){
 #' @return corrected data
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
+#' @examples
+#' 
+#' 
 correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
   aref = obj  
   a1=data
@@ -55,6 +58,8 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
 #' @return msexperiment object with RT normalized intensities
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
+#' @examples
+#' 
 #' 
 correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
   experiment = obj

@@ -104,7 +104,6 @@ subset.msexperiment<- function(x,idx,...){
 #' SDat =  convertLF2Wideformat(  feature_alignment_requant  ) 
 #'
 convertLF2Wideformat=function(aligtable){
-  
   aligtable = as.data.table(aligtable)
   idx = grep("m*z" , colnames(aligtable) )
   setnames(aligtable,  idx, "mz")
@@ -131,6 +130,7 @@ convertLF2Wideformat=function(aligtable){
   
   return(list(protmapping=unique(protmapping), ints=ints, rt=rt,score=score,mz=mz, aligtable=aligtable))
 }
+
 #' converts to msExperiment (exported more for debugging purpose)
 #' @param data output of convertLF2Wideformat
 #' @export

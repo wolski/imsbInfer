@@ -14,7 +14,7 @@
 #' @seealso \code{\link{analyzeDuplicated}} for contex
 getUniquePeptides = function( rownames )
 {
-  dups = rownames[which(duplicated(rownames))]
+  dups = unique(rownames[which(duplicated(rownames))])
   res = setdiff(rownames,dups)
   res = which( rownames %in% res)
   return(res)
@@ -51,7 +51,7 @@ randomPeptidePairs = function(n, pepidx){
 #' rownames[res[[1]]]
 #' @seealso \code{\link{analyzeDuplicated}} for contex
 getListOfMatches = function(  rownames ){
-  dups = rownames[which(duplicated(rownames))]
+  dups = unique(rownames[which(duplicated(rownames))])
   res = list(length(dups))
   for(i in 1:length(dups)){
     res[[i]]= which(rownames %in% dups[i])
@@ -64,14 +64,16 @@ getListOfMatches = function(  rownames ){
 #' @examples
 #' data(SDat)
 #' rownames = SDat$pepinfo$ProteinName
+#' intens = apply(SDat$intensity,1,mean)
 #' res = getListOfMatchesOrderedByIntensity(rownames, apply(SDat$intensity,1,mean))
-#' rownames[res[[1]]]
+#' intens[res[[1]]]
 getListOfMatchesOrderedByIntensity = function(  rownames, intensities ){
-  dups = rownames[which(duplicated(rownames))]
+  dups = unique(rownames[which(duplicated(rownames))])
   res = list(length(dups))
   for(i in 1:length(dups)){
     tmp = which(rownames %in% dups[i])
-    ord = order(intensities[tmp])
+    xx = intensities[tmp]
+    ord = order(xx,decreasing = TRUE)
     res[[i]] = tmp[ord]
   }
   return(res)
@@ -172,7 +174,7 @@ analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000){
   for(dup in dups){
     duplicated <- dup
     ld = min(maxpep, length(duplicated))
-    cat("nrdup ", (ld), " count " , count, "\n")
+    #cat("nrdup ", (ld), " count " , count, "\n")
     if(count > countmax){
       break
     }
