@@ -102,7 +102,7 @@ subset.msexperiment<- function(x,idx,...){
 #' @examples
 #' data(feature_alignment_requant) 
 #' SDat =  convertLF2Wideformat(  feature_alignment_requant  ) 
-#'
+#' @seealso \code{\link{convert2msExperiment}} for contex
 convertLF2Wideformat=function(aligtable){
   aligtable = as.data.table(aligtable)
   idx = grep("m*z" , colnames(aligtable) )
@@ -137,7 +137,7 @@ convertLF2Wideformat=function(aligtable){
 #' @examples
 #' data(feature_alignment_requant) 
 #' SDat=convert2msExperiment(convertLF2Wideformat(feature_alignment_requant))
-#' 
+#' @seealso \code{\link{read2msExperiment}} and \code{\link{convertLF2Wideformat}} for contex
 convert2msExperiment = function(data){
   nams=colnames(data$ints)
   # prepare the column names

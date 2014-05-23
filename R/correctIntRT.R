@@ -15,7 +15,7 @@ correctIntRTv1 <- function(obj, ... ){
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' @examples
-#' 
+#' NULL
 #' 
 correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
   aref = obj  
@@ -59,7 +59,7 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' @examples
-#' 
+#' NULL
 #' 
 correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
   experiment = obj
