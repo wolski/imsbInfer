@@ -32,9 +32,8 @@ tmp = data.frame(transition_group_id = as.character(unlist(idss)),
                  aggr_Peak_Area = as.numeric(unlist(transints)),
                  aggr_Fragment_Annotation =  as.character(unlist( transids) ) )
 #got wide format here...
-data.frame = dcast(tmp, transition_group_id + aggr_Fragment_Annotation ~ align_origfilename , value.var="aggr_Peak_Area")
-
-
+data = dcast(tmp, transition_group_id + aggr_Fragment_Annotation ~ align_origfilename , value.var="aggr_Peak_Area")
+dim(data)
 
 medxx = apply(xxvalues,1,median)
 xxmex= cbind( xx[1:2] , medxx)
