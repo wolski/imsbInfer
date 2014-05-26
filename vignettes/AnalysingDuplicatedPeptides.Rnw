@@ -1,0 +1,139 @@
+\documentclass{article}
+\title{How does normalization influence feature correlation}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+We analyse the distribution of correlations (spearman) among features over multiple samples, and how this correlation is influenced by the samplewise normalization of the data.
+
+We have 5 different cases:
+\begin{itemize}
+\item random - Features/Peakgroups  can be randomly drawn from the dataset.
+\item unique - Features/Peakgroups can be randomly drawn from among those which uniquely represent proteins.
+\item protein - correlation among peakgroups derived from the same protein can be computed.
+\item proteinTOP - The correlation among peaks derived from the same protein and having good intensities.
+\item peptide - correlation of peaks representing the same peptide but with different charge.
+\end{itemize}
+
+
+<<sp1,echo=FALSE,results=hide>>=
+rm(list=ls())
+library(imsbInfer)
+#PanHuman = ("data/E1405020812-PanHuman-canonical/feature_alignment_requant.tsv")
+#SpecLib = ("data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
+data(feature_alignment_requant) 
+specLib = read2msExperiment(feature_alignment_requant)
+specLib$Intensity = asinh(specLib$Intensity)
+dim(specLib)
+@
+
+<<fig=FALSE>>=
+specLib = removeDecoys(specLib)
+library(imsbInfer)
+nriterations = 40
+
+specLib$Intensity[specLib$score==2] = NA
+#image(asinh(specLib$Intensity))
+@
+
+The statistics are based on \Sexpr{nriterations}.
+
+\section{Raw data - no normalization}
+
+<<fig=TRUE>>=
+boxplot(specLib$Intensity,main="Raw intensities")
+@
+
+<<analyseDuplicated,echo=TRUE,results=hide>>=
+res = compPeptideCorrelations(specLib,countmax=nriterations)
+
+@
+
+
+<<fig=TRUE>>=
+plotPairCors(res,main="no normalization")
+@
+
+<<>>=
+summaryCors(res)
+@
+
+\section{Robust sample wise scaling}
+
+After this scaling the median and the mad of all samples is equal.
+
+
+
+<<>>=
+specLib2 = specLib
+specLib2$Intensity = robustscale(specLib2$Intensity)
+@
+
+<<fig=TRUE>>=
+boxplot(specLib2$Intensity,main="Scaling samplewise")
+@
+
+<<results=hide>>=
+library(imsbInfer)
+res2 = compPeptideCorrelations(specLib2 , countmax=nriterations)
+names(res2)
+lapply(res,dim)
+
+@
+
+<<fig=TRUE,echo=FALSE>>=
+plotPairCors(res2, main = "robust scaling")
+summaryCors(res2)
+
+@
+
+\section{apply RT dependent median scaling}
+
+After this normalization the median Intensity among the samples at each RT is the same (but not at each RT).
+
+<<results=hide>>=
+specLib3 = specLib
+specLib3 = correctIntRTv1(specLib3,k=501,plot=F)
+res3 = compPeptideCorrelations(specLib3,countmax=nriterations)
+@
+
+<<fig=TRUE>>=
+boxplot(specLib3$Intensity,main="median RT intensities")
+@
+
+
+<<fig=TRUE>>=
+plotPairCors(res3,main="median RT intensities")
+@
+
+<<>>=
+summaryCors(res3)
+@
+
+\section{apply RT dependent scaling}
+
+After this normalization the median and variance at each RT is the same.
+
+
+<<rtscalingvar,fig=FALSE,results=hide>>=
+specLib4 = specLib
+specLib4 = correctIntRTv2(specLib4,k=501,plot=F,scale=TRUE)
+res4 = compPeptideCorrelations(specLib4,countmax=nriterations)
+
+
+<<fig=TRUE>>=
+boxplot(specLib4$Intensity,main="scaling RT intensities")
+@
+
+<<fig=TRUE>>=
+plotPairCors(res4, main="robust scaling sample and RT")
+@
+
+<<>>=
+summaryCors(res4)
+@
+
+
+\end{document}

@@ -19,26 +19,21 @@ runrobscale = function(arefw,k=101,scale=TRUE){
   }
   return(list("scaled"  = mediana1w, "runmed" = medianref))
 }
-#' running total ion count scaling
+#' running total ion count scaling (TIC)
 #' @export
 #' @examples
-#' res = c(rnorm(1000,0,1),rnorm(2000,0,3))
-#' res2 = runrobscale(res)
+#' res = c(rnorm(1000,3,2),rnorm(2000,1,1))
+#' res2 = runTIC(res)
 #' plot(res,type="p",pch="x",col=1)
-#' lines(res2$runmed,col=3)
+#' lines(1:length(res),res2$tic,col=3)
 #' points(res2$scaled, pch=".",cex=3,col=2)
+#' length(res2$scaled)
+#' 
 #' @seealso correctIntRTv2 for context
-runTic = function(arefw,k=101,scale=TRUE){
-  medianref = runmed( arefw , k=k ,endrule="constant")
-  # adjust intensities
-  # center around 0
-  scalefactor = medianref
-  mediana1w = arefw - scalefactor
-  if(scale){
-    madref <- runMAD(arefw,k=k)
-    mediana1w <- mediana1w / madref
-  }
-  return(list("scaled"  = mediana1w, "runmed" = medianref))
+runTIC = function(arefw,k=101,scale=TRUE){
+  madref <- runFun(arefw,k=k,function(x,...){return(mean(x))})
+  mediana1w <- arefw / madref
+  return(list("scaled"  = mediana1w, "tic" = madref))
 }
 
 #' @export
@@ -88,7 +83,9 @@ correctIntRTv2.default = function(obj, rto , scale=FALSE, plot=TRUE, k=501, func
 #' @return msexperiment object with RT normalized intensities
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
-#' 
+#' @examples
+#' data(SDat)
+#' res = correctIntRTv2(SDat)
 correctIntRTv2.msexperiment = function(obj , k=501,plot=FALSE , scale=FALSE, func = runrobscale, ... )
 {
   experiment = obj
