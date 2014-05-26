@@ -23,6 +23,7 @@ install:
   - "[ ! -d ${R_LIBS_USER} ] && mkdir ${R_LIBS_USER}"
   - R --version
   - R -e '.libPaths(); sessionInfo()'
+  - Rscript -e 'install.packages("gplots", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
   - Rscript -e 'install.packages("roxygen2", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
   - Rscript -e 'install.packages("data.table", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
   - Rscript -e 'library("roxygen2"); roxygenize("../imsbInfer")'
