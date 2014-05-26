@@ -28,4 +28,4 @@ install:
   - Rscript -e 'install.packages("data.table", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
 # run tests
 script:
-  - make ${TARGET}
+  - make travis
