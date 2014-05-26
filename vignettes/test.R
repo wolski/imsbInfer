@@ -1,4 +1,11 @@
 library(imsbInfer)
+SpecLib = ("/home//witold/Analysis/EBhardt//data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
+xx = fread(SpecLib)
+
+colnames(xx)
+
+
+library(imsbInfer)
 data(feature_alignment_requant)
 
 dim(feature_alignment_requant)

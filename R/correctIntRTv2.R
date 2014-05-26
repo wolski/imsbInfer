@@ -1,44 +1,82 @@
+#' running robust scaling of arefw
 #' @export
-correctIntRTv2 <- function(obj, ... ){
-  UseMethod('correctIntRTv2')
-}
-#' correct Intensity RT
-#' Computes difference between aref and data and adjust data
-#'  that the median of differences is equal 0
-#' @aliases correctIntRTv2
-#' @param aref  reference data - ordered by retention time
-#' @param data to correct
-#' @param rto  retention time
-#' @param k  smoothing with
-#' @return corrected data
-#' @export
-#' @author Witold Wolski \email{wolski@@gmail.com}
-correctIntRTv2.default = function(obj, rto , scale=FALSE, plot=TRUE, k=501, ...){
-  aref= obj
-  idxref = is.na(aref) | is.infinite(aref)
-  arefw = aref[!idxref]
-  rtow = rto[!idxref]
-  length(arefw)
-  #diffa1ref  = a1w - arefw
+#' @examples
+#' res = c(rnorm(1000,0,1),rnorm(2000,0,3))
+#' res2 = runrobscale(res)
+#' plot(res,type="p",pch="x",col=1)
+#' lines(res2$runmed,col=3)
+#' points(res2$scaled, pch=".",cex=3,col=2)
+#' @seealso correctIntRTv2 for context
+runrobscale = function(arefw,k=101,scale=TRUE){
   medianref = runmed( arefw , k=k ,endrule="constant")
   # adjust intensities
+  # center around 0
+  scalefactor = medianref
+  mediana1w = arefw - scalefactor
+  if(scale){
+    madref <- runFun(arefw,k=k)
+    mediana1w <- mediana1w / madref
+  }
+  return(list("scaled"  = mediana1w, "runmed" = medianref))
+}
+#' running total ion count scaling
+#' @export
+#' @examples
+#' res = c(rnorm(1000,0,1),rnorm(2000,0,3))
+#' res2 = runrobscale(res)
+#' plot(res,type="p",pch="x",col=1)
+#' lines(res2$runmed,col=3)
+#' points(res2$scaled, pch=".",cex=3,col=2)
+#' @seealso correctIntRTv2 for context
+runTic = function(arefw,k=101,scale=TRUE){
+  medianref = runmed( arefw , k=k ,endrule="constant")
+  # adjust intensities
+  # center around 0
   scalefactor = medianref
   mediana1w = arefw - scalefactor
   if(scale){
     madref <- runMAD(arefw,k=k)
     mediana1w <- mediana1w / madref
   }
+  return(list("scaled"  = mediana1w, "runmed" = medianref))
+}
+
+#' @export
+correctIntRTv2 <- function(obj, ... ){
+  UseMethod('correctIntRTv2')
+}
+#' correct Intensity RT using func
+#' @aliases correctIntRTv2
+#' @param obj to correct
+#' @param rto  retention time
+#' @param plot show diagnostic plot
+#' @param scale should scaling be applied
+#' @param k smoothing with (see runmed)
+#' @param func function to apply for scaling see runrobscale
+#' @return corrected data
+#' @export
+#' @author Witold Wolski 
+#' @examples
+#' res = c(rnorm(1000,0,1),rnorm(2000,0,3))
+#' res[sample(1:length(res),100)] = NA
+#' rto = as.numeric(1:length(res))
+#' res2 = correctIntRTv2(res ,rto )
+correctIntRTv2.default = function(obj, rto , scale=FALSE, plot=TRUE, k=501, func=runrobscale, ...){
+  aref= obj
+  idxref = is.na(aref) | is.infinite(aref)
+  arefw = aref[!idxref]
+  rtow = rto[!idxref]
+  
+  resScale = func(arefw,k=k,scale=scale)
   
   if(plot){
     par(mfrow=c(2,1))
     plot(rtow , arefw , pch=".", cex=0.4 , col="gray" ,ylim=c(-10,15))
-    lines(rtow , medianref,col="red",lwd=2)
-    plot(rtow , mediana1w,col="blue",pch=".")
-    medianref2 = runmed( mediana1w , k=k ,endrule="constant")
-    lines(rtow , medianref2,col="red",lwd=2)
+    lines(rtow , resScale$runmed,col="red",lwd=2)
+    points(rtow , resScale$scaled,col="blue",pch=".")
   }
   bb  = rep(NA, length(idxref))
-  bb[!idxref] = mediana1w
+  bb[!idxref] = resScale$runmed
   return(bb)
 }
 #' correct intensity over RT for entire msexperiment
@@ -51,17 +89,17 @@ correctIntRTv2.default = function(obj, rto , scale=FALSE, plot=TRUE, k=501, ...)
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' 
-correctIntRTv2.msexperiment = function(obj , k=501,plot=FALSE , scale=FALSE, ...)
+correctIntRTv2.msexperiment = function(obj , k=501,plot=FALSE , scale=FALSE, func = runrobscale, ... )
 {
   experiment = obj
   experiment = removeDecoys(experiment)
   experiment = orderByRT(experiment)
   
-  for(i in 1:dim(experiment$intensity)[2])
+  for(i in 1:dim(experiment$Intensity)[2])
   {
-    intensV = experiment$intensity[,i]
-    corrected = correctIntRTv2( unlist(intensV) , (experiment$RT) , plot=plot , k=k, scale=scale )
-    experiment$intensity[,i] = corrected
+    intensV = experiment$Intensity[,i]
+    corrected = correctIntRTv2( unlist(intensV) , (experiment$RT) , plot=plot , k=k, scale=scale, func = runrobscale )
+    experiment$Intensity[,i] = corrected
   }
   return(experiment)
 }

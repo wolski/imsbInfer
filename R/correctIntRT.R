@@ -9,14 +9,16 @@ correctIntRTv1 <- function(obj, ... ){
 #'  that the median of differences is equal 0
 #' @param obj  reference data - ordered by retention time
 #' @param data to correct
-#' @param rto  retention time
+#' @param rto  retention time (ordered)
 #' @param k  smoothing with
 #' @return corrected data
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' @examples
-#' NULL
-#' 
+#' data(SDat)
+#' experiment = removeDecoys(SDat)
+#' experiment = orderByRT(experiment)
+#' cor = correctIntRTv1(experiment$Intensity[,1], experiment$Intensity[,2],experiment$RT)
 correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
   aref = obj  
   a1=data
@@ -59,7 +61,8 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' @examples
-#' NULL
+#' data(SDat)
+#' SDatal = correctIntRTv1(SDat)
 #' 
 correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
   experiment = obj
@@ -67,21 +70,21 @@ correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
   experiment = orderByRT(experiment)
   
   # select reference dataset
-  nas = apply( experiment$intensity, 2 , function(x){sum(is.na(x))} )
+  nas = apply( experiment$Intensity, 2 , function(x){sum(is.na(x))} )
   idx = which(nas == min(nas))
   # if more than one with few NA's than choose dataset with max median
   if(length(idx) > 1){
-    ma = apply(experiment$intensity[,idx],2,median,na.rm=TRUE)
+    ma = apply(experiment$Intensity[,idx],2,median,na.rm=TRUE)
     id <-which(ma == max(ma))
     idx <- idx[id]
   }
 
-  reference=experiment$intensity[,idx]
-  for(i in 1:dim(experiment$intensity)[2])
+  reference=experiment$Intensity[,idx]
+  for(i in 1:dim(experiment$Intensity)[2])
   {
-    intensV = experiment$intensity[,i]
+    intensV = experiment$Intensity[,i]
     corrected = correctIntRTv1( unlist(reference), unlist(intensV) , (experiment$RT) , plot=plot , k=k )
-    experiment$intensity[,i] = corrected
+    experiment$Intensity[,i] = corrected
   }
   return(experiment)
 }

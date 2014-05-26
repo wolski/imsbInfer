@@ -19,7 +19,7 @@ orderByRT.msexperiment = function(obj){
   RT = apply(experiment$rt , 1 , median, na.rm=TRUE )
   #order relevant data by retention time
   rto = order(RT)
-  experiment$intensity = experiment$intensity[rto,]
+  experiment$Intensity = experiment$Intensity[rto,]
   experiment$score = experiment$score[rto,]
   experiment$rt = experiment$rt[rto,]
   experiment$pepinfo = experiment$pepinfo[rto,]
@@ -41,7 +41,8 @@ removeDecoys = function(obj,...){
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' dim(SDat)
 #' SDat = removeDecoys(SDat)
-#' dim(SDat)
+#' lapply(SDat,dim)
+#' 
 removeDecoys.msexperiment = function(obj,...){
   data = obj
   return(subset(data,!data$pepinfo$decoy))
@@ -87,7 +88,7 @@ keepRTRange.msexperiment<- function(obj,rtrange=c(1000,7000),...){
 #' dim(SDatr)
 subset.msexperiment<- function(x,idx,...){
   data=x
-  data$intensity = data$intensity[idx,]
+  data$Intensity = data$Intensity[idx,]
   data$score = data$score[idx,]
   data$rt = data$rt[idx,]
   data$pepinfo = data$pepinfo[idx,]
@@ -115,42 +116,24 @@ convertLF2Wideformat=function(aligtable){
   #fix missing keys by adding NA
   setkey(aligtable,transition_group_id,align_origfilename)
   aligtable = aligtable[CJ(unique(transition_group_id), unique(align_origfilename))]
+  
+  ## make wide format
   # extract intensitiies
   ints = aligtable[,as.list(Intensity),by=transition_group_id]
-  setnames(ints,c("transition_group_id",paste("Intensity", unique(aligtable$align_origfilename ), sep="_")))
+  setnames(ints,c("transition_group_id", unique(aligtable$align_origfilename )))
   #extract rt's
   rt = aligtable[,as.list(RT),by=transition_group_id]
-  setnames(rt,c("Peptide",paste("RT", unique(aligtable$align_origfilename ), sep="_")))
+  setnames(rt,c("transition_group_id", unique(aligtable$align_origfilename)))
   #extract scor's
   score = aligtable[,as.list(m_score),by=transition_group_id]
-  setnames(score,c("Peptide",paste("score", unique(aligtable$align_origfilename ), sep="_")))
+  setnames(score,c("transition_group_id", unique(aligtable$align_origfilename )))
   #extract masses
   mz = aligtable[,as.list(mz),by=transition_group_id]
-  setnames(mz,c("Peptide",paste("mz", unique(aligtable$align_origfilename ), sep="_")))
-  
-  return(list(protmapping=unique(protmapping), ints=ints, rt=rt,score=score,mz=mz, aligtable=aligtable))
+  setnames(mz,c("transition_group_id", unique(aligtable$align_origfilename )))
+  return(list(protmapping=unique(protmapping), Intensity=ints, rt=rt,score=score,mz=mz, aligtable=aligtable))
 }
-
-#' converts to msExperiment (exported more for debugging purpose)
-#' @param data output of convertLF2Wideformat
-#' @export
-#' @examples
-#' data(feature_alignment_requant) 
-#' SDat=convert2msExperiment(convertLF2Wideformat(feature_alignment_requant))
-#' @seealso \code{\link{read2msExperiment}} and \code{\link{convertLF2Wideformat}} for contex
-convert2msExperiment = function(data){
-  nams=colnames(data$ints)
-  # prepare the column names
-  nams = sub("Intensity_","",nams)
-  nams = sub("_with_dscore.*","",nams)
-  nams = sub("_all_peakgroups.*","",nams)
-  setnames(data$ints,nams)
-  setnames(data$score,nams)
-  setnames(data$rt, nams)
-  setnames(data$mz, nams)
-  
-  #setnames(data$protmapping,nams)
-  nams = data$protmapping$transition_group_id
+# gnerate peptide information from transition_group_id
+.preparePepinfo <- function (nams) {
   idxDecoy<-grep("^DECOY\\_",nams)
   decoy = rep(FALSE,length(nams))
   decoy[idxDecoy] <- TRUE
@@ -159,35 +142,57 @@ convert2msExperiment = function(data){
   
   pepinfo=split2table(nams,split="\\_|\\/")
   pepinfo = pepinfo[,-dim(pepinfo)[2]]
-  colnames(pepinfo)=c("id","sequence","charge")
-  pepinfo = as.data.frame(pepinfo,stringsAsFactors = FALSE)
+  colnames(pepinfo)=c("id","PeptideSequence","PrecursorCharge")
+  pepinfo = data.frame(pepinfo,decoy =decoy,stringsAsFactors = FALSE)
+  return(pepinfo)
+}
+#' converts to msExperiment (exported more for debugging purpose)
+#' @param data output of convertLF2Wideformat
+#' @export
+#' @examples
+#' data(feature_alignment_requant) 
+#' data = convertLF2Wideformat(feature_alignment_requant)
+#' lapply(data,dim)
+#' SDat=convert2msExperiment(data)
+#' #save(SDat, file="data/SDat.rda")
+#' @seealso \code{\link{read2msExperiment}} and \code{\link{convertLF2Wideformat}} for contex
+convert2msExperiment = function(data){
+  nams=colnames(data$Intensity)
+  # prepare the column names
+  nams = sub("Intensity_","",nams)
+  nams = sub("_with_dscore.*","",nams)
+  nams = sub("_all_peakgroups.*","",nams)
+  setnames(data$Intensity,nams)
+  setnames(data$score,nams)
+  setnames(data$rt, nams)
+  setnames(data$mz, nams)
   
+  #setnames(data$protmapping,nams)
+  nams = data$protmapping$transition_group_id
+  pepinfo = .preparePepinfo(nams)
   nametable = data.frame(transition_group_id=as.character(data$protmapping$transition_group_id),
                          pepinfo,
-                         decoy=decoy,
-                         seqchid = paste(pepinfo$sequence, pepinfo$charge, sep="_"),
                          ProteinName = as.character(data$protmapping$ProteinName),
-                         stringsAsFactors = FALSE
-                         )
+                         stringsAsFactors = FALSE)
 
   #nametable  = nametable[order(nametable$transition_group_id),]
-  nrcol = dim(data$ints)[2]
-  SwathDat = list(intensity = as.matrix(data$ints[,2:nrcol,with=F] ) ,
+  nrcol = dim(data$Intensity)[2]
+  SwathDat = list(Intensity = as.matrix(data$Intensity[,2:nrcol,with=F] ) ,
                   score = as.matrix(data$score[,2:nrcol,with=F] ) ,
                   rt  = as.matrix(data$rt[,2:nrcol,with=F]) ,
                   mz  = as.matrix(data$mz[,2:nrcol,with=F]) ,
                   pepinfo = nametable
                   )
   
-  rownames(SwathDat$intensity) = data$ints$transition_group_id
-  rownames(SwathDat$score) = data$ints$transition_group_id
-  rownames(SwathDat$rt) = data$ints$transition_group_id
-  rownames(SwathDat$mz) = data$ints$transition_group_id
+  rownames(SwathDat$Intensity) = data$Intensity$transition_group_id
+  rownames(SwathDat$score) = data$Intensity$transition_group_id
+  rownames(SwathDat$rt) = data$Intensity$transition_group_id
+  rownames(SwathDat$mz) = data$Intensity$transition_group_id
   
-  colnames(SwathDat$intensity) = colnames(data$ints)[2:nrcol]
-  colnames(SwathDat$score) = colnames(data$ints)[2:nrcol]
-  colnames(SwathDat$rt) = colnames(data$ints)[2:nrcol]
-  colnames(SwathDat$mz) = colnames(data$ints)[2:nrcol]
+  colnames(SwathDat$Intensity) = colnames(data$Intensity)[2:nrcol]
+  colnames(SwathDat$score) = colnames(data$Intensity)[2:nrcol]
+  colnames(SwathDat$rt) = colnames(data$Intensity)[2:nrcol]
+  colnames(SwathDat$mz) = colnames(data$Intensity)[2:nrcol]
   
   class(SwathDat) = "msexperiment"
   return(SwathDat)
@@ -203,6 +208,8 @@ read2msExperiment=function(obj,...){
 #' @return msexperiment
 #' @export
 #' @examples
+#' data(feature_alignment_requant) 
+#' res = read2msExperiment(feature_alignment_requant)
 #' \dontrun{res = read2msExperiment("path/to/feature_alignment_requant.tsv")}
 read2msExperiment.default=function(obj,...){
   filename = obj
@@ -230,7 +237,7 @@ read2msExperiment.data.frame=function(obj,...){
 #'
 #' @export
 dim.msexperiment<-function(x){
-  return(dim(x$intensity))
+  return(dim(x$Intensity))
 }
 #' show colnames (it does'nt let you set the columns)
 #' 
@@ -240,7 +247,7 @@ dim.msexperiment<-function(x){
 #' colnames(SDat)
 #' @export
 colnames.msexperiment<-function(x){
-  return(colnames(x$intensity))
+  return(colnames(x$Intensity))
 }
 #' allows to set colnames for all the matrices in msexperiment
 #'

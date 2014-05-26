@@ -38,7 +38,7 @@ colorscale = function(data,colors=heat.colors(12)){
 #' @export
 #' @examples
 #' data(SDat)
-#' altmanbland(SDat$intensity[,1],SDat$intensity[,2],log="xy")
+#' altmanbland(SDat$Intensity[,1],SDat$Intensity[,2],log="xy")
 #' 
 altmanbland = function(x,y,main="",pch=".",log=""){
   idx<-apply(cbind(x,y),1,function(x){sum(x==0)==0})
@@ -52,7 +52,7 @@ altmanbland = function(x,y,main="",pch=".",log=""){
 #' @export
 #' @examples
 #' data(SDat)
-#' pairsQQ( SDat$intensity )
+#' pairsQQ( SDat$Intensity )
 #' @seealso \code{\link{qqplot}} and  \code{\link{pairs}}
 pairsQQ = function(dataframesel,main=""){
   pairs(dataframesel, panel = function(x,y){
@@ -69,7 +69,7 @@ pairsQQ = function(dataframesel,main=""){
 #' @examples
 #' data(SDat)
 #' rtord = orderByRT(SDat)
-#' pairsRatio( rtord$intensity, rtord$RT )
+#' pairsRatio( rtord$Intensity, rtord$RT )
 #' @seealso \code{\link{pairs}} and \code{\link{pairsDifference}}
 pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
   pairs(dataframesel, panel = function(x,y,...){
@@ -88,7 +88,7 @@ pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
 #' @examples
 #' data(SDat)
 #' rtord = orderByRT(SDat)
-#' pairsDifference( asinh(rtord$intensity), rtord$RT , ylim=c(-2,2))
+#' pairsDifference( asinh(rtord$Intensity), rtord$RT , ylim=c(-2,2))
 #' @seealso \code{\link{pairs}} and \code{\link{pairsRatio}}
 pairsDifference = function(dataframesel,RT,main="",ylim=c(-2,2)){
   pairs(dataframesel, panel = function(x,y,...){
@@ -108,7 +108,7 @@ pairsDifference = function(dataframesel,RT,main="",ylim=c(-2,2)){
 #' @export
 #' @examples
 #' data(SDat)
-#' mypairs(SDat$intensity,log="xy",main="small data")
+#' mypairs(SDat$Intensity,log="xy",main="small data")
 #' @seealso also \code{\link{pairs}}
 mypairs = function(dataframesel,...){
   pairs(dataframesel, panel = function(x,y){
@@ -127,7 +127,7 @@ mypairs = function(dataframesel,...){
 #' @param mycol
 #' @examples
 #' data(SDat)
-#' simpleheatmap(SDat$intensity,ColSideColors=c("red","blue","pink"))
+#' simpleheatmap(SDat$Intensity,ColSideColors=c("red","blue","pink"))
 simpleheatmap = function(pln,main="",
                   distf=dist,
                   hclustf=hclust,

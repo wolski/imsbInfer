@@ -3,7 +3,7 @@
 #' @export
 #' @examples
 #' data(SDat)
-#' rownames = SDat$pepinfo$sequence
+#' rownames = SDat$pepinfo$PeptideSequence
 #' res = getUniquePeptides(rownames)
 #' res[1:10]
 #' sum(duplicated(res))
@@ -42,7 +42,7 @@ randomPeptidePairs = function(n, pepidx){
 #' @export
 #' @examples
 #' data(SDat)
-#' rownames = SDat$pepinfo$sequence
+#' rownames = SDat$pepinfo$PeptideSequence
 #' res = getListOfMatches(rownames)
 #' rownames[res[[1]]]
 #' rownames = as.character(SDat$pepinfo$ProteinName)
@@ -64,8 +64,8 @@ getListOfMatches = function(  rownames ){
 #' @examples
 #' data(SDat)
 #' rownames = SDat$pepinfo$ProteinName
-#' intens = apply(SDat$intensity,1,mean)
-#' res = getListOfMatchesOrderedByIntensity(rownames, apply(SDat$intensity,1,mean))
+#' intens = apply(SDat$Intensity,1,mean)
+#' res = getListOfMatchesOrderedByIntensity(rownames, apply(SDat$Intensity,1,mean))
 #' intens[res[[1]]]
 getListOfMatchesOrderedByIntensity = function(  rownames, intensities ){
   dups = unique(rownames[which(duplicated(rownames))])
@@ -93,7 +93,7 @@ getListOfMatchesOrderedByIntensity = function(  rownames, intensities ){
 #' @param data msExperiment
 #' @param countmax maximum number of duplicate comparisons
 analyzeDuplicatedPeptides = function(data,countmax = 1000){
-  rownames = data$pepinfo$sequence
+  rownames = data$pepinfo$PeptideSequence
   dups=getListOfMatches( rownames )
   analyzeDuplicated( data ,dups, countmax = countmax )
 }
@@ -134,14 +134,14 @@ analyzeDuplicatedProteins = function(data,maxpep=3,countmax = 1000){
 #' @param countmax maximum number of duplicate comparisons
 analyzeDuplicatedProteinsTOP = function(data,maxpep=3,countmax = 1000){
   rownames = data$pepinfo$ProteinName
-  dups=getListOfMatchesOrderedByIntensity( rownames, apply(data$intensity,1,mean) )
+  dups=getListOfMatchesOrderedByIntensity( rownames, apply(data$Intensity,1,mean) )
   analyzeDuplicated( data ,dups , maxpep= maxpep,countmax=countmax)
 }
 
 #' analyse duplicated peptides/proteins/lines
 #' @examples
 #' data(SDat)
-#' rownames = SDat$pepinfo$sequence
+#' rownames = SDat$pepinfo$PeptideSequence
 #' dups = getListOfMatches(rownames)
 #' res = analyzeDuplicated(SDat , dups[1:25])
 #' dim(res)
@@ -149,7 +149,7 @@ analyzeDuplicatedProteinsTOP = function(data,maxpep=3,countmax = 1000){
 #' hist(res$cor)
 #' plot(res$medianRTDiff,res$cor)
 #' 
-#' rownames = SDat$pepinfo$sequence
+#' rownames = SDat$pepinfo$PeptideSequence
 #' nondups = getUniquePeptides(rownames)
 #' length(nondups)
 #' res = analyzeDuplicated(SDat , list(nondups[1:25]))
@@ -178,15 +178,16 @@ analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000){
     if(count > countmax){
       break
     }
+    medianrt = apply(data$rt,1,median)
+    
     for(i in 1:ld){
       for(j in i:ld){
         if(i!=j){
-          #cat("count:",count, " i:",i," j:",j,"\n")
-          tmp=cor(t(data$intensity[duplicated[c(i,j)],]))
+          cat("count:",count, " i:",i," j:",j,"\n")
+          tmp=cor(t(data$Intensity[duplicated[c(i,j)],]),use="pairwise.complete.obs")
           cors = tmp[upper.tri(tmp)]
           x<-which(upper.tri(tmp),arr.ind=T)
           nams <- rownames(tmp)[x]
-          medianrt = apply(data$rt,1,median)
           rowstoget = which(rownames(data$rt) %in% nams)
           RTDiff = data$rt[rowstoget[1],] - data$rt[rowstoget[2],]
           tmp=c(t(nams),cors,t( medianrt[rowstoget]), median(RTDiff), mad(RTDiff) )
@@ -205,4 +206,41 @@ analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000){
   res2$madDiffRT=as.numeric(res2$madDiffRT)
   return(res2)
 }
-
+#' compute various correlation ...
+#' @export
+compPeptideCorrelations = function(specLib,countmax= 500){
+  xxPeptide = analyzeDuplicatedPeptides( specLib , countmax=countmax )
+  xxProt = analyzeDuplicatedProteins( specLib , countmax=countmax )
+  xxProt2 = analyzeDuplicatedProteinsTOP( specLib , countmax=countmax )
+  # look at random peptide pairs
+  res = randomPeptidePairs(countmax,1:dim(specLib)[1])
+  resRandom = analyzeDuplicated( specLib , res)
+  # look at unique peptides
+  rownames = specLib$pepinfo$PeptideSequence
+  res = getUniquePeptides(rownames)
+  pairs = randomPeptidePairs(countmax,res)
+  res2 = analyzeDuplicated( specLib , pairs)
+  pp = list(peptide = xxPeptide, protein = xxProt, proteinTOP = xxProt2, random = resRandom, unique= res2)
+  return(pp)
+}
+#' plot the output of compPeptideCorrelations
+#' @export
+plotPairCors=function(res,main="",ylim=NULL,xlim=c(-1,1)){
+  plot(density(res$peptide$cor,na.rm = TRUE),ylim=ylim,xlim=xlim,main=main,col=5)
+  lines(density(res$random$cor,na.rm = TRUE),col=2)
+  lines(density(res$protein$cor,na.rm = TRUE),col=3)
+  lines(density(res$proteinTOP$cor,na.rm = TRUE),col=4)
+  lines(density(res$unique$cor,na.rm = TRUE),col=1)
+  legend("topleft",legend=c("unique","random","protein","protein Top","peptide"),lty=c(1,1,1,1),lwd=c(2,2,2,2),col=c(1,2,3,4,5))
+}
+#' summaryCors
+#' @export
+summaryCors = function(res){
+  xx = c(summary(res[[1]]$cor)["Median"],
+         summary(res[[2]]$cor)["Median"]
+         ,summary(res[[3]]$cor)["Median"]
+         ,summary(res[[4]]$cor)["Median"]
+         ,summary(res[[5]]$cor)["Median"])
+  names(xx) = names(res)
+  return(xx)
+}

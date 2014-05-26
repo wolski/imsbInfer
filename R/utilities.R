@@ -40,26 +40,30 @@ uppertriang <- function(mat){
   res<-mat[upper.tri(mat,diag=FALSE)] 
   return( c(unlist(res)) )
 }
-#' running median absolute deviation (not quite efficient) robust version of sd
-#'
+#' running function (default median absolute deviation) 
+#' @param func default med but can be any function taking a vector and returning a summary
 #' @examples
 #' x = rnorm(5000)
-#' y = runMAD(x,k=501)
+#' y = runFun(x,k=501)
 #' med = runmed(x,k=501)
 #' plot(x,pch="*")
 #' lines(med,col=2,lwd=3)
 #' lines(y,col=3,lwd=3)
 #' lines(-y,col=3,lwd=3)
+#' tic = runFun(x,k=501,func=function(x,...){mean(x)})
+#' plot(x,pch=".")
+#' abline(h=0,col=2)
+#' lines(tic,col=3,lwd=3)
 #' @export
 #' @seealso  \code{\link{runmed}}
 #' 
-runMAD <- function(aref,k=301){
+runFun <- function(aref,k=301,func=mad){
   m = k %/% 2
   N = length(aref)
   res = rep(0,N)
-  for(i in 1:(N-k+1)){
+  for(i in 1:(N-k)){
     sub = aref[i:(i+k)]
-    res[i + m]=mad(sub,na.rm=T)
+    res[i + m]=func(sub,na.rm=TRUE)
   }  
   res[1:m] = rep(res[m+1],m)
   res[(N-m + 1):N] = rep(res[N-m],m)

@@ -29,36 +29,37 @@ SwathDat = removeDecoys(SwathDat)
 @
 
 <<>>=
-xx<-colnames(SwathDat$intensity)
+xx<-colnames(SwathDat$Intensity)
 xx<-sub("chludwig_","",xx)
 xx<-sub("_SW$","",xx)
 SwathDat = mycolnames(SwathDat,xx)
-head(SwathDat$intensity)
+head(SwathDat$Intensity)
+
 @
 
 <<>>=
 SwathDat = orderByRT(SwathDat)
-pairsRatio(SwathDat$intensity[,1:3],SwathDat$RT,ylim=c(-8,8),main="ratio vs RT")
+pairsRatio(SwathDat$Intensity[,1:3],SwathDat$RT,ylim=c(-8,8),main="ratio vs RT")
 
 @
 
 <<echo=FALSE, results=hide>>=
 dim(SwathDat)
 names(SwathDat)
-sum(is.na(SwathDat$intensity))
-colnames(SwathDat$intensity)
+sum(is.na(SwathDat$Intensity))
+colnames(SwathDat$Intensity)
 colnames(SwathDat$pepinfo)
 @
 
 pairsplot
 
 <<fig=TRUE>>=
-mypairs(SwathDat$intensity[,1:3],log="xy",main="pairsplot")
+mypairs(SwathDat$Intensity[,1:3],log="xy",main="pairsplot")
 
 @
 
 <<fig=TRUE>>=
-pairsQQ(SwathDat$intensity[,1:3],main="qqplot")
+pairsQQ(SwathDat$Intensity[,1:3],main="qqplot")
 
 @
 
@@ -66,12 +67,12 @@ Remove low and high RT ranges
 
 <<fig=TRUE>>=
 SwathDatT = subset(SwathDat, SwathDat$RT < 7000 & SwathDat$RT > 1000)
-pairsRatio(SwathDatT$intensity[,1:3],SwathDatT$RT,ylim=c(-8,8),main="ratio vs RT")
+pairsRatio(SwathDatT$Intensity[,1:3],SwathDatT$RT,ylim=c(-8,8),main="ratio vs RT")
 @
 
 
 <<fig=TRUE,width=9,height=6>>=
-cors = cor(SwathDatT$intensity, use="na.or.complete",method="spearman")
+cors = cor(SwathDatT$Intensity, use="na.or.complete",method="spearman")
 dim(cors)
 par(mar = c(7,7,1,1))
 imagelabels(cors)
@@ -92,12 +93,13 @@ hist(cors[upper.tri(cors)],main="histogram of correlations")
 <<fig=TRUE,width=10, height=10,echo=FALSE,results=hide>>=
 par(mfrow=c(1,3))
 
-SwathDatT$intensityasinh = asinh(SwathDatT$intensity)
+SwathDatT$intensityasinh = asinh(SwathDatT$Intensity)
 
 aref = SwathDatT$intensityasinh[,1]
 data = SwathDatT$intensityasinh[,3]
 
 par(mfrow=c(2,2))
+
 plot(SwathDatT$RT,aref -  data,pch=".",ylim=c(-4,4))
 abline(h=0,col=2,lwd=2)
 
@@ -121,17 +123,17 @@ plot(SwathDatT$RT,aref -  tmp,type="l",pch=".")
 
 <<wholeDataset,fig=TRUE>>=
 
-SwathDatT$intensity = asinh(SwathDatT$intensity)
+SwathDatT$Intensity = asinh(SwathDatT$Intensity)
 
 tmp = correctIntRTv2(SwathDatT,k=301,scale=TRUE)
-tmp$intensity = sinh(tmp$intensity)
-pairsRatio(tmp$intensity[,1:3],tmp$RT,ylim=c(-6,6),main="ratio vs RT")
+tmp$Intensity = sinh(tmp$Intensity)
+pairsRatio(tmp$Intensity[,1:3],tmp$RT,ylim=c(-6,6),main="ratio vs RT")
 
 @
 
 
 <<fig=TRUE,width=9,height=5>>=
-cors2 = cor(tmp$intensity, use="na.or.complete",method="spearman")
+cors2 = cor(tmp$Intensity, use="na.or.complete",method="spearman")
 par(mar = c(7,7,1,1))
 imagelabels(cors2)
 
