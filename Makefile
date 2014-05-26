@@ -31,6 +31,7 @@ check: build
 
 travis: build
 	cd ..;\
+  R CMD BATCH imsbInfer/runrox2.R
 	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --no-manual
 
 integration-need:

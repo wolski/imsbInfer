@@ -1,5 +1,4 @@
 #' get a list of random matches
-#' 
 #' @export
 #' @examples
 #' data(SDat)
