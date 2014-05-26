@@ -16,7 +16,7 @@ docs:
 build:
 	cd ..;\
 	R CMD BATCH imsbInfer/runrox2.R;\
-	R CMD build --no-manual $(PKGSRC)
+	R CMD build --no-manual --no-rebuild-vignettes $(PKGSRC)
 
 install: build
 	cd ..;\
@@ -28,7 +28,7 @@ check: build
 
 travis: build
 	cd ..;\
-	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --no-manual
+	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --no-manual --no-rebuild-vignettes
 
 integration-run: install
 	rm knitr-examples/cache -rf
