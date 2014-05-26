@@ -4,9 +4,11 @@ License: GPL
 Title: Visualization, normalization and QC of proteomics SWATH-MS data
 Type: Package
 Author: Witold Wolski
-Description: Functions to visualize and analyse quantification results of MS proteomics experiments mostly (SWATH).
-The functions in this package are used to genrate QC reports for data produced by 
-label free data independent aquisition (DIA) quantificaton experiments in the R. Aeberold IMSB/ETH Zurich.
+Description: Functions to visualize and analyse quantification results of MS
+    proteomics experiments mostly (SWATH). The functions in this package are
+    used to genrate QC reports for data produced by label free data independent
+    aquisition (DIA) quantificaton experiments in the R. Aeberold IMSB/ETH
+    Zurich.
 Version: 1.0.3
 Date: 2013-06-06
 Depends:
