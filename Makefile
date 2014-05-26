@@ -30,25 +30,6 @@ travis: build
 	cd ..;\
 	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --no-manual --no-rebuild-vignettes
 
-integration-run: install
-	rm knitr-examples/cache -rf
-	make sysdeps deps xvfb-start knit xvfb-stop -C knitr-examples
-
-integration-verify:
-	GIT_PAGER=cat make diff -C knitr-examples
-
-integration: integration-run integration-verify
-
-examples:
-	cd inst/examples;\
-	Rscript knit-all.R
-
-vignettes:
-	cd vignettes;\
-	lyx -e knitr knitr-refcard.lyx;\
-	sed -i '/\\usepackage{breakurl}/ d' knitr-refcard.Rnw;\
-	mv knitr-refcard.Rnw assets/template-refcard.tex
-
 clean:
 	cd ..;\
 	$(RM) -r $(PKGNAME).Rcheck/
