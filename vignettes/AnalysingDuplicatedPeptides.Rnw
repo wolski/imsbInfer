@@ -95,6 +95,7 @@ After this normalization the median Intensity among the samples at each RT is th
 
 <<results=hide>>=
 specLib3 = specLib
+class(specLib3)
 specLib3 = correctIntRTv1(specLib3,k=501,plot=F)
 res3 = compPeptideCorrelations(specLib3,countmax=nriterations)
 @

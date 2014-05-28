@@ -51,6 +51,32 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
   bb[!idxs] = a1wc
   return(bb)
 }
+#' correct columns in data frame given RT.
+#'
+#' @export
+# select reference dataset
+correctIntRTv1.matrix = function(intensity,rt,k=501,plot=F,...)
+{
+  
+  print("here")
+  nas = apply( intensity, 2 , function(x){sum(is.na(x))} )
+  idx = which(nas == min(nas))
+  # if more than one with few NA's than choose dataset with max median
+  if(length(idx) > 1){
+    ma = apply(intensity[,idx],2,median,na.rm=TRUE)
+    id <-which(ma == max(ma))
+    idx <- idx[id]
+  }
+  
+  reference=intensity[,idx]
+  for(i in 1:dim(intensity)[2])
+  {
+    intensV = intensity[,i]
+    corrected = correctIntRTv1( obj  = unlist(reference), data = unlist(intensV) , rto = rt , plot=plot , k=k )
+    intensity[,i] = corrected
+  }
+}
+
 #' correct intensity over RT for entire msexperiment
 #' 
 #' @note reorders all entries in experiment according to RT, finds sample with fewest NA's if there are many picks that one
@@ -69,23 +95,8 @@ correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
   experiment = removeDecoys(experiment)
   experiment = orderByRT(experiment)
   
-  # select reference dataset
-  nas = apply( experiment$Intensity, 2 , function(x){sum(is.na(x))} )
-  idx = which(nas == min(nas))
-  # if more than one with few NA's than choose dataset with max median
-  if(length(idx) > 1){
-    ma = apply(experiment$Intensity[,idx],2,median,na.rm=TRUE)
-    id <-which(ma == max(ma))
-    idx <- idx[id]
-  }
+  correctIntRTv1(intensity= experiment$Intensity,rt = experiment$RT,k=501,plot=F,...)
 
-  reference=experiment$Intensity[,idx]
-  for(i in 1:dim(experiment$Intensity)[2])
-  {
-    intensV = experiment$Intensity[,i]
-    corrected = correctIntRTv1( unlist(reference), unlist(intensV) , (experiment$RT) , plot=plot , k=k )
-    experiment$Intensity[,i] = corrected
-  }
   return(experiment)
 }
 
