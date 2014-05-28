@@ -55,9 +55,9 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
 #'
 #' @export
 # select reference dataset
-correctIntRTv1.matrix = function(intensity,rt,k=501,plot=F,...)
+correctIntRTv1.matrix = function(obj,rt,k=501,plot=F,...)
 {
-  
+  intensity = obj
   print("here")
   nas = apply( intensity, 2 , function(x){sum(is.na(x))} )
   idx = which(nas == min(nas))

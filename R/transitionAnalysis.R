@@ -50,7 +50,7 @@ transitions2wide = function(far){
 #' @examples
 #' data(feature_alignment_requant)
 #' tmp = transitions2wide(feature_alignment_requant)
-#' selectTopTransitions(tmp)
+#' xx = selectTopFragmentsPerPeptide(tmp)
 selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   #compute median and create table with id's
   medxx = apply(data[,3:dim(data)[2]],1,median)
