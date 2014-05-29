@@ -5,31 +5,33 @@ library(imsbInfer)
 SpecLib = ("/home//witold/Analysis/EBhardt//data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
 data = fread(SpecLib)
 
-nrt = 3
-peptop = 3
-
-msexp = loadTransitonsMSExperiment(data,nrt=nrt,peptop=peptop)
-boxplot(asinh(msexp$Intensity))
-
-
-SpecLib = ("/home//witold/Analysis/LightSwath/MSstatsanalysis/feature_alignment_requant.tsv")
-data = fread(SpecLib)
-
-nrt = 3
-peptop = 3
-
-obj = data
-tmp = basename(obj$align_origfilename)
-tmp[1:10]
-tmp = sub("_SW_with_dscore.csv","",tmp)
-
-obj$align_origfilename = paste(tmp , obj$align_runid , sep="_")
-obj$align_origfilename[1:10]
-data =  transitions2wide(obj)
-toptrans = selectTopFragmentsPerPeptide(data,nrt=3)
-
-dim(data)
 colnames(data)
+sum(data$decoy==1)
+data = data[data$decoy==0]
+dim(data)
+nrt = 3
+peptop = 3
+
 msexp = loadTransitonsMSExperiment(data,nrt=nrt,peptop=peptop)
 boxplot(asinh(msexp$Intensity))
+
+# do normalization
+
+tmp = convert2MSstats(msexp)
+
+msexp2 = aggregatePeptide(msexp)
+dim(msexp2)
+head(msexp2$pepinfo)
+
+msexp3 = aggregateProtein(msexp)
+
+
+#####
+# reading tiannan dataset : 6_049_920 rows
+library(imsbInfer)
+SpecLib = ("/home//witold/Analysis/tiannan/data/feature_alignment_requant.tsv")
+data = fread(SpecLib)
+data = data[data$decoy==0]
+msexp = loadTransitonsMSExperiment(data,nrt=3,peptop=3)
+
 

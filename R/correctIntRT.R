@@ -48,7 +48,7 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
     legend("topleft",legend=c("ref","before","after"),col=c("red","blue","black"),lty=c(1,1,1))
   }
   bb  = rep(NA, length(idxs))
-  bb[!idxs] = a1wc
+  bb[idx] = a1wc
   return(bb)
 }
 #' correct columns in data frame given RT.
@@ -94,9 +94,7 @@ correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
   experiment = obj
   experiment = removeDecoys(experiment)
   experiment = orderByRT(experiment)
-  
-  correctIntRTv1(intensity= experiment$Intensity,rt = experiment$RT,k=501,plot=F,...)
-
+  correctIntRTv1(obj = experiment$Intensity,rt = experiment$RT,k=501,plot=F,...)
   return(experiment)
 }
 

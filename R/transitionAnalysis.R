@@ -150,24 +150,35 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @description Selects top nrt transitions based on median transition intensity in all runs.
 #' Selects top nr peptides based on median peptide intensity in all runs.
 #' @export
-#' 
+#' @examples
+#' data(feature_alignment_requant)
+#' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=3)
+#' rownames(x$Intensity)[1:3]
+#' mypairs(x$Intensity[,1:3])
 loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
+  ptm <- proc.time()
+
+  cat("reading extended peptide information (creating msexperiment)\n - please be patient it make take a while (minutes)\n")
+  msexp = read2msExperiment(obj)
+  gc()
   # long running function
   cat("extracting single transtion intensities\n - please be patient it make take a while (minuts)\n")
   data =  transitions2wide(obj)
+  # this will read in also the full annotation (which peptide belongs to which protein)
+  rm(obj)
+  gc()
   
   ##### selecting top 2-n fragments ####
   # long running
   cat("selecting top :", nrt , " transitions\n - please be patient it make take a while (minutes)\n")
-  toptrans = selectTopFragmentsPerPeptide(data,nrt=3)
+  toptrans = selectTopFragmentsPerPeptide(data , nrt=3)
+  rm(data)
+  gc()
   
   ##### 
   cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")
   agrpeptide = aggregatepeptide(toptrans)
   
-  # this will read in also the full annotation (which peptide belongs to which protein)
-  cat("reading extended peptide information (creating msexperiment). \n")
-  msexp = read2msExperiment(obj)
   
   ## update the intensities with new intensities computed from top 2 transitions
   msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]
@@ -182,26 +193,29 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   
   # select the toptransitions of the top peptides
   toptrans = toptrans[toppep$pepinfo$transition_group_id]
-  dim(toptrans)
+  #dim(toptrans)
   
   # create msexperiment containing transtions
   msExpTransition = function(toptrans,msexp){
     tt = toptrans[,transition_group_id,aggr_Fragment_Annotation]
     newkey = paste(tt$transition_group_id,tt$aggr_Fragment_Annotation,sep="-")
-    msexp$pepinfo = merge(tt,msexp$pepinfo,by="transition_group_id")
+    msexp$pepinfo = data.frame(merge(tt,msexp$pepinfo,by="transition_group_id"))
     rownames(msexp$pepinfo) = newkey
-    msexp$rt = msexp$rt[tt$transition_group_id,]
+    msexp$rt = as.matrix(msexp$rt[tt$transition_group_id,])
+    print(dim(msexp$rt))
     rownames(msexp$rt) = newkey
-    msexp$score = msexp$score[tt$transition_group_id,]
+    msexp$score = as.matrix(msexp$score[tt$transition_group_id,])
     rownames(msexp$score) = newkey
-    msexp$mz = msexp$mz[tt$transition_group_id,]
+    msexp$mz = as.matrix(msexp$mz[tt$transition_group_id,])
     rownames(msexp$mz) = newkey
-    msexp$Intensity = toptrans[,3:dim(toptrans)[2],with=FALSE]
+    msexp$Intensity = as.matrix( toptrans[,3:dim(toptrans)[2],with=FALSE])
     rownames(msexp$Intensity) = newkey
     return(msexp)
   }
   
-  msexp2 = msExpTransition(toptrans,msexp)
-  return(msexp2)
+  msexp = msExpTransition(toptrans,msexp)
+  cat("processing done in : ",proc.time() - ptm," [s] \n")
+  gc()
+  return(msexp)
 }
 
