@@ -1,6 +1,6 @@
 #' convert to MSstats
 #' @export
-#' convert msexp to msstats compatible output
+#' @description convert msexp to msstats compatible output
 #' @examples
 #' NULL
 convert2MSstats=function(msexp){

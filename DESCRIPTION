@@ -16,4 +16,5 @@ Date: 2014-04-01
 Depends:
     roxygen2,
     data.table,
-    gplots, reshape2
+    gplots,
+    reshape2

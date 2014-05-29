@@ -1,7 +1,11 @@
 
 #' aggregate peptides - given msexperiment with transitons
 #' @export
-aggregatePeptide=function(msexp, FUN = sum)
+#' @examples
+#' NULL
+#' @seealso aggregateProtein
+#' 
+aggregatePeptides=function(msexp, FUN = sum)
 {
   tomatrix = function(x){
     rownames(x) = x[,1]
@@ -9,10 +13,12 @@ aggregatePeptide=function(msexp, FUN = sum)
     return(as.matrix(x))
   }
   
-  sum(rownames(msexp$Intensity)==rownames(msexp$pepinfo))
+  #check sorting
+  #sum(rownames(msexp$Intensity)==rownames(msexp$pepinfo))
   
   aggval = list( msexp$pepinfo$transition_group_id)
   intensity = aggregate(msexp$Intensity,by= aggval,FUN=FUN)
+
   msexp$Intensity = tomatrix(intensity)
   x = aggregate(msexp$mz,by=aggval,function(x){x[1]})
   msexp$mz = tomatrix(x)
@@ -30,7 +36,10 @@ aggregatePeptide=function(msexp, FUN = sum)
 
 #' aggregate peptides - given msexperiment with transitons
 #' @export 
-aggregateProtein=function(msexp, FUN = sum)
+#' @examples
+#' NULL
+#' @seealso aggregatePeptide
+aggregateProteins=function(msexp, FUN = sum)
 {
   tomatrix = function(x){
     rownames(x) = x[,1]

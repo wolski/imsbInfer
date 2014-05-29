@@ -6,22 +6,30 @@ SpecLib = ("/home//witold/Analysis/EBhardt//data/E1404301658-sample-SpecLib/feat
 data = fread(SpecLib)
 
 colnames(data)
+# keep only non decoy
 sum(data$decoy==1)
 data = data[data$decoy==0]
-dim(data)
+
+# nr of transition per peptide
 nrt = 3
+# nr of peptides per protein
 peptop = 3
 
+# 
 msexp = loadTransitonsMSExperiment(data,nrt=nrt,peptop=peptop)
 boxplot(asinh(msexp$Intensity))
 
 # do normalization
+head(msexp$Intensity)
+msrob = msexp
+msrob$Intensity = robustscale(asinh(msexp$Intensity))
+boxplot(msrob$Intensity)
 
-tmp = convert2MSstats(msexp)
 
-msexp2 = aggregatePeptide(msexp)
-dim(msexp2)
-head(msexp2$pepinfo)
+tmp = convert2MSstats(msrob)
+head(tmp)
+
+msexp2 = aggregatePeptides(msexp)
 
 msexp3 = aggregateProtein(msexp)
 
