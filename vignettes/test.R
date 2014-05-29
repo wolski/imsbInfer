@@ -1,34 +1,35 @@
 rm(list=ls())
 library(imsbInfer)
+
+
 SpecLib = ("/home//witold/Analysis/EBhardt//data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
-xx = fread(SpecLib)
+data = fread(SpecLib)
 
-# long running function
-data =  transitions2wide(xx)
-colnames(data)
+nrt = 3
+peptop = 3
 
-##### selecting top 2-n fragments ####
-# long running
+msexp = loadTransitonsMSExperiment(data,nrt=nrt,peptop=peptop)
+boxplot(asinh(msexp$Intensity))
+
+
+SpecLib = ("/home//witold/Analysis/LightSwath/MSstatsanalysis/feature_alignment_requant.tsv")
+data = fread(SpecLib)
+
+nrt = 3
+peptop = 3
+
+obj = data
+tmp = basename(obj$align_origfilename)
+tmp[1:10]
+tmp = sub("_SW_with_dscore.csv","",tmp)
+
+obj$align_origfilename = paste(tmp , obj$align_runid , sep="_")
+obj$align_origfilename[1:10]
+data =  transitions2wide(obj)
 toptrans = selectTopFragmentsPerPeptide(data,nrt=3)
-agrpeptide = aggregatepeptide(toptrans)
 
-# this will read in also the full annotation (which peptide belongs to which protein)
-msexp = read2msExperiment(xx)
-
-msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]
-rownames(msexp$Intensity) = agrpeptide$transition_group_id
-
-
-# select top peptides
-toppep = selectTopPeptidesPerProtein(msexp ,peptop=3)
-boxplot(asinh(toppep$Intensity))
-
-length(toppep$pepinfo$transition_group_id)
-# get the transitions belonging to the top peptides
-
-toptrans = toptrans[toppep$pepinfo$transition_group_id]
-# make sure that the selection is OK.
-xx = aggregatepeptide(toptrans)
-toppep$Intensity[xx$transition_group_id[1],1:9] == xx[1,2:10]
-
+dim(data)
+colnames(data)
+msexp = loadTransitonsMSExperiment(data,nrt=nrt,peptop=peptop)
+boxplot(asinh(msexp$Intensity))
 

@@ -145,3 +145,63 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   res = subset(msexp, res$transition_group_id)
   return(res)
 }
+#' load msexperiment with nrt transtions and peptides
+#' 
+#' @description Selects top nrt transitions based on median transition intensity in all runs.
+#' Selects top nr peptides based on median peptide intensity in all runs.
+#' @export
+#' 
+loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
+  # long running function
+  cat("extracting single transtion intensities\n - please be patient it make take a while (minuts)\n")
+  data =  transitions2wide(obj)
+  
+  ##### selecting top 2-n fragments ####
+  # long running
+  cat("selecting top :", nrt , " transitions\n - please be patient it make take a while (minutes)\n")
+  toptrans = selectTopFragmentsPerPeptide(data,nrt=3)
+  
+  ##### 
+  cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")
+  agrpeptide = aggregatepeptide(toptrans)
+  
+  # this will read in also the full annotation (which peptide belongs to which protein)
+  cat("reading extended peptide information (creating msexperiment). \n")
+  msexp = read2msExperiment(obj)
+  
+  ## update the intensities with new intensities computed from top 2 transitions
+  msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]
+  rownames(msexp$Intensity) = agrpeptide$transition_group_id
+  
+  # select top peptides
+  cat("selecting top :", peptop, " peptides per protein\n")
+  toppep = selectTopPeptidesPerProtein(msexp ,peptop=3)
+  
+  #length(toppep$pepinfo$transition_group_id)
+  # get the transitions belonging to the top peptides
+  
+  # select the toptransitions of the top peptides
+  toptrans = toptrans[toppep$pepinfo$transition_group_id]
+  dim(toptrans)
+  
+  # create msexperiment containing transtions
+  msExpTransition = function(toptrans,msexp){
+    tt = toptrans[,transition_group_id,aggr_Fragment_Annotation]
+    newkey = paste(tt$transition_group_id,tt$aggr_Fragment_Annotation,sep="-")
+    msexp$pepinfo = merge(tt,msexp$pepinfo,by="transition_group_id")
+    rownames(msexp$pepinfo) = newkey
+    msexp$rt = msexp$rt[tt$transition_group_id,]
+    rownames(msexp$rt) = newkey
+    msexp$score = msexp$score[tt$transition_group_id,]
+    rownames(msexp$score) = newkey
+    msexp$mz = msexp$mz[tt$transition_group_id,]
+    rownames(msexp$mz) = newkey
+    msexp$Intensity = toptrans[,3:dim(toptrans)[2],with=FALSE]
+    rownames(msexp$Intensity) = newkey
+    return(msexp)
+  }
+  
+  msexp2 = msExpTransition(toptrans,msexp)
+  return(msexp2)
+}
+
