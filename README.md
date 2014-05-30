@@ -10,14 +10,15 @@ R-package for the quantitative analysis of SWATH-MS data.
 
 How to build:
 
-- download the repository as a zip archive (see link on the left)
-- extract the zip file into the folder imsbInfer
+- download the repository as a zip archive (see button _Download Zip_ to the right)
+- then run the sequence of commands below:
 
-```bash
+```sh
 unzip imsbInfer-master.zip
 mv imsbInfer-master imsbInfer
+# to create the package documentation 
 cp imsbInfer/runrox2.R .
-Rscript runrox2.R
-R CMD build imsbInfer
-R CMD install imsbInfer
+Rscript runrox2.R 
+# install the package
+R CMD INSTALL imsbInfer
 ```
