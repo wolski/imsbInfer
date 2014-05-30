@@ -212,7 +212,7 @@ read2msExperiment=function(obj,...){
 #' @export
 #' @examples
 #' data(feature_alignment_requant) 
-#' res = read2msExperiment(feature_alignment_requant)
+#' SDat = read2msExperiment(feature_alignment_requant)
 #' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
 #' \dontrun{res = read2msExperiment("path/to/feature_alignment_requant.tsv")}
 read2msExperiment.default=function(obj,...){

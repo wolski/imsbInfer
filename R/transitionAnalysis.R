@@ -197,7 +197,6 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")
   agrpeptide = aggregatepeptide(toptrans)
   
-  
   ## update the intensities with new intensities computed from top 2 transitions
   msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]
   rownames(msexp$Intensity) = agrpeptide$transition_group_id
