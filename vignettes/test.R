@@ -16,6 +16,9 @@ peptop = 3
 
 # 
 msexp = loadTransitonsMSExperiment(data,nrt=nrt,peptop=peptop)
+View(msexp$pepinfo[1:10,])
+rownames(msexp$Intensity)[1:10]
+
 tmp = convert2MSstats(msrob)
 
 head(tmp)

@@ -91,6 +91,7 @@ subset.msexperiment<- function(x,idx,...){
   data$Intensity = data$Intensity[idx,]
   data$score = data$score[idx,]
   data$rt = data$rt[idx,]
+  data$mz = data$mz[idx,]
   data$pepinfo = data$pepinfo[idx,]
   if(!is.null(data$RT)){
     data$RT = data$RT[idx]
@@ -154,7 +155,8 @@ convertLF2Wideformat=function(aligtable){
 #' data = convertLF2Wideformat(feature_alignment_requant)
 #' lapply(data,dim)
 #' SDat=convert2msExperiment(data)
-#' #save(SDat, file="data/SDat.rda")
+#' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
+#' stopifnot(dim(SDat$Intensity) == dim(SDat$mz), dim(SDat$mz) == dim(SDat$score))
 #' @seealso \code{\link{read2msExperiment}} and \code{\link{convertLF2Wideformat}} for contex
 convert2msExperiment = function(data){
   nams=colnames(data$Intensity)
@@ -188,6 +190,7 @@ convert2msExperiment = function(data){
   rownames(SwathDat$score) = data$Intensity$transition_group_id
   rownames(SwathDat$rt) = data$Intensity$transition_group_id
   rownames(SwathDat$mz) = data$Intensity$transition_group_id
+  rownames(SwathDat$pepinfo) = data$Intensity$transition_group_id
   
   colnames(SwathDat$Intensity) = colnames(data$Intensity)[2:nrcol]
   colnames(SwathDat$score) = colnames(data$Intensity)[2:nrcol]
@@ -210,6 +213,7 @@ read2msExperiment=function(obj,...){
 #' @examples
 #' data(feature_alignment_requant) 
 #' res = read2msExperiment(feature_alignment_requant)
+#' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
 #' \dontrun{res = read2msExperiment("path/to/feature_alignment_requant.tsv")}
 read2msExperiment.default=function(obj,...){
   filename = obj
@@ -226,7 +230,10 @@ read2msExperiment.default=function(obj,...){
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
-#' dim(SDat)
+#' stopifnot(dim(SDat)==c(964,3))
+#' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
+#' rownames(SDat$pepinfo)
+#' \dontrun{save(SDat,file="data/SDat.rda")}
 read2msExperiment.data.frame=function(obj,...){
   data = obj
   data = convertLF2Wideformat(data)

@@ -8,7 +8,9 @@
 #' @export
 #' @examples
 #' data(feature_alignment_requant)
-#' transitions2wide(feature_alignment_requant)
+#' tmp = transitions2wide(feature_alignment_requant)
+#' names(tmp)
+#' head(tmp)
 transitions2wide = function(far){
   #far = feature_alignment_requant
   ids = as.character(far$transition_group_id)
@@ -93,7 +95,12 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' aggregate peptide from transtion
 #' @export
 #' @examples
-#' NULL
+#' data(feature_alignment_requant)
+#' tmp = transitions2wide(feature_alignment_requant)
+#' xx = selectTopFragmentsPerPeptide(tmp)
+#' dim(xx)
+#' aggr = aggregatepeptide(xx)
+#' dim(aggr)
 aggregatepeptide=function(toptrans, func = sum){
   toptransvals=toptrans[,3:dim(toptrans)[2],with=F]
   toptransvals = lapply(toptransvals,as.numeric)
@@ -107,6 +114,13 @@ aggregatepeptide=function(toptrans, func = sum){
 #' this function selects the top x peptides / protein
 #' @param newprot data.frame with 
 #' @export
+#' @examples
+#' data(SDat)
+#' class(SDat)
+#' rownames(SDat$pepinfo)
+#' x = selectTopPeptidesPerProtein(SDat,peptop=3)
+#' stopifnot(dim(x)==c(247,3))
+#' stopifnot(rownames(x$pepinfo)[1:10]==rownames(x$Intensity)[1:10])
 selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   #newprot = merge(msexp$pepinfo[,c("transition_group_id","ProteinName")],agrpeptide,by.x="transition_group_id",by.y="transition_group_id")
   
@@ -140,7 +154,7 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   
   res = res[1:end,]
   colnames(res) = c("ProteinName","transition_group_id","medxx")
-
+  
   res = data.table(res)
   res = subset(msexp, res$transition_group_id)
   return(res)
@@ -154,10 +168,14 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' data(feature_alignment_requant)
 #' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=3)
 #' rownames(x$Intensity)[1:3]
+#' head(x$pepinfo)
 #' mypairs(x$Intensity[,1:3])
+#' xx = split2table(rownames(x$pepinfo),split="-")
+#' stopifnot(xx[,1] == x$pepinfo$transition_group_id)
+#' stopifnot(xx[,2] == x$pepinfo$aggr_Fragment_Annotation)
 loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   ptm <- proc.time()
-
+  
   cat("reading extended peptide information (creating msexperiment)\n - please be patient it make take a while (minutes)\n")
   msexp = read2msExperiment(obj)
   gc()
@@ -194,20 +212,30 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   # select the toptransitions of the top peptides
   toptrans = toptrans[toppep$pepinfo$transition_group_id]
   #dim(toptrans)
-  
+  ms = msexp
+  msexp = ms
   # create msexperiment containing transtions
   msExpTransition = function(toptrans,msexp){
+    #select two columns only
     tt = toptrans[,transition_group_id,aggr_Fragment_Annotation]
-    newkey = paste(tt$transition_group_id,tt$aggr_Fragment_Annotation,sep="-")
+    setkey(tt,transition_group_id,aggr_Fragment_Annotation)
+    setkey(toptrans,transition_group_id,aggr_Fragment_Annotation)
+    
     msexp$pepinfo = data.frame(merge(tt,msexp$pepinfo,by="transition_group_id"))
+    newkey = paste(msexp$pepinfo$transition_group_id,msexp$pepinfo$aggr_Fragment_Annotation,sep="-")
     rownames(msexp$pepinfo) = newkey
-    msexp$rt = as.matrix(msexp$rt[tt$transition_group_id,])
-    print(dim(msexp$rt))
+    
+    msexp$rt = as.matrix(msexp$rt[msexp$pepinfo$transition_group_id,])
     rownames(msexp$rt) = newkey
-    msexp$score = as.matrix(msexp$score[tt$transition_group_id,])
+    
+    msexp$score = as.matrix(msexp$score[msexp$pepinfo$transition_group_id,])
     rownames(msexp$score) = newkey
-    msexp$mz = as.matrix(msexp$mz[tt$transition_group_id,])
+    msexp$mz = as.matrix(msexp$mz[msexp$pepinfo$transition_group_id,])
     rownames(msexp$mz) = newkey
+    
+    stopifnot(msexp$pepinfo$transition_group_id==toptrans$transition_group_id)    
+    stopifnot(msexp$pepinfo$aggr_Fragment_Annotation==toptrans$aggr_Fragment_Annotation)    
+    
     msexp$Intensity = as.matrix( toptrans[,3:dim(toptrans)[2],with=FALSE])
     rownames(msexp$Intensity) = newkey
     return(msexp)
