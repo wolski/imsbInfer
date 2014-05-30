@@ -10,7 +10,7 @@ R-package for the quantitative analysis of SWATH-MS data.
 
 How to build:
 
-- download the repository as a zip archive (see button _Download Zip_ to the right)
+- download the repository as a zip archive (see button ~~Download Zip~~ to the right)
 - then run the sequence of commands below:
 
 ```sh
