@@ -16,8 +16,19 @@ peptop = 3
 
 # 
 msexp = loadTransitonsMSExperiment(data,nrt=nrt,peptop=peptop)
-View(msexp$pepinfo[1:10,])
-rownames(msexp$Intensity)[1:10]
+table(table(msexp$pepinfo$ProteinName))
+
+
+msexpS = read2msExperiment(data)
+length(unique(msexpS$pepinfo$ProteinName))
+
+xx = selectTopPeptidesPerProtein(msexpS,peptop=3)
+length(unique(xx$pepinfo$ProteinName))
+
+
+
+
+
 
 tmp = convert2MSstats(msrob)
 

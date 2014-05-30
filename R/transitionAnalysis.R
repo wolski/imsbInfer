@@ -123,12 +123,12 @@ aggregatepeptide=function(toptrans, func = sum){
 #' stopifnot(rownames(x$pepinfo)[1:10]==rownames(x$Intensity)[1:10])
 selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   #newprot = merge(msexp$pepinfo[,c("transition_group_id","ProteinName")],agrpeptide,by.x="transition_group_id",by.y="transition_group_id")
-  
+  msexp
   #compute median and create table with id's
   medxx = apply(msexp$Intensity , 1,median)
   xxmex = cbind( msexp$pepinfo[,c("transition_group_id","ProteinName")] , medxx)
-  
   tmpdt = data.table(xxmex)
+  
   ## fixing column types
   tmpdt <- tmpdt[, transition_group_id:=as.character(transition_group_id)]
   tmpdt <- tmpdt[, ProteinName:=as.character(ProteinName)]
@@ -136,13 +136,12 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   
   # we are going to select the top peptides for each protein.
   proteinname = unique( as.character(tmpdt$ProteinName) )
+  
   # prepare output matrix
   lx = length(proteinname)
   res <- matrix("",nrow=lx*peptop,ncol=3)
   start = 1
   end = 0
-  dim(res)
-  dim(tmpdt)
   for(i in 1:lx){
     tmp<-tmpdt[proteinname[i],]
     xx=which(order(as.numeric(tmp$medxx),decreasing=TRUE) < (peptop+1))
@@ -154,10 +153,19 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   
   res = res[1:end,]
   colnames(res) = c("ProteinName","transition_group_id","medxx")
-  
   res = data.table(res)
-  res = subset(msexp, res$transition_group_id)
-  return(res)
+  dim(res)
+  length(unique(msexp$pepinfo$ProteinName))
+  length(unique(res$ProteinName))
+  
+  res2 = subset(msexp, match(res$transition_group_id, rownames(msexp$Intensity)))
+  
+  #postconditions
+  stopifnot(res2$pepinfo$ProteinName==res$ProteinName)
+  stopifnot(length(unique(msexp$pepinfo$ProteinName))==length(unique(res$ProteinName)))
+            
+  
+  return(res2)
 }
 #' load msexperiment with nrt transtions and peptides
 #' 
