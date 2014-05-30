@@ -3,10 +3,9 @@
 
 R-package for the quantitative analysis of SWATH-MS data.
 
-- data import, filtering, transfromations
+- data import, filtering, transfromations, normalization,  scaling
 - visualization
 - QC on peptide and protein level
-- data normalization,  scaling
 
 How to build:
 

@@ -1,7 +1,6 @@
 rm(list=ls())
 library(imsbInfer)
 
-
 SpecLib = ("/home//witold/Analysis/EBhardt//data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
 data = fread(SpecLib)
 
@@ -17,21 +16,11 @@ peptop = 3
 
 # 
 msexp = loadTransitonsMSExperiment(data,nrt=nrt,peptop=peptop)
-boxplot(asinh(msexp$Intensity))
-
-# do normalization
-head(msexp$Intensity)
-msrob = msexp
-msrob$Intensity = robustscale(asinh(msexp$Intensity))
-boxplot(msrob$Intensity)
-
-
 tmp = convert2MSstats(msrob)
+
 head(tmp)
 
-
 msexp2 = aggregatePeptides(msexp)
-
 msexp3 = aggregateProtein(msexp)
 
 
