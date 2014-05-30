@@ -13,8 +13,11 @@ How to build:
 - download the repository as a zip archive (see link on the left)
 - extract the zip file into the folder imsbInfer
 
-
+```bash
+unzip imsbInfer-master.zip
+mv imsbInfer-master imsbInfer
 cp imsbInfer/runrox2.R .
 Rscript runrox2.R
 R CMD build imsbInfer
 R CMD install imsbInfer
+```
