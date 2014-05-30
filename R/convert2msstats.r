@@ -13,6 +13,8 @@ convert2MSstats=function(msexp){
   meltedDS=melt(mergedDS,id=c("transition_group_id","aggr_Fragment_Annotation","PeptideSequence","PrecursorCharge","ProteinName"))
   colnames(meltedDS)[colnames(meltedDS) == "aggr_Fragment_Annotation"] = "FragmentIon"
   colnames(meltedDS)[colnames(meltedDS) == "value"] = "Intensity"
-  colnames(meltedDS)[colnames(meltedDS) == "variable"] = "OrigFilename"
+  colnames(meltedDS)[colnames(meltedDS) == "variable"] = "Run"
+  meltedDS$"ProductCharge" = rep(1,dim(meltedDS)[1])
+  meltedDS$"IsotopeLabelType" = rep("L",dim(meltedDS)[1])
   return(meltedDS)
 }

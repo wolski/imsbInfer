@@ -20,11 +20,11 @@ aggregatePeptides=function(msexp, FUN = sum)
   intensity = aggregate(msexp$Intensity,by= aggval,FUN=FUN)
 
   msexp$Intensity = tomatrix(intensity)
-  x = aggregate(msexp$mz,by=aggval,function(x){x[1]})
+  x = aggregate(msexp$mz,by=aggval , function(x){x[1]})
   msexp$mz = tomatrix(x)
-  x = aggregate(msexp$rt,by=aggval,function(x){x[1]})
+  x = aggregate(msexp$rt,by=aggval , function(x){x[1]})
   msexp$rt = tomatrix(x)
-  x = aggregate(msexp$score,by=aggval,function(x){x[1]})
+  x = aggregate(msexp$score,by=aggval , function(x){x[1]})
   msexp$score = tomatrix(x)
   
   msexp$pepinfo = msexp$pepinfo[,-match("aggr_Fragment_Annotation",colnames(msexp$pepinfo))]
