@@ -11,6 +11,7 @@ convert2MSstats=function(msexp){
   mergedDS = mergedDS[,!(colnames(mergedDS) %in% c("id","decoy"))]
   # melt the data into MSstats format
   meltedDS=melt(mergedDS,id=c("transition_group_id","aggr_Fragment_Annotation","PeptideSequence","PrecursorCharge","ProteinName"))
+  meltedDS = meltedDS[,-match("transition_group_id",colnames(meltedDS))]
   colnames(meltedDS)[colnames(meltedDS) == "aggr_Fragment_Annotation"] = "FragmentIon"
   colnames(meltedDS)[colnames(meltedDS) == "value"] = "Intensity"
   colnames(meltedDS)[colnames(meltedDS) == "variable"] = "Run"

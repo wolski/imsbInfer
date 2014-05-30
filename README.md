@@ -8,3 +8,13 @@ R-package for the quantitative analysis of SWATH-MS data.
 - QC on peptide and protein level
 - data normalization,  scaling
 
+How to build:
+
+- download the repository as a zip archive (see link on the left)
+- extract the zip file into the folder imsbInfer
+
+
+cp imsbInfer/runrox2.R .
+Rscript runrox2.R
+R CMD build imsbInfer
+R CMD install imsbInfer

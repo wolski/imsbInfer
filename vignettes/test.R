@@ -29,6 +29,7 @@ boxplot(msrob$Intensity)
 tmp = convert2MSstats(msrob)
 head(tmp)
 
+
 msexp2 = aggregatePeptides(msexp)
 
 msexp3 = aggregateProtein(msexp)
