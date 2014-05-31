@@ -2,7 +2,16 @@ rm(list=ls())
 library(imsbInfer)
 
 SpecLib = ("/home//witold/Analysis/EBhardt//data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
-data = fread(SpecLib)
+data2 = fread(SpecLib)
+
+# ("Charge" and "Sequence" are extracted from transition_group_id)
+required = c("transition_group_id","align_runid","align_origfilename","RT",
+             "m/z","Intensity","ProteinName","decoy","m_score","aggr_Fragment_Annotation","aggr_Peak_Area")
+match(required,colnames(data2))
+View(head(data2))
+data = data2[,match(required,colnames(data2)),with=FALSE]
+
+
 
 colnames(data)
 # keep only non decoy
