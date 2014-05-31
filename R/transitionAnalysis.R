@@ -35,7 +35,6 @@ transitions2wide = function(far){
     idss[[i]] = rep(ids[i],l) # transition group ids
     origf[[i]] = rep(orig[i],l) # orig file name
   }
-  library(reshape2)
   # extend to wide format
   tmp = data.frame(transition_group_id = as.character(unlist(idss)),
                    align_origfilename = as.character(unlist(origf)),
