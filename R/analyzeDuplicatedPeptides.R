@@ -224,12 +224,13 @@ compPeptideCorrelations = function(specLib,countmax= 500){
 }
 #' plot the output of compPeptideCorrelations
 #' @export
-plotPairCors=function(res,main="",ylim=NULL,xlim=c(-1,1)){
-  plot(density(res$peptide$cor,na.rm = TRUE),ylim=ylim,xlim=xlim,main=main,col=5)
-  lines(density(res$random$cor,na.rm = TRUE),col=2)
-  lines(density(res$protein$cor,na.rm = TRUE),col=3)
-  lines(density(res$proteinTOP$cor,na.rm = TRUE),col=4)
-  lines(density(res$unique$cor,na.rm = TRUE),col=1)
+plotPairCors=function(res,main="",ylim=NULL,xlim=c(-1,1))
+{
+  plot( density(res$peptide$cor,na.rm = TRUE), ylim=ylim ,xlim=xlim ,main=main , col=5)
+  lines( density(res$random$cor,na.rm = TRUE), col=2)
+  lines( density(res$protein$cor,na.rm = TRUE), col=3, lty=2 )
+  lines( density(res$proteinTOP$cor,na.rm = TRUE), col=4)
+  lines( density(res$unique$cor,na.rm = TRUE), col=1)
   legend("topleft",legend=c("unique","random","protein","protein Top","peptide"),lty=c(1,1,1,1),lwd=c(2,2,2,2),col=c(1,2,3,4,5))
 }
 #' summaryCors

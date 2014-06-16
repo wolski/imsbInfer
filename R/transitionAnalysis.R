@@ -98,9 +98,9 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' tmp = transitions2wide(feature_alignment_requant)
 #' xx = selectTopFragmentsPerPeptide(tmp)
 #' dim(xx)
-#' aggr = aggregatepeptide(xx)
+#' aggr = .aggregatepeptide(xx)
 #' dim(aggr)
-aggregatepeptide=function(toptrans, func = sum){
+.aggregatepeptide=function(toptrans, func = sum){
   toptransvals=toptrans[,3:dim(toptrans)[2],with=F]
   toptransvals = lapply(toptransvals,as.numeric)
   agregatepeptide = aggregate(toptransvals,by=list(toptrans$transition_group_id),func)
@@ -202,7 +202,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   
   ##### 
   cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")
-  agrpeptide = aggregatepeptide(toptrans)
+  agrpeptide = .aggregatepeptide(toptrans)
   
   ## update the intensities with new intensities computed from top 2 transitions
   msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]
