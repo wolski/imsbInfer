@@ -159,7 +159,7 @@ analyzeDuplicatedProteinsTOP = function(data,maxpep=3,countmax = 1000){
 #' @param dups - list as returned by function \code{\link{getListOfMatches}}
 #' @param maxpep - limit the number of duplicated peptides
 #' @param countmax - limit the total number of comparisons
-analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000){
+analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000, method="pearson"){
   res = NULL
   count = 1
   nameshead = c("p1","p2","cor","rt1","rt2","medianRTDiff","madDiffRT")
@@ -183,7 +183,7 @@ analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000){
       for(j in i:ld){
         if(i!=j){
           cat("count:",count, " i:",i," j:",j,"\n")
-          tmp=cor(t(data$Intensity[duplicated[c(i,j)],]),use="pairwise.complete.obs")
+          tmp=cor(t(data$Intensity[duplicated[c(i,j)],]), use="pairwise.complete.obs", method=method )
           cors = tmp[upper.tri(tmp)]
           x<-which(upper.tri(tmp),arr.ind=T)
           nams <- rownames(tmp)[x]
@@ -224,22 +224,39 @@ compPeptideCorrelations = function(specLib,countmax= 500){
 }
 #' plot the output of compPeptideCorrelations
 #' @export
-plotPairCors=function(res,main="",ylim=NULL,xlim=c(-1,1)){
-  plot(density(res$peptide$cor,na.rm = TRUE),ylim=ylim,xlim=xlim,main=main,col=5)
-  lines(density(res$random$cor,na.rm = TRUE),col=2)
-  lines(density(res$protein$cor,na.rm = TRUE),col=3)
-  lines(density(res$proteinTOP$cor,na.rm = TRUE),col=4)
-  lines(density(res$unique$cor,na.rm = TRUE),col=1)
+plotPairCors=function(res,main="",xlim=c(-1,1))
+{
+  Dpep = density(res$peptide$cor,na.rm = TRUE)
+  Drandom = density(res$random$cor,na.rm = TRUE)
+  Dprotein = density(res$protein$cor,na.rm = TRUE)
+  DproteinTOP = density(res$proteinTOP$cor,na.rm = TRUE)
+  Dunique = density(res$unique$cor,na.rm = TRUE)
+  
+  maxY = max(max(Dpep$y),max(Drandom$y),max(Dprotein$y),max(DproteinTOP$y),max(Dunique$y))
+  
+  plot( Dpep, ylim=c(0 , maxY) ,xlim=xlim ,main=main , col=5)
+  lines( Drandom, col=2)
+  lines( Dprotein, col=3 )
+  lines( DproteinTOP, col=6, lty=2)
+  lines( Dunique , col=1)
   legend("topleft",legend=c("unique","random","protein","protein Top","peptide"),lty=c(1,1,1,1),lwd=c(2,2,2,2),col=c(1,2,3,4,5))
+  abline(v=0)
 }
 #' summaryCors
 #' @export
 summaryCors = function(res){
-  xx = c(summary(res[[1]]$cor)["Median"],
-         summary(res[[2]]$cor)["Median"]
-         ,summary(res[[3]]$cor)["Median"]
-         ,summary(res[[4]]$cor)["Median"]
-         ,summary(res[[5]]$cor)["Median"])
-  names(xx) = names(res)
+  #xx = c(summary(res[[1]]$cor)["Median"],
+  #       summary(res[[2]]$cor)["Median"]
+  #       ,summary(res[[3]]$cor)["Median"]
+  #       ,summary(res[[4]]$cor)["Median"]
+  #       ,summary(res[[5]]$cor)["Median"])
+  
+  xx = cbind(summary(res[[1]]$cor),
+         summary(res[[2]]$cor)
+         ,summary(res[[3]]$cor)
+         ,summary(res[[4]]$cor)
+         ,summary(res[[5]]$cor))
+  
+  colnames(xx) = names(res)
   return(xx)
 }

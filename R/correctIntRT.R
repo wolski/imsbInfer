@@ -58,7 +58,7 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
 correctIntRTv1.matrix = function(obj,rt,k=501,plot=F,...)
 {
   intensity = obj
-  print("here")
+  
   nas = apply( intensity, 2 , function(x){sum(is.na(x))} )
   idx = which(nas == min(nas))
   # if more than one with few NA's than choose dataset with max median
@@ -75,6 +75,7 @@ correctIntRTv1.matrix = function(obj,rt,k=501,plot=F,...)
     corrected = correctIntRTv1( obj  = unlist(reference), data = unlist(intensV) , rto = rt , plot=plot , k=k )
     intensity[,i] = corrected
   }
+  return(intensity)
 }
 
 #' correct intensity over RT for entire msexperiment
@@ -94,7 +95,7 @@ correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
   experiment = obj
   experiment = removeDecoys(experiment)
   experiment = orderByRT(experiment)
-  correctIntRTv1(obj = experiment$Intensity,rt = experiment$RT,k=501,plot=F,...)
+  experiment$Intensity = correctIntRTv1(obj = experiment$Intensity,rt = experiment$RT,k=501,plot=F,...)
   return(experiment)
 }
 
