@@ -251,7 +251,7 @@ dim.msexperiment<-function(x){
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
-#' colnames(SDat)
+#' names(SDat)
 #' @export
 colnames.msexperiment<-function(x){
   return(colnames(x$Intensity))
@@ -282,6 +282,3 @@ reordercolumns  = function( data, ord = NULL )
   }
   return(data)
 }
-
-
-

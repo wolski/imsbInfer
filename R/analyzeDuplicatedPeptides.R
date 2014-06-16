@@ -239,24 +239,18 @@ plotPairCors=function(res,main="",xlim=c(-1,1))
   lines( Dprotein, col=3 )
   lines( DproteinTOP, col=6, lty=2)
   lines( Dunique , col=1)
-  legend("topleft",legend=c("unique","random","protein","protein Top","peptide"),lty=c(1,1,1,1),lwd=c(2,2,2,2),col=c(1,2,3,4,5))
+
+  legend("topleft",legend=c("unique","random","protein","protein Top","peptide"),lty=c(1,1,1,2,1), lwd = c(2,2,2,2,2) , col = c( 1, 2, 3, 6, 5))
   abline(v=0)
 }
 #' summaryCors
 #' @export
 summaryCors = function(res){
-  #xx = c(summary(res[[1]]$cor)["Median"],
-  #       summary(res[[2]]$cor)["Median"]
-  #       ,summary(res[[3]]$cor)["Median"]
-  #       ,summary(res[[4]]$cor)["Median"]
-  #       ,summary(res[[5]]$cor)["Median"])
-  
   xx = cbind(summary(res[[1]]$cor),
          summary(res[[2]]$cor)
          ,summary(res[[3]]$cor)
          ,summary(res[[4]]$cor)
          ,summary(res[[5]]$cor))
-  
   colnames(xx) = names(res)
   return(xx)
 }

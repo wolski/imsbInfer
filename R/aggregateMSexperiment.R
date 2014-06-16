@@ -1,4 +1,3 @@
-
 #' aggregate peptides - given msexperiment with transitons
 #' @export
 #' @examples
@@ -12,7 +11,6 @@ aggregatePeptides=function(msexp, FUN = sum)
     x = x[,-1]
     return(as.matrix(x))
   }
-  
   #check sorting
   #sum(rownames(msexp$Intensity)==rownames(msexp$pepinfo))
   
@@ -32,8 +30,6 @@ aggregatePeptides=function(msexp, FUN = sum)
   msexp$pepinfo =msexp$pepinfo[!tmp,]
   return(msexp)
 }
-
-
 #' aggregate peptides - given msexperiment with transitons
 #' @export 
 #' @examples

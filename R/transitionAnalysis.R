@@ -1,3 +1,23 @@
+#' checks input file for required columns - removes nonrequired columns from data.frame
+#'
+#' @export
+#' @examples
+#' data(feature_alignment_requant)
+#' colnames(feature_alignment_requant)
+#' df = feature_alignment_requant
+#' df = prepareDF(feature_alignment_requant)
+#' colnames(df)
+prepareDF <- function(df){
+  required = c("transition_group_id","align_runid","align_origfilename","RT",
+               "mz","Intensity","ProteinName","decoy","m_score","aggr_Fragment_Annotation","aggr_Peak_Area")
+  colnames(df) = sub("m.z","mz",colnames(df))
+  x=match(required,colnames(df))
+  stopifnot(required == colnames(df)[x])
+  df  = data.table(df)
+  df = df[,x,with=FALSE]
+  return(df)
+}
+
 #' extract transition intensities from input file. WARNING - slow running function
 #' @description
 #' the input table required fields are:
@@ -162,7 +182,7 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   #postconditions
   stopifnot(res2$pepinfo$ProteinName==res$ProteinName)
   stopifnot(length(unique(msexp$pepinfo$ProteinName))==length(unique(res$ProteinName)))
-            
+  
   
   return(res2)
 }
