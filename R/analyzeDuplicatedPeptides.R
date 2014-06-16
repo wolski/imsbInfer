@@ -239,6 +239,7 @@ plotPairCors=function(res,main="",xlim=c(-1,1))
   lines( Dprotein, col=3 )
   lines( DproteinTOP, col=6, lty=2)
   lines( Dunique , col=1)
+
   legend("topleft",legend=c("unique","random","protein","protein Top","peptide"),lty=c(1,1,1,1),lwd=c(2,2,2,2),col=c(1,2,3,4,5))
   abline(v=0)
 }
