@@ -226,11 +226,11 @@ compPeptideCorrelations = function(specLib,countmax= 500){
 #' @export
 plotPairCors=function(res,main="",xlim=c(-1,1))
 {
-  Dpep = density(res$peptide$cor,na.rm = TRUE)
-  Drandom = density(res$random$cor,na.rm = TRUE)
-  Dprotein = density(res$protein$cor,na.rm = TRUE)
-  DproteinTOP = density(res$proteinTOP$cor,na.rm = TRUE)
-  Dunique = density(res$unique$cor,na.rm = TRUE)
+  Dpep = density(res$peptide$cor, na.rm = TRUE)
+  Drandom = density(res$random$cor, na.rm = TRUE)
+  Dprotein = density(res$protein$cor, na.rm = TRUE)
+  DproteinTOP = density(res$proteinTOP$cor, na.rm = TRUE)
+  Dunique = density(res$unique$cor, na.rm = TRUE)
   
   maxY = max(max(Dpep$y),max(Drandom$y),max(Dprotein$y),max(DproteinTOP$y),max(Dunique$y))
   

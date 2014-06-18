@@ -251,9 +251,9 @@ dim.msexperiment<-function(x){
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
-#' names(SDat)
+#' dimnames(SDat)
 #' @export
-colnames.msexperiment<-function(x){
+dimnames.msexperiment<-function(x){
   return(colnames(x$Intensity))
 }
 #' allows to set colnames for all the matrices in msexperiment

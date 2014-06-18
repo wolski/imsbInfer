@@ -16,7 +16,7 @@ imagelabels = function(x, labels=colnames(x),cex=1,cex.axis=0.5,main=NULL,col = 
   axis( 1, at=seq(0,1,length=length((labels))) , labels=labels,cex.axis=cex.axis, las=2, cex=cex )
   axis( 2, at=seq(0,1,length=length((labels))) , labels=labels,cex.axis=cex.axis, las=1, cex=cex )
   
-  colorlevels = seq(min(x),max(x),length=length(col))
+  colorlevels = seq(min(x,na.rm = TRUE),max(x,na.rm = TRUE),length=length(col))
   image(1, seq(0,1,length=length(colorlevels)),
         matrix(data=colorlevels, nrow=1),
         col=col,xlab="",ylab="",

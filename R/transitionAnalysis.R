@@ -8,12 +8,14 @@
 #' df = prepareDF(feature_alignment_requant)
 #' colnames(df)
 prepareDF <- function(df){
+
   required = c("transition_group_id","align_runid","align_origfilename","RT",
                "mz","Intensity","ProteinName","decoy","m_score","aggr_Fragment_Annotation","aggr_Peak_Area")
-  colnames(df) = sub("m.z","mz",colnames(df))
+  df  = data.table(df)
+  
+  setnames(df, sub("m.z","mz",colnames(df)))
   x=match(required,colnames(df))
   stopifnot(required == colnames(df)[x])
-  df  = data.table(df)
   df = df[,x,with=FALSE]
   return(df)
 }
