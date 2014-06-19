@@ -97,9 +97,7 @@ pairsDifference = function(dataframesel,RT,main="",ylim=NULL ){
     for(i in 1:nr){
       for(j in 1:nr){
         if(i != j){
-          print(tmp)
           tmp = range(c(tmp,(dataframesel[,i] - dataframesel[,j])), na.rm=TRUE)
-          
         }
       }
     }
