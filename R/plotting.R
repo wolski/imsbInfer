@@ -64,7 +64,7 @@ pairsQQ = function(dataframesel,main=""){
   ,main = main
   )
 }
-#' plot ratios against retention time
+#' plot log2(x/y) against retention time
 #' @export
 #' @examples
 #' data(SDat)
@@ -83,14 +83,30 @@ pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
   ,main = main
   )
 }
-#' plot difference against retention time
+#' plot x-y against retention time
 #' @export
 #' @examples
 #' data(SDat)
 #' rtord = orderByRT(SDat)
-#' pairsDifference( asinh(rtord$Intensity), rtord$RT , ylim=c(-2,2))
+#' pairsDifference( asinh(rtord$Intensity), rtord$RT , ylim=NULL)
 #' @seealso \code{\link{pairs}} and \code{\link{pairsRatio}}
-pairsDifference = function(dataframesel,RT,main="",ylim=c(-2,2)){
+pairsDifference = function(dataframesel,RT,main="",ylim=NULL ){
+  if(is.null(ylim)){
+    nr = dim(dataframesel)[2]
+    tmp = NULL
+    for(i in 1:nr){
+      for(j in 1:nr){
+        if(i != j){
+          print(tmp)
+          tmp = range(c(tmp,(dataframesel[,i] - dataframesel[,j])), na.rm=TRUE)
+          
+        }
+      }
+    }
+    ylim = tmp
+  }
+  print(ylim)
+  
   pairs(dataframesel, panel = function(x,y,...){
     y = x - y
     r <- points(RT[!is.na(y)] , y[!is.na(y)],pch=".",... )
@@ -129,10 +145,10 @@ mypairs = function(dataframesel,...){
 #' data(SDat)
 #' simpleheatmap(SDat$Intensity,ColSideColors=c("red","blue","pink"))
 simpleheatmap = function(pln,main="",
-                  distf=dist,
-                  hclustf=hclust,
-                  palette=terrain.colors(12),
-                  ColSideColors=NULL)
+                         distf=dist,
+                         hclustf=hclust,
+                         palette=terrain.colors(12),
+                         ColSideColors=NULL)
 {
   tmp <- heatmap.2( as.matrix(pln) , trace="none" , scale="none" , col=palette ,
                     ColSideColors=ColSideColors ,
@@ -154,12 +170,12 @@ simpleheatmap = function(pln,main="",
 #' volcanoplot(foldchange, pval)
 #'
 volcanoplot = function(foldchange,
-                         pvals ,
-                         pthresh = 0.05,
-                         ratiothresh = 2,
-                         xlab ="log2(T/N)" ,
-                         ylab = "-log10(P)"
-                         ){
+                       pvals ,
+                       pthresh = 0.05,
+                       ratiothresh = 2,
+                       xlab ="log2(T/N)" ,
+                       ylab = "-log10(P)"
+){
   d <- data.frame(ratio = foldchange, pvals = pvals )
   bla = tryCatch( plot(d$ratio,-log10(d$pvals),col="#00000033",pch=19,xlab=xlab, ylab=ylab),
                   warning=function(bla){ dev.off(); return(1)} 
