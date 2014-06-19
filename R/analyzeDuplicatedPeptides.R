@@ -182,7 +182,7 @@ analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000, method="pear
     for(i in 1:ld){
       for(j in i:ld){
         if(i!=j){
-          cat("count:",count, " i:",i," j:",j,"\n")
+          #cat("count:",count, " i:",i," j:",j,"\n")
           tmp=cor(t(data$Intensity[duplicated[c(i,j)],]), use="pairwise.complete.obs", method=method )
           cors = tmp[upper.tri(tmp)]
           x<-which(upper.tri(tmp),arr.ind=T)
