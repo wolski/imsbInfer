@@ -42,21 +42,28 @@ pvalCorMat = function(x, alternative = "two.sided", method = "spearman"){
 #' @param how to initialize the output matrix
 #' @export
 #' @examples
-#' mat = matrix(rnorm(10*20),ncol=10)
+#' mat = matrix(rnorm(10*5000),ncol=10)
 #' redist = distmy(mat,function(x,y){mean(abs(x-y))},init=0)
 #' image(redist)
+#' redist = distmy(mat,cor,init=0)
+#' image(redist)
+#' redist = distmy(mat,function(x,y){ks.test(x,y)$p.value},init=1)
+#' image(redist)
+#' hist(redist)
 distmy = function( x, func, init=NA ){
   nout = dim(x)[2]
   resP = matrix(init,nrow=nout,ncol=nout)
   for(i in 1:nout){
     for(j in 1:nout){
-      if(i < j){
+      if(i <= j){
         test = func(x[,i],x[,j])
         resP[i,j] = test
       }
     }
   }
   resP[lower.tri(resP)] = t(resP)[lower.tri(resP)]
+  rownames(resP) = colnames(x)
+  colnames(resP) = colnames(x)
   return(resP)
 }
 
