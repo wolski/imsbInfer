@@ -34,12 +34,12 @@ Methods to filter top transtions and peptides,  and to aggregate transitions and
 
 Easy to remove decoys, retention time ranges (begin or end of gradient), filter for mscore.
 
-*Programmed with S3. 
-- insepecting function code from within R easy (makes seeing internals and learning R easy).
+* Programmed with S3. 
+  *insepecting function code from within R easy (makes seeing internals and learning R easy).
 
-*Documentation is brief but there is plenty of example code for each function 
-- helps to understand what the functions are doing
-- examples are also used to test the function - so there are is a lot of stopifnot statements in the example code sections
+* Documentation is brief but there is plenty of example code for each function 
+  * helps to understand what the functions are doing
+  * examples are also used to test the function - so there are is a lot of stopifnot statements in the example code sections
 
 * Methods to scale/transform intensities.
   - robust scaling of individual samples
