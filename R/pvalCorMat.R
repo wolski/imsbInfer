@@ -48,7 +48,7 @@ pvalCorMat = function(x, alternative = "two.sided", method = "spearman"){
 #' image(redist)
 #' redist = distmy(mat,cor,init=0,diag=FALSE)
 #' image(redist)
-#' redist = distmy(mat,function(x,y){ks.test(x,y)$p.value},init=1,diag=T)
+#' redist = distmy(mat,function(x,y){ks.test(x,y)$p.value},init=1,diag=TRUE)
 #' image(redist)
 #' hist(uppertriang(redist))
 #' range(uppertriang(redist))
