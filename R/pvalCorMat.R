@@ -39,23 +39,33 @@ pvalCorMat = function(x, alternative = "two.sided", method = "spearman"){
 #' dist with freely choosable distance function
 #' @param x data
 #' @param func function taking 2 arrays x, y
-#' @param how to initialize the output matrix
+#' @param init how to initialize the output matrix
+#' @param diag should the diagonal be also computed
 #' @export
 #' @examples
 #' mat = matrix(rnorm(10*5000),ncol=10)
-#' redist = distmy(mat,function(x,y){mean(abs(x-y))},init=0)
+#' redist = distmy(mat,function(x,y){mean(abs(x-y))},init=NA,diag=FALSE)
 #' image(redist)
-#' redist = distmy(mat,cor,init=0)
+#' redist = distmy(mat,cor,init=0,diag=FALSE)
 #' image(redist)
-#' redist = distmy(mat,function(x,y){ks.test(x,y)$p.value},init=1)
+#' redist = distmy(mat,function(x,y){ks.test(x,y)$p.value},init=1,diag=T)
 #' image(redist)
-#' hist(redist)
-distmy = function( x, func, init=NA ){
+#' hist(uppertriang(redist))
+#' range(uppertriang(redist))
+#' which(redist < 0.05 , arr.ind = TRUE)
+distmy = function( x, func, init=NA , diag = TRUE)
+{
+  f = NULL
+  if(diag){
+    f = function(i,j){i<=j}
+  }else{
+    f = function(i,j){i<j}
+  }
   nout = dim(x)[2]
   resP = matrix(init,nrow=nout,ncol=nout)
   for(i in 1:nout){
     for(j in 1:nout){
-      if(i <= j){
+      if(f(i,j)){
         test = func(x[,i],x[,j])
         resP[i,j] = test
       }
