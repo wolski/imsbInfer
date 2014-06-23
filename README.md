@@ -31,14 +31,14 @@ imsbInfer provides methods to import data from openSwath - feature-alinger or sp
 
 
 * Programmed with S3. 
-  * insepecting function code from within R easy (see internals, learn, modify from within your R session).
+  * inspecting function code from within R easy (see internals, learn, modify from within your R session).
 
 * Documentation is brief but there is plenty of example code for each function 
   * helps to understand what the functions are doing
   * examples are also used to test the function - so there are is a lot of stopifnot statements in the example code sections
 
-* Easy to filter :
-  * Filter top transtions and peptides and to aggregate them.
+* filter :
+  * Filter top transitions and peptides and to aggregate them.
   * remove decoys, retention time ranges (i.e. begin or end of gradient), filter for m_score.
 
 * Methods to scale/transform intensities.
@@ -51,13 +51,15 @@ imsbInfer provides methods to import data from openSwath - feature-alinger or sp
   - for peptides from same protein postive correlation is expected
   - for same peptide and a different charge high correlation is expected
 
+* Export to MSstats [http://www.msstats.org/](http://www.msstats.org/)
+
 A lot of cool stuff to do visualization of the data.
 
 * various flawors of pairplots : 
   - scatter plot
-  - foldchanges/differences between samples against RT
+  - foldchanges against RT
   - qqplots
 
 * imageplot to visualize 
   - correlations among samples
-  - similarity of distributions among (ks.test) samples:
+  - similarity of distributions among samples (ks.test).
