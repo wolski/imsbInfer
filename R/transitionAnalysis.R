@@ -2,11 +2,13 @@
 #'
 #' @export
 #' @examples
+#' library(imsbInfer)
 #' data(feature_alignment_requant)
 #' colnames(feature_alignment_requant)
 #' df = feature_alignment_requant
 #' df = prepareDF(feature_alignment_requant)
 #' colnames(df)
+#' length(unique(df$ProteinName))
 prepareDF <- function(df){
 
   required = c("transition_group_id","align_runid","align_origfilename","RT",
@@ -30,9 +32,12 @@ prepareDF <- function(df){
 #' @export
 #' @examples
 #' data(feature_alignment_requant)
-#' tmp = transitions2wide(feature_alignment_requant)
-#' names(tmp)
-#' head(tmp)
+#' df = prepareDF(feature_alignment_requant)
+#' tmp = transitions2wide(df)
+#' names(df)
+#' dim(feature_alignment_requant)
+#' dim(tmp)[1]/dim(feature_alignment_requant)[1]*3
+#' 
 transitions2wide = function(far){
   #far = feature_alignment_requant
   ids = as.character(far$transition_group_id)
@@ -45,9 +50,9 @@ transitions2wide = function(far){
   transints = lapply(apa,function(x){unlist(strsplit(x,";"))})
   # split transition names
   transids = lapply(afa,function(x){unlist(strsplit(x,";"))})
-  
-  # prepare output
+    # prepare output
   lx = length(transids)
+  transids <<-transids
   idss = vector(length=lx,mode="list")
   origf = vector(length=lx,mode="list")
   
@@ -73,7 +78,8 @@ transitions2wide = function(far){
 #' @examples
 #' data(feature_alignment_requant)
 #' tmp = transitions2wide(feature_alignment_requant)
-#' xx = selectTopFragmentsPerPeptide(tmp)
+#' xx = selectTopFragmentsPerPeptide(tmp,nrt=2)
+#' stopifnot(names(table(table(xx$transition_group_id))) == "2")
 selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   #compute median and create table with id's
   medxx = apply(data[,3:dim(data)[2]],1,median)
@@ -137,11 +143,12 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' @export
 #' @examples
 #' data(SDat)
-#' class(SDat)
 #' rownames(SDat$pepinfo)
+#' table(table(SDat$pepinfo$ProteinName))
 #' x = selectTopPeptidesPerProtein(SDat,peptop=3)
-#' stopifnot(dim(x)==c(247,3))
+#' table(table(x$pepinfo$ProteinName))
 #' stopifnot(rownames(x$pepinfo)[1:10]==rownames(x$Intensity)[1:10])
+#' stopifnot( length(unique(SDat$pepinfo$ProteinName)) == length(unique(x$pepinfo$ProteinName)) )
 selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   #newprot = merge(msexp$pepinfo[,c("transition_group_id","ProteinName")],agrpeptide,by.x="transition_group_id",by.y="transition_group_id")
   msexp
@@ -196,7 +203,6 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @examples
 #' data(feature_alignment_requant)
 #' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=3)
-#' rownames(x$Intensity)[1:3]
 #' head(x$pepinfo)
 #' mypairs(x$Intensity[,1:3])
 #' xx = split2table(rownames(x$pepinfo),split="-")
@@ -209,7 +215,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   msexp = read2msExperiment(obj)
   gc()
   # long running function
-  cat("extracting single transtion intensities\n - please be patient it make take a while (minuts)\n")
+  cat("extracting single transtion intensities\n - please be patient it make take a while (minutes)\n")
   data =  transitions2wide(obj)
   # this will read in also the full annotation (which peptide belongs to which protein)
   rm(obj)

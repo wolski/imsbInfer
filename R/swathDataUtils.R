@@ -259,9 +259,14 @@ dimnames.msexperiment<-function(x){
 #' allows to set colnames for all the matrices in msexperiment
 #'
 #' @export
+#' @examples
+#' data(SDat)
+#' SDat = mycolnames(SDat, c("bal1","bla2","bla3"))
+#' 
 mycolnames  = function(data,newNames)
 {
-  for(i in 1:(length(data)-1))
+  columns = c("Intensity", "score", "rt", "mz") 
+  for(i in columns)
   {
     colnames(data[[i]]) = newNames
   }
@@ -271,9 +276,16 @@ mycolnames  = function(data,newNames)
 #' @param msexperiment to reorder
 #' @param ord new ordering - if null then use ordering by column names
 #' @export
+#' @examples
+#' data(SDat)
+#' SDat = mycolnames(SDat, c("C","A","B"))
+#' dimnames(SDat)
+#' SDat = reordercolumns(SDat)
+#' dimnames(SDat)
 reordercolumns  = function( data, ord = NULL )
 {
-  for(i in 1:(length(data)-1))
+  columns = c("Intensity", "score", "rt", "mz") 
+  for(i in columns)
   {
     if(length(ord)==0){
       ord= order(colnames(data[[i]]))

@@ -1,9 +1,13 @@
 #' aggregate peptides - given msexperiment with transitons
 #' @export
 #' @examples
-#' NULL
+#' data(feature_alignment_requant)
+#' x = loadTransitonsMSExperiment( feature_alignment_requant , nrt = 3 , peptop = 3 )
+#' dim(x)
+#' y = aggregatePeptides(x)
+#' dim(y)
+#' stopifnot(table(table(y$pepinfo$transition_group_id)) == 247)
 #' @seealso aggregateProtein
-#' 
 aggregatePeptides=function(msexp, FUN = sum)
 {
   tomatrix = function(x){
@@ -32,10 +36,19 @@ aggregatePeptides=function(msexp, FUN = sum)
 }
 #' aggregate peptides - given msexperiment with transitons
 #' @export 
+#' @param msexp - msexperiment
+#' @param FUN aggregation function to use 
 #' @examples
-#' NULL
+#' data( feature_alignment_requant )
+#' x = loadTransitonsMSExperiment( feature_alignment_requant , nrt = 3 , peptop = 3 )
+#' dim( x$pepinfo$ProteinName )
+#' x = removeDecoys( x )
+#' table( table( x$pepinfo$ProteinName ) )
+#' y = aggregateProteins( x )
+#' 
+#' stopifnot( table( table( y$pepinfo$ProteinName ) ) == 50 )
 #' @seealso aggregatePeptide
-aggregateProteins=function(msexp, FUN = sum)
+aggregateProteins=function( msexp, FUN = sum )
 {
   tomatrix = function(x){
     rownames(x) = x[,1]
@@ -53,7 +66,7 @@ aggregateProteins=function(msexp, FUN = sum)
   msexp$score = tomatrix(x)
   
   msexp$pepinfo = msexp$pepinfo[,-match(c("aggr_Fragment_Annotation","transition_group_id") , colnames( msexp$pepinfo ) )]
-  tmp = duplicated(msexp$pepinfo) 
-  msexp$pepinfo =msexp$pepinfo[!tmp,]
+  tmp = duplicated( msexp$pepinfo$ProteinName ) 
+  msexp$pepinfo = msexp$pepinfo[ !tmp , ]
   return(msexp)
 }
