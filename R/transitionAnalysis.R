@@ -76,12 +76,19 @@ transitions2wide = function(far){
 #' @param nrt - top transitions to select
 #' @examples
 #' data(feature_alignment_requant)
+#' table(table(feature_alignment_requant$transition_group_id))
 #' tmp = transitions2wide(feature_alignment_requant)
-#' xx = selectTopFragmentsPerPeptide(tmp,nrt=2)
+#' # how many peptides with how many transitions
+#' x1 = table(table(tmp$transition_group_id))
+#' xx = selectTopFragmentsPerPeptide(tmp,nrt=3)
+#' table(table(xx$transition_group_id))
+#' xx = selectTopFragmentsPerPeptide(tmp,nrt=7)
+#' x2 = table(table(xx$transition_group_id))
+#' stopifnot(x1 == x2)
 #' stopifnot(names(table(table(xx$transition_group_id))) == "2")
 selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   #compute median and create table with id's
-  medxx = apply(data[,3:dim(data)[2]],1,median)
+  medxx = apply(data[,3:dim(data)[2]],1,median,na.rm=TRUE)
   xxmex= cbind( data[,c("transition_group_id","aggr_Fragment_Annotation")] , medxx)
   tmpdt = data.table(xxmex)
   # fixing column types
@@ -151,7 +158,7 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   #newprot = merge(msexp$pepinfo[,c("transition_group_id","ProteinName")],agrpeptide,by.x="transition_group_id",by.y="transition_group_id")
   msexp
   #compute median and create table with id's
-  medxx = apply(msexp$Intensity , 1,median)
+  medxx = apply(msexp$Intensity , 1,median,na.rm=TRUE)
   xxmex = cbind( msexp$pepinfo[,c("transition_group_id","ProteinName")] , medxx)
   tmpdt = data.table(xxmex)
   
@@ -201,7 +208,6 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @examples
 #' data(feature_alignment_requant)
 #' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=1000)
-#' table(table(x$pepinfo$ProteinName))
 #' table(table(feature_alignment_requant$transition_group_id))
 #' table(table(x$pepinfo$transition_group_id))
 #' dim(x)
@@ -245,7 +251,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   
   # select top peptides
   cat("selecting top :", peptop, " peptides per protein\n")
-  toppep = selectTopPeptidesPerProtein(msexp ,peptop=3)
+  toppep = selectTopPeptidesPerProtein(msexp ,peptop=peptop)
   
   #length(toppep$pepinfo$transition_group_id)
   # get the transitions belonging to the top peptides
