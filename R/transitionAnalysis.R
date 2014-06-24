@@ -80,11 +80,10 @@ transitions2wide = function(far){
 #' tmp = transitions2wide(feature_alignment_requant)
 #' # how many peptides with how many transitions
 #' x1 = table(table(tmp$transition_group_id))
-#' xx = selectTopFragmentsPerPeptide(tmp,nrt=3)
-#' table(table(xx$transition_group_id))
 #' xx = selectTopFragmentsPerPeptide(tmp,nrt=7)
 #' x2 = table(table(xx$transition_group_id))
 #' stopifnot(x1 == x2)
+#' xx = selectTopFragmentsPerPeptide(tmp,nrt=2)
 #' stopifnot(names(table(table(xx$transition_group_id))) == "2")
 selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   #compute median and create table with id's
