@@ -48,7 +48,7 @@ altmanbland = function(x,y,main="",pch=".",log=""){
   plot(mean,absdiff,log=log,xlab="(y+x)/2",ylab="abs(x-y)",pch="x",cex=0.5,main=main)
   lines(lowess(mean,absdiff),col=2,lwd=2)
 }
-#' plot QQ plot
+#' pairsplot of QQ plots
 #' @export
 #' @examples
 #' data(SDat)
@@ -132,7 +132,7 @@ mypairs = function(dataframesel,...){
   , lower.panel=NULL,...
   )
 }
-#' heatmap2 to wrapper
+#' heatmap2 facade
 #' @export
 #' @param matrix or dataframe with numerical values
 #' @param distf distance function
