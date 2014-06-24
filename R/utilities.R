@@ -8,15 +8,23 @@ getMolfun <- function(pfilename){
   tmp <- (unlist(dd))
   return(list(ids=pgl$Mapped.IDs, molfun=tmp))
 }
-#' Removes rows with nas from matrix
+#' Removes rows with NA's from matrix
 #' @export
+#' @return matrix
+#' @examples
+#' x = matrix(rnorm(10*10),ncol=10)
+#' dim(x)
+#' x[3,3] = NA
+#' x = rmNArows(x)
+#' dim(x)
 rmNArows <- function(plev, thresh=0 )
 {
   x <- apply(plev,1,function(x){sum(is.na(x))})
   plev <- plev[-which(x>thresh),]
 }
-#' splits names and binds into matrix
+#' splits names and creates a matrix
 #' @export
+#' @return matrix
 #' @examples
 #' dat = c("bla_ra0/2_run0","bla_ra1/2_run0","bla_ra2/2_run0")
 #' split2table(dat,split="\\_|\\/")

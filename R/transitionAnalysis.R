@@ -120,7 +120,6 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 }
 
 #' aggregate peptide from transtion
-#' @export
 #' @examples
 #' data(feature_alignment_requant)
 #' tmp = transitions2wide(feature_alignment_requant)

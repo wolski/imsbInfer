@@ -26,7 +26,8 @@ imagelabels = function(x, labels=colnames(x),cex=1,cex.axis=0.5,main=NULL,col = 
 }
 #' if you need an colorscale to you imagelables use this
 #' @param data the data matrix
-#' @param colors used 
+#' @param colors used
+#' @export
 colorscale = function(data,colors=heat.colors(12)){
   nrc = length(colors)
   z  = seq( min(data) , max(data) , length=nrc)

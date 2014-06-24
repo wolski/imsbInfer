@@ -1,6 +1,8 @@
-#' pvalues for correlation matrix - Benjamin Hochberg - adjusted
-#' tests for significance of correlations among rows
-#' transpose your matrix if you want to have it among columns
+#' pvalues for correlation matrix - 
+#' @description
+#' Benjamin Hochberg - adjusted
+#' tests for significance of correlations among rows.
+#' Transpose your matrix if you want to have it among columns
 #' @param x data matrix 
 #' @param alternative (see cor.test)
 #' @param method (see cor.test) 
@@ -35,12 +37,12 @@ pvalCorMat = function(x, alternative = "two.sided", method = "spearman"){
   corr[lower.tri(corr)] = t(corr)[lower.tri(corr)]
   return(list(pval = res2, cor = corr))
 }
-
-#' dist with freely choosable distance function
+#' distance among matrix columns with freely choosable distance function
 #' @param x data
 #' @param func function taking 2 arrays x, y
 #' @param init how to initialize the output matrix
 #' @param diag should the diagonal be also computed
+#' @return matrix with dist[i,j] = func(x[,i],[x,j])
 #' @export
 #' @examples
 #' mat = matrix(rnorm(10*5000),ncol=10)
