@@ -37,8 +37,11 @@ colorscale = function(data,colors=heat.colors(12)){
 #' altman-bland plot 
 #' @description
 #' plots abs(x-y) against (y+x)/2
-#' @param x, y input intensities
-#' @param main, pch, log - plotting parameters
+#' @param x - input intensities
+#' @param y -
+#' @param main plotting parameters
+#' @param pch -
+#' @param log -
 #' @export
 #' @examples
 #' data(SDat)
@@ -138,11 +141,11 @@ mypairs = function(dataframesel,...){
 }
 #' heatmap2 facade
 #' @export
-#' @param matrix or dataframe with numerical values
+#' @param pln or dataframe with numerical values
 #' @param distf distance function
 #' @param hclustf clustering function
-#' @param mypalette
-#' @param mycol
+#' @param palette
+#' @param ColSideColors
 #' @examples
 #' data(SDat)
 #' simpleheatmap(SDat$Intensity,ColSideColors=c("red","blue","pink"))
