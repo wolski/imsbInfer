@@ -58,6 +58,7 @@ getListOfDuplicated = function(  rownames ){
   }
   return(res)
 }
+
 #' get a list of duplicates ordered by intensity
 #' 
 #' @export

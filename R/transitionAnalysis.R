@@ -21,7 +21,6 @@ prepareDF <- function(df){
   df = df[,x,with=FALSE]
   return(df)
 }
-
 #' extract transition intensities from input file. WARNING - slow running function
 #' @description
 #' the input table required fields are:
@@ -202,8 +201,12 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @examples
 #' data(feature_alignment_requant)
 #' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=3)
+#' dim(x)
+#' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 20, peptop=20)
+#' dim(x)
 #' head(x$pepinfo)
 #' mypairs(x$Intensity[,1:3])
+#' check that ordering is consistent
 #' xx = split2table(rownames(x$pepinfo),split="-")
 #' stopifnot(xx[,1] == x$pepinfo$transition_group_id)
 #' stopifnot(xx[,2] == x$pepinfo$aggr_Fragment_Annotation)
