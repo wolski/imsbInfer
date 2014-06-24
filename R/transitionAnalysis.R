@@ -200,13 +200,18 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @export
 #' @examples
 #' data(feature_alignment_requant)
-#' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=3)
+#' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=1000)
+#' table(table(x$pepinfo$ProteinName))
+#' table(table(feature_alignment_requant$transition_group_id))
+#' table(table(x$pepinfo$transition_group_id))
 #' dim(x)
-#' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 20, peptop=20)
+#' x2 = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 20, peptop=20)
+#' table(table(x2$pepinfo$ProteinName))
+#' table(table(x2$pepinfo$PeptideSequence))
 #' dim(x)
 #' head(x$pepinfo)
 #' mypairs(x$Intensity[,1:3])
-#' check that ordering is consistent
+#' #check that ordering is consistent
 #' xx = split2table(rownames(x$pepinfo),split="-")
 #' stopifnot(xx[,1] == x$pepinfo$transition_group_id)
 #' stopifnot(xx[,2] == x$pepinfo$aggr_Fragment_Annotation)
