@@ -1,5 +1,7 @@
 #' aggregate peptides - given msexperiment with transitons
 #' @export
+#' @param msexp msexperiment object
+#' @param FUN aggregation function
 #' @examples
 #' data(feature_alignment_requant)
 #' x = loadTransitonsMSExperiment( feature_alignment_requant , nrt = 3 , peptop = 3 )

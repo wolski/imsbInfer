@@ -1,5 +1,9 @@
 \documentclass{article}
 \title{How does normalization influence feature correlation}
+\author { W.E. Wolski }
+
+%\VignetteIndexEntry{Normalizing data}
+
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}

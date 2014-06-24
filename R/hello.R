@@ -28,3 +28,5 @@ NULL
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' names(SDat)
 NULL
+# hack to supress _no visible binding for global variable _ warning in R CMD check.
+utils::globalVariables(c("transition_group_id","ProteinName","align_origfilename","Intensity","aggr_Fragment_Annotation"), add = TRUE)

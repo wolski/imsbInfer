@@ -34,8 +34,11 @@ colorscale = function(data,colors=heat.colors(12)){
   image(1, seq(0,1,length=nrc), matrix(z,1,nrc) ,axes=F,ylab="",xlab="")
   axis( 2, at=seq(0,1,length=nrc) , labels=round(z,digits=2), las=2 )
 }
-#' altman bland
-#' 
+#' altman-bland plot 
+#' @description
+#' plots abs(x-y) against (y+x)/2
+#' @param x, y input intensities
+#' @param main, pch, log - plotting parameters
 #' @export
 #' @examples
 #' data(SDat)
