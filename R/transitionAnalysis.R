@@ -36,7 +36,6 @@ prepareDF <- function(df){
 #' names(df)
 #' dim(feature_alignment_requant)
 #' dim(tmp)[1]/dim(feature_alignment_requant)[1]*3
-#' 
 transitions2wide = function(far){
   #far = feature_alignment_requant
   ids = as.character(far$transition_group_id)

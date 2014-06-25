@@ -92,19 +92,28 @@ pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
 }
 #' plot x-y against retention time
 #' @export
+#' @param dataf dataframe
+#' @param RT retention time vector
+#' @param main
+#' @param ylim
+#' @param maxPanel maximum number of datasets to display. dim(dataf)[2] > maxPanel, maxPanel columns are sampled
 #' @examples
 #' data(SDat)
 #' rtord = orderByRT(SDat)
 #' pairsDifference( asinh(rtord$Intensity), rtord$RT , ylim=NULL)
 #' @seealso \code{\link{pairs}} and \code{\link{pairsRatio}}
-pairsDifference = function(dataframesel,RT,main="",ylim=NULL ){
+pairsDifference = function(dataf,RT,main="",ylim=NULL, maxPanel=8 ){
+  if(dim(dataf)[2] > maxPanel){
+    idx = sample(1:dim(dataf)[2],maxPanel)
+    dataf = dataf[,idx]
+  }
   if(is.null(ylim)){
-    nr = dim(dataframesel)[2]
+    nr = dim(dataf)[2]
     tmp = NULL
     for(i in 1:nr){
       for(j in 1:nr){
         if(i != j){
-          tmp = range(c(tmp,(dataframesel[,i] - dataframesel[,j])), na.rm=TRUE)
+          tmp = range(c(tmp,(dataf[,i] - dataf[,j])), na.rm=TRUE)
         }
       }
     }
