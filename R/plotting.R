@@ -121,7 +121,7 @@ pairsDifference = function(dataf,RT,main="",ylim=NULL, maxPanel=8 ){
   }
   print(ylim)
   
-  pairs(dataframesel, panel = function(x,y,...){
+  pairs(dataf, panel = function(x,y,...){
     y = x - y
     r <- points(RT[!is.na(y)] , y[!is.na(y)],pch=".",... )
     abline(h = 0,col=2)
