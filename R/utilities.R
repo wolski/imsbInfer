@@ -1,13 +1,3 @@
-#' Depracated 
-#' @export
-getMolfun <- function(pfilename){
-  pgl <- read.csv(pfilename , stringsAsFactors=FALSE)
-  gofunction <- pgl$GOMolecularFunction
-  dd <- lapply(gofunction , function(x){d <- strsplit(x,";"); return(d[[1]][1])})
-  dd <- lapply(dd , function(x){d <- strsplit(x,","); return(d[[1]][1])})
-  tmp <- (unlist(dd))
-  return(list(ids=pgl$Mapped.IDs, molfun=tmp))
-}
 #' Removes rows with NA's from matrix
 #' @export
 #' @return matrix
