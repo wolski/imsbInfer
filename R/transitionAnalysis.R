@@ -256,9 +256,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   
   # select the toptransitions of the top peptides
   toptrans = toptrans[toppep$pepinfo$transition_group_id]
-  #dim(toptrans)
-  ms = msexp
-  msexp = ms
+ 
   # create msexperiment containing transtions
   msExpTransition = function(toptrans,msexp){
     #select two columns only

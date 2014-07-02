@@ -256,7 +256,7 @@ plotPairCors=function(res,main="",xlim=c(-1,1))
   
   maxY = max(max(Dpep$y),max(Drandom$y),max(Dprotein$y),max(DproteinTOP$y),max(Dunique$y))
   
-  plot( Dpep, ylim=c(0 , maxY) ,xlim=xlim ,main=main , col=5)
+  plot( Dpep, ylim=c(0 , maxY) ,xlim=xlim ,main=main , col=5, xlab="correlation - spearman")
   lines( Drandom, col=2)
   lines( Dprotein, col=3 )
   lines( DproteinTOP, col=6, lty=2)
