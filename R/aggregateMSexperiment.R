@@ -4,9 +4,12 @@
 #' @param FUN aggregation function
 #' @examples
 #' data(feature_alignment_requant)
-#' x = loadTransitonsMSExperiment( feature_alignment_requant , nrt = 3 , peptop = 3 )
-#' dim(x)
-#' y = aggregatePeptides(x)
+#' dim(feature_alignment_requant)/3
+#' msexp = loadTransitonsMSExperiment( feature_alignment_requant , nrt = 3 , peptop = 3 )
+#' dim(msexp)
+#' sum(rownames(msexp$Intensity) == rownames(msexp$pepinfo))
+#' y = aggregatePeptides(msexp)
+#' sum(rownames(y$Intensity) == rownames(y$pepinfo))
 #' dim(y)
 #' stopifnot(table(table(y$pepinfo$transition_group_id)) == 247)
 #' @seealso aggregateProtein
@@ -18,23 +21,25 @@ aggregatePeptides=function(msexp, FUN = sum)
     return(as.matrix(x))
   }
   #check sorting
-  #sum(rownames(msexp$Intensity)==rownames(msexp$pepinfo))
+  stopifnot(rownames(msexp$Intensity)==rownames(msexp$pepinfo))
   
   aggval = list( msexp$pepinfo$transition_group_id)
-  intensity = aggregate(msexp$Intensity,by= aggval,FUN=FUN)
-
-  msexp$Intensity = tomatrix(intensity)
+  intensity = aggregate(msexp$Intensity,by = aggval,FUN=FUN)
+  res = msexp
+  res$Intensity = tomatrix(intensity)
   x = aggregate(msexp$mz,by=aggval , function(x){x[1]})
-  msexp$mz = tomatrix(x)
+  res$mz = tomatrix(x)
   x = aggregate(msexp$rt,by=aggval , function(x){x[1]})
-  msexp$rt = tomatrix(x)
+  res$rt = tomatrix(x)
   x = aggregate(msexp$score,by=aggval , function(x){x[1]})
-  msexp$score = tomatrix(x)
+  res$score = tomatrix(x)
   
-  msexp$pepinfo = msexp$pepinfo[,-match("aggr_Fragment_Annotation",colnames(msexp$pepinfo))]
-  tmp = duplicated(msexp$pepinfo) 
-  msexp$pepinfo =msexp$pepinfo[!tmp,]
-  return(msexp)
+  res$pepinfo = msexp$pepinfo[,-match("aggr_Fragment_Annotation",colnames(msexp$pepinfo))]
+  tmp = duplicated(res$pepinfo) 
+  res$pepinfo =res$pepinfo[!tmp,]
+  stopifnot(res$pepinfo$transition_group_id == rownames(res$Intensity))
+  rownames(res$pepinfo) = res$pepinfo$transition_group_id
+  return(res)
 }
 #' aggregate peptides - given msexperiment with transitons
 #' @export 
