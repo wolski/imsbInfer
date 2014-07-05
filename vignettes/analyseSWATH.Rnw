@@ -48,7 +48,7 @@ dim(specLib)
 @
 
 <<fig=TRUE>>=
-barplot(table(table(specLib$pepinfo$PeptideSequence))), main = "number of proteins per peptide")
+barplot(table(table(specLib$pepinfo$PeptideSequence)), main = "number of proteins per peptide")
 @
 
 Next we remove the decoys, and also remove all the requant values.
