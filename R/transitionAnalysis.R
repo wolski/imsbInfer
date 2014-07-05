@@ -81,8 +81,10 @@ transitions2wide = function(far){
 #' x1 = table(table(tmp$transition_group_id))
 #' xx = selectTopFragmentsPerPeptide(tmp,nrt=7)
 #' x2 = table(table(xx$transition_group_id))
+#' # because with nrt 7 you do not remove any transitions
 #' stopifnot(x1 == x2)
 #' xx = selectTopFragmentsPerPeptide(tmp,nrt=2)
+#' # all peptides must have 2 transitions
 #' stopifnot(names(table(table(xx$transition_group_id))) == "2")
 selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   #compute median and create table with id's
@@ -124,6 +126,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 }
 
 #' aggregate peptide from transtion
+#' @export
 #' @examples
 #' data(feature_alignment_requant)
 #' tmp = transitions2wide(feature_alignment_requant)
@@ -206,9 +209,11 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @examples
 #' data(feature_alignment_requant)
 #' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=1000)
+#' nrt = 20
+#' peptop = 20
+#' obj =feature_alignment_requant
 #' table(table(feature_alignment_requant$transition_group_id))
 #' table(table(x$pepinfo$transition_group_id))
-#' dim(x)
 #' x2 = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 20, peptop=20)
 #' table(table(x2$pepinfo$ProteinName))
 #' table(table(x2$pepinfo$PeptideSequence))
@@ -221,7 +226,6 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' stopifnot(xx[,2] == x$pepinfo$aggr_Fragment_Annotation)
 loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   ptm <- proc.time()
-  
   cat("reading extended peptide information (creating msexperiment)\n - please be patient it make take a while (minutes)\n")
   msexp = read2msExperiment(obj)
   gc()
@@ -229,13 +233,15 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   cat("extracting single transtion intensities\n - please be patient it make take a while (minutes)\n")
   data =  transitions2wide(obj)
   # this will read in also the full annotation (which peptide belongs to which protein)
-  rm(obj)
+  #rm(obj)
   gc()
   
   ##### selecting top 2-n fragments ####
   # long running
   cat("selecting top :", nrt , " transitions\n - please be patient it make take a while (minutes)\n")
-  toptrans = selectTopFragmentsPerPeptide(data , nrt=3)
+  toptrans = selectTopFragmentsPerPeptide(data , nrt=nrt)
+  dim(data)
+  dim(toptrans)
   rm(data)
   gc()
   
@@ -246,17 +252,22 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   ## update the intensities with new intensities computed from top 2 transitions
   msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]
   rownames(msexp$Intensity) = agrpeptide$transition_group_id
+  dim(msexp$Intensity) == dim(msexp$mz)
+  
   
   # select top peptides
   cat("selecting top :", peptop, " peptides per protein\n")
+  
   toppep = selectTopPeptidesPerProtein(msexp ,peptop=peptop)
+  stopifnot(rownames(toppep$Intensity) == rownames(toppep$pepinfo))
   
   #length(toppep$pepinfo$transition_group_id)
   # get the transitions belonging to the top peptides
   
   # select the toptransitions of the top peptides
   toptrans = toptrans[toppep$pepinfo$transition_group_id]
- 
+  msexp = toppep
+  
   # create msexperiment containing transtions
   msExpTransition = function(toptrans,msexp){
     #select two columns only
@@ -264,19 +275,30 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
     setkey(tt,transition_group_id,aggr_Fragment_Annotation)
     setkey(toptrans,transition_group_id,aggr_Fragment_Annotation)
     
-    msexp$pepinfo = data.frame(merge(tt,msexp$pepinfo,by="transition_group_id"))
+    msexp$pepinfo = merge(as.data.frame(tt),msexp$pepinfo,by="transition_group_id")
+    # R-FIX you need them as characters for rownames access
+    msexp$pepinfo$transition_group_id = as.character(msexp$pepinfo$transition_group_id)
+    
+    stopifnot(msexp$pepinfo$transition_group_id==toptrans$transition_group_id)
+    
     newkey = paste(msexp$pepinfo$transition_group_id,msexp$pepinfo$aggr_Fragment_Annotation,sep="-")
     rownames(msexp$pepinfo) = newkey
     
-    msexp$rt = as.matrix(msexp$rt[msexp$pepinfo$transition_group_id,])
-    rownames(msexp$rt) = newkey
+    # expand rt
+    # sum(!rownames(msexp$rt) %in% msexp$pepinfo$transition_group_id)
+    # sum(!msexp$pepinfo$transition_group_id %in% rownames(msexp$rt))
     
-    msexp$score = as.matrix(msexp$score[msexp$pepinfo$transition_group_id,])
+    msexp$rt = as.matrix(msexp$rt[msexp$pepinfo$transition_group_id , ])
+    class(msexp$pepinfo$transition_group_id)
+    msexp$rt = as.matrix(msexp$rt[msexp$pepinfo$transition_group_id , ])
+    
+    rownames(msexp$rt) = newkey
+    msexp$score = as.matrix(msexp$score[msexp$pepinfo$transition_group_id , ])
+    
     rownames(msexp$score) = newkey
-    msexp$mz = as.matrix(msexp$mz[msexp$pepinfo$transition_group_id,])
+    msexp$mz = as.matrix(msexp$mz[msexp$pepinfo$transition_group_id , ])
     rownames(msexp$mz) = newkey
     
-    stopifnot(msexp$pepinfo$transition_group_id==toptrans$transition_group_id)    
     stopifnot(msexp$pepinfo$aggr_Fragment_Annotation==toptrans$aggr_Fragment_Annotation)    
     
     msexp$Intensity = as.matrix( toptrans[,3:dim(toptrans)[2],with=FALSE])
@@ -284,7 +306,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
     return(msexp)
   }
   
-  msexp = msExpTransition(toptrans,msexp)
+  msexp = msExpTransition(toptrans,toppep)
   cat("processing done in : ",proc.time() - ptm," [s] \n")
   gc()
   return(msexp)
