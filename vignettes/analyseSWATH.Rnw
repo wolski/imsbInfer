@@ -1,4 +1,6 @@
 \documentclass{article}
+\usepackage{hyperref}
+
 \title{How does normalization influence feature correlation}
 
 \author{Witold Wolski}
@@ -43,9 +45,10 @@ specLib = read2msExperiment(SpecLib)
 
 specLib$Intensity = asinh(specLib$Intensity)
 dim(specLib)
+@
 
-(table(table(specLib$pepinfo$PeptideSequence)))
-
+<<fig=TRUE>>=
+barplot(table(table(specLib$pepinfo$PeptideSequence))), main = "number of proteins per peptide")
 @
 
 Next we remove the decoys, and also remove all the requant values.
