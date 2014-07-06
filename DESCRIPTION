@@ -11,7 +11,7 @@ Description: Objects and functions (S3) to import, export,
     effects. This package is part of a workflow to analyse data independent
     aquisition (DIA) SWATH quantificaton experiments in the R. Aebersold
     IMSB/ETH Zurich, comprising of openSWATH, pyProphet, and MSstats.
-Version: 0.1.5
+Version: 0.2.0
 Date: 2014-04-01
 Depends:
     roxygen2,
