@@ -15,6 +15,9 @@
 #' @seealso aggregateProtein
 aggregatePeptides=function(msexp, FUN = sum)
 {
+  loccoll = Sys.getlocale("LC_COLLATE")
+  Sys.setlocale("LC_COLLATE", "C")
+  
   tomatrix = function(x){
     rownames(x) = x[,1]
     x = x[,-1]
@@ -39,6 +42,8 @@ aggregatePeptides=function(msexp, FUN = sum)
   res$pepinfo =res$pepinfo[!tmp,]
   stopifnot(res$pepinfo$transition_group_id == rownames(res$Intensity))
   rownames(res$pepinfo) = res$pepinfo$transition_group_id
+  Sys.setlocale("LC_COLLATE", loccoll)
+  
   return(res)
 }
 #' aggregate peptides - given msexperiment with transitons
@@ -58,6 +63,10 @@ aggregatePeptides=function(msexp, FUN = sum)
 #' @seealso aggregatePeptide
 aggregateProteins=function( msexp, FUN = sum )
 {
+  loccoll = Sys.getlocale("LC_COLLATE")
+  Sys.setlocale("LC_COLLATE", "C")
+  
+  
   tomatrix = function(x){
     rownames(x) = x[,1]
     x = x[,-1]
@@ -76,12 +85,14 @@ aggregateProteins=function( msexp, FUN = sum )
   # compute mean score per protein (TODO: - think about requant)
   x = aggregate(res$score,by=aggval,mean)
   res$score = tomatrix(x)
-  res$pepinfo = res$pepinfo[,-match(c("aggr_Fragment_Annotation","transition_group_id") , colnames( res$pepinfo ) )]
+  res$pepinfo = res$pepinfo[, c("ProteinName", "decoy")]
   res$pepinfo = res$pepinfo[order(res$pepinfo$ProteinName),]
 
   tmp = duplicated( res$pepinfo$ProteinName ) 
   res$pepinfo = res$pepinfo[ !tmp , ]
   
   stopifnot(res$pepinfo$ProteinName == rownames(res$Intensity))
+  Sys.setlocale("LC_COLLATE", loccoll)
+  
   return(res)
 }
