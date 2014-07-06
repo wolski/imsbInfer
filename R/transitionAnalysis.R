@@ -208,10 +208,12 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @export
 #' @examples
 #' data(feature_alignment_requant)
-#' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=1000)
+#' SpecLib = ("C:/Users/witek/Google Drive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
+#' obj  = fread(SpecLib)
 #' nrt = 20
 #' peptop = 20
 #' obj =feature_alignment_requant
+#' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=1000)
 #' table(table(feature_alignment_requant$transition_group_id))
 #' table(table(x$pepinfo$transition_group_id))
 #' x2 = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 20, peptop=20)
@@ -227,8 +229,10 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   ptm <- proc.time()
   cat("reading extended peptide information (creating msexperiment)\n - please be patient it make take a while (minutes)\n")
+
   msexp = read2msExperiment(obj)
-  gc()
+  
+  
   # long running function
   cat("extracting single transtion intensities\n - please be patient it make take a while (minutes)\n")
   data =  transitions2wide(obj)
@@ -243,23 +247,30 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   dim(data)
   dim(toptrans)
   rm(data)
+  dim(msexp)
   gc()
   
   ##### 
   cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")
   agrpeptide = .aggregatepeptide(toptrans)
+  dim(agrpeptide)
   
   ## update the intensities with new intensities computed from top 2 transitions
   msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]
   rownames(msexp$Intensity) = agrpeptide$transition_group_id
-  dim(msexp$Intensity) == dim(msexp$mz)
+
+  stopifnot(dim(msexp$Intensity) == dim(msexp$mz))
+  rownames(msexp$Intensity)[1:10] 
+  rownames(msexp$mz)[1:10]
+  msexp$pepinfo$transition_group_id[1:10]
+  
   
   
   # select top peptides
   cat("selecting top :", peptop, " peptides per protein\n")
-  
   toppep = selectTopPeptidesPerProtein(msexp ,peptop=peptop)
   stopifnot(rownames(toppep$Intensity) == rownames(toppep$pepinfo))
+  
   
   #length(toppep$pepinfo$transition_group_id)
   # get the transitions belonging to the top peptides
