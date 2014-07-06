@@ -47,13 +47,14 @@ aggregatePeptides=function(msexp, FUN = sum)
 #' @param FUN aggregation function to use 
 #' @examples
 #' data( feature_alignment_requant )
-#' x = loadTransitonsMSExperiment( feature_alignment_requant , nrt = 3 , peptop = 3 )
-#' dim( x$pepinfo$ProteinName )
+#' msexp = loadTransitonsMSExperiment( feature_alignment_requant , nrt = 3 , peptop = 3 )
+#' x = msexp
 #' x = removeDecoys( x )
 #' table( table( x$pepinfo$ProteinName ) )
 #' y = aggregateProteins( x )
-#' 
+#' stopifnot(rownames(y$pepinfo$ProteinName) == rownames(y$Intensity))
 #' stopifnot( table( table( y$pepinfo$ProteinName ) ) == 50 )
+#' 
 #' @seealso aggregatePeptide
 aggregateProteins=function( msexp, FUN = sum )
 {
@@ -62,18 +63,25 @@ aggregateProteins=function( msexp, FUN = sum )
     x = x[,-1]
     return(as.matrix(x))
   }
-  sum(rownames(msexp$Intensity)==rownames(msexp$pepinfo))
-  aggval = list( msexp$pepinfo$ProteinName)
-  intensity = aggregate(msexp$Intensity,by= aggval,FUN=FUN)
-  msexp$Intensity = tomatrix(intensity)
-  #x = aggregate(msexp$mz,by=aggval,function(x){x[1]})
-  msexp$mz = NULL
-  msexp$rt = NULL
-  x = aggregate(msexp$score,by=aggval,mean)
-  msexp$score = tomatrix(x)
+  res = msexp
+  stopifnot(rownames(res$Intensity)==rownames(res$pepinfo))
   
-  msexp$pepinfo = msexp$pepinfo[,-match(c("aggr_Fragment_Annotation","transition_group_id") , colnames( msexp$pepinfo ) )]
-  tmp = duplicated( msexp$pepinfo$ProteinName ) 
-  msexp$pepinfo = msexp$pepinfo[ !tmp , ]
-  return(msexp)
+  aggval = list( res$pepinfo$ProteinName)
+  intensity = aggregate(res$Intensity,by= aggval,FUN=FUN)
+  res$Intensity = tomatrix(intensity)
+  #x = aggregate(msexp$mz,by=aggval,function(x){x[1]})
+  #set null since there are no peptide values anymore
+  res$mz = NULL
+  res$rt = NULL
+  # compute mean score per protein (TODO: - think about requant)
+  x = aggregate(res$score,by=aggval,mean)
+  res$score = tomatrix(x)
+  res$pepinfo = res$pepinfo[,-match(c("aggr_Fragment_Annotation","transition_group_id") , colnames( res$pepinfo ) )]
+  res$pepinfo = res$pepinfo[order(res$pepinfo$ProteinName),]
+
+  tmp = duplicated( res$pepinfo$ProteinName ) 
+  res$pepinfo = res$pepinfo[ !tmp , ]
+  
+  stopifnot(res$pepinfo$ProteinName == rownames(res$Intensity))
+  return(res)
 }

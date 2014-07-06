@@ -1,0 +1,176 @@
+\documentclass{article}
+\usepackage{hyperref}
+
+\title{How does normalization influence feature correlation}
+
+\author{Witold Wolski}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+We analyse the distribution of correlations (spearman) among features (peptides) over multiple samples, and how this correlation is influenced by the samplewise normalization of the data.
+
+There are 5 different ways how pairs of features can be sampled from the dataset:
+\begin{itemize}
+\item random - pairs of features are randomly drawn from the dataset.
+\item different protein - pairs of features are drawn in such way that they belong to different peptides.
+\item same protein - pairs of features are randomly drawn among peptides of the same protein.
+\item same protein TOP - pairs of features are randomly drawn among peptides of the same protein and having good intensities.
+\item same peptide - pairs of features are of the same peptide but with different charge.
+\end{itemize}
+
+
+The analysis was created using the R-package imsbInfer which can be downloaded from \href{https://github.com/wolski/imsbInfer}{https://github.com/wolski/imsbInfer}. The documents includes the R code, so that you can reproduce this analysis. If you have suggestions how to improve this report please send an email to: \href{mailto:wewolski@gmail.com}{wewolski@gmail.com}
+
+
+We start with loading the data:
+
+<<sp1,echo=FALSE,results=hide>>=
+rm(list=ls())
+library(imsbInfer)
+#SpecLib = "feature_alignment_requant.tsv"
+args <- commandArgs(TRUE)
+
+if(length(args)>0){
+  SpecLib <- args[1]
+  print(SpecLib)
+}else{
+  data(feature_alignment_requant)
+  SpecLib = feature_alignment_requant
+}
+
+specLib = read2msExperiment(SpecLib)
+
+specLib$Intensity = asinh(specLib$Intensity)
+dim(specLib)
+@
+
+<<fig=TRUE>>=
+barplot(table(table(specLib$pepinfo$PeptideSequence)), main = "number of proteins per peptide")
+@
+
+Next we remove the decoys, and also remove all the requant values.
+
+<<fig=FALSE>>=
+specLib = removeDecoys(specLib)
+library(imsbInfer)
+nriterations = 150
+
+specLib$Intensity[specLib$score==2] = NA
+#image(asinh(specLib$Intensity))
+@
+
+
+<<>>=
+table(table(specLib$pepinfo$ProteinName))
+dim(specLib$pepinfo)
+@
+
+
+The statistics are based on \Sexpr{nriterations}.
+
+\newpage
+\section{Raw data - no normalization}
+
+<<fig=TRUE>>=
+boxplot(specLib$Intensity,main="Raw intensities",pars=list(pch="."))
+@
+
+
+<<fig=TRUE>>=
+par(mar=c(5,5,1,1))
+imagelabels(cor(specLib$Intensity,method="spearman",use="pairwise.complete.obs"), main="spearman correlation among samples")
+@
+
+<<fig=TRUE>>=
+par(mar=c(5,5,1,1))
+specLib = orderByRT(specLib)
+pairsDifference(asinh(specLib$Intensity),specLib$RT)
+@
+
+
+<<analyseDuplicated,echo=TRUE,results=hide,fig=TRUE>>=
+res = compPeptideCorrelations(specLib,countmax=nriterations)
+plotPairCors(res,main="no normalization")
+summaryCors(res)
+@
+
+\newpage
+\section{Robust sample wise scaling}
+
+After this scaling the median and the mad of all samples is equal.
+
+<<>>=
+specLib2 = specLib
+specLib2$Intensity = robustscale(specLib2$Intensity)
+
+@
+
+<<fig=TRUE>>=
+boxplot(specLib2$Intensity,main="Scaling samplewise",pars=list(pch="."))
+@
+
+
+<<fig=TRUE>>=
+par(mar=c(5,5,1,1))
+imagelabels(cor(specLib2$Intensity,method="spearman",use="pairwise.complete.obs"), main="spearman correlation among samples")
+@
+
+<<fig=TRUE>>=
+par(mar=c(5,5,1,1))
+specLib2 = orderByRT(specLib2)
+pairsDifference(asinh(specLib2$Intensity),specLib$RT,main="difference versus RT")
+@
+
+<<results=hide,fig=TRUE>>=
+library(imsbInfer)
+res2 = compPeptideCorrelations(specLib2 , countmax=nriterations)
+names(res2)
+lapply(res,dim)
+
+plotPairCors(res2, main = "robust scaling")
+
+@
+
+<<>>=
+summaryCors(res2)
+@
+
+\newpage
+\section{apply RT dependent scaling}
+
+After this normalization the median and variance at each RT is the same.
+
+
+<<rtscalingvar,fig=FALSE,results=hide>>=
+specLib4 = specLib
+specLib4 = correctIntRTv2(specLib4,k=501,plot=F,scale=TRUE)
+@
+
+<<fig=TRUE>>=
+boxplot(specLib4$Intensity,main="scaling RT intensities",pars=list(pch="."))
+@
+
+<<fig=TRUE>>=
+par(mar=c(5,5,1,1))
+imagelabels(cor(specLib4$Intensity,method="spearman",use="pairwise.complete.obs"),main="spearman correlation among samples")
+@
+
+<<fig=TRUE>>=
+par(mar=c(5,5,1,1))
+specLib4 = orderByRT(specLib4)
+pairsDifference(asinh(specLib4$Intensity),specLib4$RT)
+@
+
+<<fig=TRUE>>=
+res4 = compPeptideCorrelations(specLib4,countmax=nriterations)
+plotPairCors(res4, main="robust scaling sample and RT")
+@
+
+<<>>=
+summaryCors(res4)
+@
+
+\end{document}
