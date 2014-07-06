@@ -10,7 +10,8 @@
 #' colnames(df)
 #' length(unique(df$ProteinName))
 prepareDF <- function(df){
-
+  Sys.setlocale("LC_COLLATE", "C")
+  
   required = c("transition_group_id","align_runid","align_origfilename","RT",
                "mz","Intensity","ProteinName","decoy","m_score","aggr_Fragment_Annotation","aggr_Peak_Area")
   df  = data.table(df)
@@ -19,6 +20,7 @@ prepareDF <- function(df){
   x=match(required,colnames(df))
   stopifnot(required == colnames(df)[x])
   df = df[,x,with=FALSE]
+  df <- df[order(df$transition_group_id),]
   return(df)
 }
 #' extract transition intensities from input file. WARNING - slow running function
@@ -37,6 +39,8 @@ prepareDF <- function(df){
 #' dim(feature_alignment_requant)
 #' dim(tmp)[1]/dim(feature_alignment_requant)[1]*3
 transitions2wide = function(far){
+  Sys.setlocale("LC_COLLATE", "C")
+  
   #far = feature_alignment_requant
   ids = as.character(far$transition_group_id)
   apa = as.character(far$aggr_Peak_Area)
@@ -87,6 +91,8 @@ transitions2wide = function(far){
 #' # all peptides must have 2 transitions
 #' stopifnot(names(table(table(xx$transition_group_id))) == "2")
 selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
+  Sys.setlocale("LC_COLLATE", "C")
+  
   #compute median and create table with id's
   medxx = apply(data[,3:dim(data)[2]],1,median,na.rm=TRUE)
   xxmex= cbind( data[,c("transition_group_id","aggr_Fragment_Annotation")] , medxx)
@@ -135,6 +141,8 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' aggr = .aggregatepeptide(xx)
 #' dim(aggr)
 .aggregatepeptide=function(toptrans, func = sum){
+  Sys.setlocale("LC_COLLATE", "C")
+  
   # this is a compatibility hack since data.table does not work on windows...
   toptrans = as.data.frame(toptrans)
   toptransvals=toptrans[,3:dim(toptrans)[2]]
@@ -158,6 +166,8 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' stopifnot(rownames(x$pepinfo)[1:10]==rownames(x$Intensity)[1:10])
 #' stopifnot( length(unique(SDat$pepinfo$ProteinName)) == length(unique(x$pepinfo$ProteinName)) )
 selectTopPeptidesPerProtein = function(msexp, peptop = 3){
+  Sys.setlocale("LC_COLLATE", "C")
+  
   #newprot = merge(msexp$pepinfo[,c("transition_group_id","ProteinName")],agrpeptide,by.x="transition_group_id",by.y="transition_group_id")
   msexp
   #compute median and create table with id's
@@ -211,9 +221,9 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @examples
 #' data(feature_alignment_requant)
 #' 
-#' #SpecLib = ("C:/Users/witek/Google Drive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
+#' SpecLib = ("C:/Users/witek/Google Drive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
 #' #SpecLib = ("/media/witold/data/googledrive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
-#' #obj  = fread(SpecLib)
+#' obj  = fread(SpecLib)
 #' nrt = 20
 #' peptop = 20
 #' obj =feature_alignment_requant
@@ -231,6 +241,8 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' stopifnot(xx[,1] == x$pepinfo$transition_group_id)
 #' stopifnot(xx[,2] == x$pepinfo$aggr_Fragment_Annotation)
 loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
+  Sys.setlocale("LC_COLLATE", "C")
+  
   ptm <- proc.time()
   cat("reading extended peptide information (creating msexperiment)\n - please be patient it make take a while (minutes)\n")
 
@@ -253,8 +265,6 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   ##### 
   cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")
   agrpeptide = .aggregatepeptide(toptrans)
-  dim(agrpeptide)
-  head(agrpeptide)
   
   ## update the intensities with new intensities computed from top 2 transitions
   msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]

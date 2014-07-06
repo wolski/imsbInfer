@@ -106,6 +106,7 @@ subset.msexperiment<- function(x,idx,...){
 #' SDat =  convertLF2Wideformat(  feature_alignment_requant  ) 
 #' @seealso \code{\link{convert2msExperiment}} for contex
 convertLF2Wideformat=function(aligtable){
+  Sys.setlocale("LC_COLLATE", "C")
   aligtable = as.data.table(aligtable)
   idx = grep("m*z" , colnames(aligtable) )
   setnames(aligtable,  idx, "mz")
