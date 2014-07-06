@@ -10,6 +10,7 @@
 #' colnames(df)
 #' length(unique(df$ProteinName))
 prepareDF <- function(df){
+  loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
   required = c("transition_group_id","align_runid","align_origfilename","RT",
@@ -21,6 +22,8 @@ prepareDF <- function(df){
   stopifnot(required == colnames(df)[x])
   df = df[,x,with=FALSE]
   df <- df[order(df$transition_group_id),]
+  Sys.setlocale("LC_COLLATE", loccoll)
+  
   return(df)
 }
 #' extract transition intensities from input file. WARNING - slow running function
@@ -39,6 +42,7 @@ prepareDF <- function(df){
 #' dim(feature_alignment_requant)
 #' dim(tmp)[1]/dim(feature_alignment_requant)[1]*3
 transitions2wide = function(far){
+  loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
   #far = feature_alignment_requant
@@ -71,6 +75,8 @@ transitions2wide = function(far){
                    aggr_Fragment_Annotation =  as.character(unlist( transids) ) )
   #got wide format here...
   data = dcast(tmp, transition_group_id + aggr_Fragment_Annotation ~ align_origfilename , value.var="aggr_Peak_Area")
+  Sys.setlocale("LC_COLLATE", loccoll)
+  
   return(data)
 }
 #' selecting top transtions WARNING - slow running function
@@ -91,6 +97,8 @@ transitions2wide = function(far){
 #' # all peptides must have 2 transitions
 #' stopifnot(names(table(table(xx$transition_group_id))) == "2")
 selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
+  loccoll = Sys.getlocale("LC_COLLATE")
+  
   Sys.setlocale("LC_COLLATE", "C")
   
   #compute median and create table with id's
@@ -128,6 +136,8 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   res = data[res]
   # drop last row which is the median
   res = res[,-dim(res)[2],with=FALSE]
+  Sys.setlocale("LC_COLLATE", loccoll)
+  
   return(res)
 }
 
@@ -141,6 +151,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' aggr = .aggregatepeptide(xx)
 #' dim(aggr)
 .aggregatepeptide=function(toptrans, func = sum){
+  loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
   # this is a compatibility hack since data.table does not work on windows...
@@ -151,6 +162,8 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   colnames(agregatepeptide)[1] = "transition_group_id"
   # select data values
   agregatepeptide$transition_group_id = as.character(agregatepeptide$transition_group_id)
+  Sys.setlocale("LC_COLLATE", loccoll)
+  
   return(agregatepeptide)
 }
 
@@ -166,6 +179,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' stopifnot(rownames(x$pepinfo)[1:10]==rownames(x$Intensity)[1:10])
 #' stopifnot( length(unique(SDat$pepinfo$ProteinName)) == length(unique(x$pepinfo$ProteinName)) )
 selectTopPeptidesPerProtein = function(msexp, peptop = 3){
+  loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
   #newprot = merge(msexp$pepinfo[,c("transition_group_id","ProteinName")],agrpeptide,by.x="transition_group_id",by.y="transition_group_id")
@@ -210,6 +224,8 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   stopifnot(res2$pepinfo$ProteinName==res$ProteinName)
   stopifnot(length(unique(msexp$pepinfo$ProteinName))==length(unique(res$ProteinName)))
   
+  Sys.setlocale("LC_COLLATE", loccoll)
+  
   
   return(res2)
 }
@@ -221,9 +237,9 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' @examples
 #' data(feature_alignment_requant)
 #' 
-#' SpecLib = ("C:/Users/witek/Google Drive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
+#' #SpecLib = ("C:/Users/witek/Google Drive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
 #' #SpecLib = ("/media/witold/data/googledrive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
-#' obj  = fread(SpecLib)
+#' #obj  = fread(SpecLib)
 #' nrt = 20
 #' peptop = 20
 #' obj =feature_alignment_requant
@@ -241,6 +257,8 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' stopifnot(xx[,1] == x$pepinfo$transition_group_id)
 #' stopifnot(xx[,2] == x$pepinfo$aggr_Fragment_Annotation)
 loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
+  obj = prepareDF(obj)
+  loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
   ptm <- proc.time()
@@ -325,6 +343,8 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   msexp = msExpTransition(toptrans,toppep)
   cat("processing done in : ",proc.time() - ptm," [s] \n")
   gc()
+  Sys.setlocale("LC_COLLATE", loccoll)
+  
   return(msexp)
 }
 

@@ -106,6 +106,7 @@ subset.msexperiment<- function(x,idx,...){
 #' SDat =  convertLF2Wideformat(  feature_alignment_requant  ) 
 #' @seealso \code{\link{convert2msExperiment}} for contex
 convertLF2Wideformat=function(aligtable){
+  loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   aligtable = as.data.table(aligtable)
   idx = grep("m*z" , colnames(aligtable) )
@@ -132,6 +133,7 @@ convertLF2Wideformat=function(aligtable){
   #extract masses
   mz = aligtable[,as.list(mz),by=transition_group_id]
   setnames(mz,c("transition_group_id", unique(aligtable$align_origfilename )))
+  Sys.setlocale("LC_COLLATE", loccoll)
   return(list(protmapping=unique(protmapping), Intensity=ints, rt=rt,score=score,mz=mz, aligtable=aligtable))
 }
 # gnerate peptide information from transition_group_id
@@ -220,6 +222,7 @@ read2msExperiment.default=function(obj,...){
   filename = obj
   print("read2msExperiment.default")
   aligtable=fread(filename)
+  aligtable=prepareDF(aligtable)
   data = convertLF2Wideformat(aligtable)
   data = convert2msExperiment(data)
   return(data)
@@ -236,7 +239,7 @@ read2msExperiment.default=function(obj,...){
 #' rownames(SDat$pepinfo)
 #' \dontrun{save(SDat,file="data/SDat.rda")}
 read2msExperiment.data.frame=function(obj,...){
-  data = obj
+  data = prepareDF(obj)
   data = convertLF2Wideformat(data)
   data = convert2msExperiment(data)
   return(data)
