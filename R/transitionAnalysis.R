@@ -135,6 +135,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' aggr = .aggregatepeptide(xx)
 #' dim(aggr)
 .aggregatepeptide=function(toptrans, func = sum){
+  # this is a compatibility hack since data.table does not work on windows...
   toptrans = as.data.frame(toptrans)
   toptransvals=toptrans[,3:dim(toptrans)[2]]
   toptransvals = lapply(toptransvals,as.numeric)
