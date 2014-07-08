@@ -26,6 +26,32 @@ orderByRT.msexperiment = function(obj){
   experiment$RT = RT[rto]
   return(experiment)
 }
+#' order by Key
+#' @param obj obj
+#' @export
+orderByKey = function(obj){
+  UseMethod('orderByKey')
+}
+#' orders rows by rowkey
+#' @param experiment obj
+#' @export
+#' @examples
+#' data(SDat)
+#' head(SDat$rt)
+#' SDat=orderByKey(SDat)
+#' rownames(SDat$Intensity)
+#' 
+orderByKey.msexperiment = function(obj){
+  experiment = obj
+  #order relevant data by retention time
+  rto = order(rownames(experiment$Intensity))
+  experiment$Intensity = experiment$Intensity[rto,]
+  experiment$score = experiment$score[rto,]
+  experiment$rt = experiment$rt[rto,]
+  experiment$pepinfo = experiment$pepinfo[rto,]
+  experiment$RT = RT[rto]
+  return(experiment)
+}
 #' remove decoys
 #' @param obj object
 #' @export

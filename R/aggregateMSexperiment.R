@@ -15,6 +15,7 @@
 #' @seealso aggregateProtein
 aggregatePeptides=function(msexp, FUN = sum)
 {
+  # fixing incopatibility with data.table
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
