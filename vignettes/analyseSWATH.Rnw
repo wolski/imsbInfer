@@ -27,7 +27,7 @@ The analysis was created using the R-package imsbInfer which can be downloaded f
 
 We start with loading the data:
 
-<<sp1,echo=FALSE,results=hide>>=
+<<sp1,echo=TRUE,results=hide>>=
 rm(list=ls())
 library(imsbInfer)
 #SpecLib = "feature_alignment_requant.tsv"
@@ -48,7 +48,7 @@ dim(specLib)
 @
 
 <<fig=TRUE>>=
-barplot(table(table(specLib$pepinfo$PeptideSequence)), main = "number of proteins per peptide")
+barplot(table(table(specLib$pepinfo$ProteinSequence)), main = "number of peptides per protein")
 @
 
 Next we remove the decoys, and also remove all the requant values.
