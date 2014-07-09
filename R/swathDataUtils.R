@@ -50,7 +50,7 @@ orderByKey.msexperiment = function(obj){
   experiment$rt = experiment$rt[rto,]
   experiment$pepinfo = experiment$pepinfo[rto,]
   if(length(experiment$RT)>0){
-    experiment$RT = RT[rto]
+    experiment$RT = experiment$RT[rto]
   }
   return(experiment)
 }
