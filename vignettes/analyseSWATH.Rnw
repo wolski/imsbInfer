@@ -42,37 +42,55 @@ if(length(args)>0){
 }
 
 specLib = read2msExperiment(SpecLib)
+specLib = removeDecoys(specLib)
 
 specLib$Intensity = asinh(specLib$Intensity)
 dim(specLib)
 @
 
+
+What is the number of requant values / run.
+
 <<fig=TRUE>>=
-barplot(table(table(specLib$pepinfo$ProteinSequence)), main = "number of peptides per protein")
+barplot(apply(specLib$score,2,function(x){sum(x==2)/length(x)*199}),ylab="% of requant values",xlab="run")
 @
+
+remove the requant values from the dataset
+<<>>=
+specLib = setRequantToNA(specLib)
+@
+
+<<fig=TRUE>>=
+barplot(table(table(specLib$pepinfo$ProteinName)), xlab = "number of peptides per protein",ylab="number of proteins")
+@
+
+What are the RT ranges of the features in the samples?
+<<>>=
+rtrange<-t(apply(specLib$rt,2,range,na.rm=TRUE))
+colnames(rtrange)<-c("min","max")
+rtrange
+@
+
+What are the m score per run.
+<<fig=TRUE>>=
+boxplot((specLib$score),ylab="mscore",log="y",xlab="run",pars=list(pch="."))
+@
+
 
 Next we remove the decoys, and also remove all the requant values.
 
 <<fig=FALSE>>=
-specLib = removeDecoys(specLib)
 library(imsbInfer)
 nriterations = 150
-
-specLib$Intensity[specLib$score==2] = NA
-#image(asinh(specLib$Intensity))
 @
 
 
-<<>>=
-table(table(specLib$pepinfo$ProteinName))
-dim(specLib$pepinfo)
-@
-
-
-The statistics are based on \Sexpr{nriterations}.
 
 \newpage
 \section{Raw data - no normalization}
+
+
+The statistics are based on \Sexpr{nriterations}.
 
 <<fig=TRUE>>=
 boxplot(specLib$Intensity,main="Raw intensities",pars=list(pch="."))

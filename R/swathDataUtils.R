@@ -1,4 +1,34 @@
 if(getRversion() >= "3.1.0") utils::suppressForeignCheck("localvariable")
+#' removes requant values from dataset
+#' @param obj obj
+#' @export
+setRequantToNA = function(obj){
+  UseMethod('setRequantToNA')
+}
+#'  removes requant values from dataset
+#' @param experiment obj
+#' @export
+#' @examples
+#' data(SDat)
+#' SDatRT=orderByRT(SDat)
+#' SDatRT=setRequantToNA(SDatRT)
+#' SDatRT$RT[1:10] 
+#' SDat = setRequantToNA(SDat)
+#' head(SDat$rt)
+setRequantToNA.msexperiment = function(obj){
+  experiment = obj
+  idx = experiment$score < 1
+  experiment$Intensity[!idx] = NA
+  experiment$score[!idx] = NA
+  experiment$rt[!idx] = NA
+  
+  if(length(experiment$RT)>0){
+    RT = apply(experiment$rt,1,median,na.rm=TRUE)
+    experiment$RT = RT
+  }
+  
+  return(experiment)
+}
 #' order by RT
 #' @param obj obj
 #' @export
