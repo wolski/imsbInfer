@@ -173,7 +173,9 @@ analyzeDuplicatedProteinsTOP = function(data,maxpep=3,countmax = 1000){
 #' @param dups - list as returned by function \code{\link{getListOfDuplicated}}
 #' @param maxpep - limit the number of duplicated peptides
 #' @param countmax - limit the total number of comparisons
-analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000, method="pearson"){
+#' @param method - type of correlation to compute
+analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000,
+                             method="spearman"){
   res = NULL
   count = 1
   nameshead = c("p1","p2","cor","rt1","rt2","medianRTDiff","madDiffRT")

@@ -49,7 +49,9 @@ orderByKey.msexperiment = function(obj){
   experiment$score = experiment$score[rto,]
   experiment$rt = experiment$rt[rto,]
   experiment$pepinfo = experiment$pepinfo[rto,]
-  experiment$RT = RT[rto]
+  if(length(experiment$RT)>0){
+    experiment$RT = RT[rto]
+  }
   return(experiment)
 }
 #' remove decoys
