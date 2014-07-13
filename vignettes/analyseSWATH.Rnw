@@ -129,7 +129,7 @@ specLib2$Intensity = robustscale(specLib2$Intensity)
 @
 
 <<fig=TRUE>>=
-boxplot(specLib2$Intensity,main="Scaling samplewise",pars=list(pch="."))
+boxplot(specLib2$Intensity,main="Scaling samplewise",pars=list(pch="."),las=2)
 @
 
 
@@ -170,7 +170,7 @@ specLib4 = correctIntRTv2(specLib4,k=501,plot=F,scale=TRUE)
 @
 
 <<fig=TRUE>>=
-boxplot(specLib4$Intensity,main="scaling RT intensities",pars=list(pch="."))
+boxplot(specLib4$Intensity,main="scaling RT intensities",pars=list(pch="."),las=2)
 @
 
 <<fig=TRUE>>=
