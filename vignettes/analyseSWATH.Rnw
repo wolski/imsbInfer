@@ -52,7 +52,9 @@ dim(specLib)
 What is the number of requant values / run.
 
 <<fig=TRUE>>=
-barplot(apply(specLib$score,2,function(x){sum(x==2)/length(x)*199}),ylab="% of requant values",xlab="run")
+par(mar=c(10,5,1,1))
+barplot(apply(specLib$score,2,function(x){sum(x==2)/length(x)*199}),ylab="% of requant values",xlab="run",las=2)
+
 @
 
 remove the requant values from the dataset
@@ -73,7 +75,7 @@ rtrange
 
 What are the m score per run.
 <<fig=TRUE>>=
-boxplot((specLib$score),ylab="mscore",log="y",xlab="run",pars=list(pch="."))
+boxplot((specLib$score),ylab="mscore",log="y",xlab="run",pars=list(pch="."),las=2)
 @
 
 
@@ -93,7 +95,7 @@ nriterations = 150
 The statistics are based on \Sexpr{nriterations}.
 
 <<fig=TRUE>>=
-boxplot(specLib$Intensity,main="Raw intensities",pars=list(pch="."))
+boxplot(specLib$Intensity,main="Raw intensities",pars=list(pch="."),las=2)
 @
 
 
