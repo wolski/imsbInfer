@@ -17,35 +17,46 @@ aggregatePeptides=function(msexp, FUN = sum)
 {
   # fixing incopatibility with data.table
   loccoll = Sys.getlocale("LC_COLLATE")
+  loccoll
   Sys.setlocale("LC_COLLATE", "C")
-  
-  tomatrix = function(x){
-    rownames(x) = x[,1]
-    x = x[,-1]
+  tomatrix = function(x) {
+    rownames(x) = x[, 1]
+    x = x[, -1]
     return(as.matrix(x))
   }
-  #check sorting
-  stopifnot(rownames(msexp$Intensity)==rownames(msexp$pepinfo))
-  
-  aggval = list( msexp$pepinfo$transition_group_id)
-  intensity = aggregate(msexp$Intensity,by = aggval,FUN=FUN)
+  stopifnot(rownames(msexp$Intensity) == rownames(msexp$pepinfo))
+  aggval = list(msexp$pepinfo$transition_group_id)
+  intensity = aggregate(msexp$Intensity, by = aggval, FUN = FUN)
   res = msexp
   res$Intensity = tomatrix(intensity)
-  x = aggregate(msexp$mz,by=aggval , function(x){x[1]})
+  x = aggregate(msexp$mz, by = aggval, function(x) {
+    x[1]
+  })
   res$mz = tomatrix(x)
-  x = aggregate(msexp$rt,by=aggval , function(x){x[1]})
+  x = aggregate(msexp$rt, by = aggval, function(x) {
+    x[1]
+  })
   res$rt = tomatrix(x)
-  x = aggregate(msexp$score,by=aggval , function(x){x[1]})
+  x = aggregate(msexp$score, by = aggval, function(x) {
+    x[1]
+  })
   res$score = tomatrix(x)
   
-  res$pepinfo = msexp$pepinfo[,-match("aggr_Fragment_Annotation",colnames(msexp$pepinfo))]
-  tmp = duplicated(res$pepinfo) 
-  res$pepinfo =res$pepinfo[!tmp,]
+  stopifnot(rownames(res$score) == rownames(res$Intensity))
+  res$pepinfo = msexp$pepinfo[, -match("aggr_Fragment_Annotation", 
+                                       colnames(msexp$pepinfo))]
+  
+  # this sorting is necessary since aggregate does not preserve (it sorts the data by key) 
+  # order while duplicate does
+  res$pepinfo = res$pepinfo[order(res$pepinfo$transition_group_id),]
+  tmp = duplicated(res$pepinfo)
+  res$pepinfo = res$pepinfo[!tmp, ]
   stopifnot(res$pepinfo$transition_group_id == rownames(res$Intensity))
+  
   rownames(res$pepinfo) = res$pepinfo$transition_group_id
   Sys.setlocale("LC_COLLATE", loccoll)
-  
   return(res)
+  
 }
 #' aggregate peptides - given msexperiment with transitons
 #' @export 
