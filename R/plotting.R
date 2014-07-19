@@ -103,6 +103,7 @@ pairsRatio = function(dataframesel,RT,main="",ylim=c(-2,2)){
 #' pairsDifference( asinh(rtord$Intensity), rtord$RT , ylim=NULL)
 #' @seealso \code{\link{pairs}} and \code{\link{pairsRatio}}
 pairsDifference = function(dataf,RT,main="",ylim=NULL, maxPanel=8 ){
+  stopifnot(dim(dataf)[2] > 1)
   if(dim(dataf)[2] > maxPanel){
     idx = sample(1:dim(dataf)[2],maxPanel)
     dataf = dataf[,idx]

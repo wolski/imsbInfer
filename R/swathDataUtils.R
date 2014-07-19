@@ -21,6 +21,7 @@ setRequantToNA.msexperiment = function(obj){
   experiment$Intensity[!idx] = NA
   experiment$score[!idx] = NA
   experiment$rt[!idx] = NA
+  experiment$mz[!idx] = NA
   
   if(length(experiment$RT)>0){
     RT = apply(experiment$rt,1,median,na.rm=TRUE)
@@ -49,10 +50,11 @@ orderByRT.msexperiment = function(obj){
   RT = apply(experiment$rt , 1 , median, na.rm=TRUE )
   #order relevant data by retention time
   rto = order(RT)
-  experiment$Intensity = experiment$Intensity[rto,]
-  experiment$score = experiment$score[rto,]
-  experiment$rt = experiment$rt[rto,]
-  experiment$pepinfo = experiment$pepinfo[rto,]
+  experiment$Intensity = experiment$Intensity[rto,,drop=FALSE]
+  experiment$score = experiment$score[rto,,drop=FALSE]
+  experiment$rt = experiment$rt[rto,,drop=FALSE]
+  experiment$mz = experiment$rt[rto,,drop=FALSE]
+  experiment$pepinfo = experiment$pepinfo[rto,,drop=FALSE]
   experiment$RT = RT[rto]
   return(experiment)
 }
@@ -75,10 +77,11 @@ orderByKey.msexperiment = function(obj){
   experiment = obj
   #order relevant data by retention time
   rto = order(rownames(experiment$Intensity))
-  experiment$Intensity = experiment$Intensity[rto,]
-  experiment$score = experiment$score[rto,]
-  experiment$rt = experiment$rt[rto,]
-  experiment$pepinfo = experiment$pepinfo[rto,]
+  experiment$Intensity = experiment$Intensity[rto,,drop=FALSE]
+  experiment$score = experiment$score[rto,,drop=FALSE]
+  experiment$rt = experiment$rt[rto,,drop=FALSE]
+  experiment$mz = experiment$mz[rto,,drop=FALSE]
+  experiment$pepinfo = experiment$pepinfo[rto,,drop=FALSE]
   if(length(experiment$RT)>0){
     experiment$RT = experiment$RT[rto]
   }
@@ -146,11 +149,11 @@ keepRTRange.msexperiment<- function(obj,rtrange=c(1000,7000),...){
 #' dim(SDatr)
 subset.msexperiment<- function(x,idx,...){
   data=x
-  data$Intensity = data$Intensity[idx,]
-  data$score = data$score[idx,]
-  data$rt = data$rt[idx,]
-  data$mz = data$mz[idx,]
-  data$pepinfo = data$pepinfo[idx,]
+  data$Intensity = data$Intensity[idx,,drop=FALSE]
+  data$score = data$score[idx,,drop=FALSE]
+  data$rt = data$rt[idx,,drop=FALSE]
+  data$mz = data$mz[idx,,drop=FALSE]
+  data$pepinfo = data$pepinfo[idx,,drop=FALSE]
   if(!is.null(data$RT)){
     data$RT = data$RT[idx]
   }

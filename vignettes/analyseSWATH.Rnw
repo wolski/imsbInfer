@@ -41,6 +41,7 @@ if(length(args)>0){
   SpecLib = feature_alignment_requant
 }
 
+
 specLib = read2msExperiment(SpecLib)
 specLib = removeDecoys(specLib)
 
@@ -53,8 +54,8 @@ What is the number of requant values / run.
 
 <<fig=TRUE>>=
 par(mar=c(10,5,1,1))
-barplot(apply(specLib$score,2,function(x){sum(x==2)/length(x)*199}),ylab="% of requant values",xlab="run",las=2)
-
+barplot(apply(specLib$score,2,function(x){sum(x==2)/length(x)*100}),ylab="% of requant values",xlab="run",las=2)
+dim(specLib$score)
 @
 
 remove the requant values from the dataset
@@ -75,6 +76,7 @@ rtrange
 
 What are the m score per run.
 <<fig=TRUE>>=
+specLib$score[specLib$score==0]=min(specLib$score[specLib$score>0])
 boxplot((specLib$score),ylab="mscore",log="y",xlab="run",pars=list(pch="."),las=2)
 @
 
@@ -85,7 +87,6 @@ Next we remove the decoys, and also remove all the requant values.
 library(imsbInfer)
 nriterations = 150
 @
-
 
 
 \newpage
@@ -107,7 +108,7 @@ imagelabels(cor(specLib$Intensity,method="spearman",use="pairwise.complete.obs")
 <<fig=TRUE>>=
 par(mar=c(5,5,1,1))
 specLib = orderByRT(specLib)
-pairsDifference(asinh(specLib$Intensity),specLib$RT)
+pairsDifference(specLib$Intensity,specLib$RT)
 @
 
 
