@@ -11,6 +11,7 @@ correctIntRTv1 <- function(obj, ... ){
 #' @param data to correct
 #' @param rto  retention time (ordered)
 #' @param k  smoothing with
+#' @param FUN running function - for equal median use runmed, for equal max use i.e. runFUN(x,k=300,max)
 #' @return corrected data
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
@@ -18,8 +19,9 @@ correctIntRTv1 <- function(obj, ... ){
 #' data(SDat)
 #' experiment = removeDecoys(SDat)
 #' experiment = orderByRT(experiment)
-#' cor = correctIntRTv1(experiment$Intensity[,1], experiment$Intensity[,2],experiment$RT)
-correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
+#' cor = correctIntRTv1(experiment$Intensity[,1], experiment$Intensity[,2],experiment$RT,k=51)
+#' cor = correctIntRTv1(experiment$Intensity[,1], experiment$Intensity[,2],experiment$RT,k=51,FUN=function(x,k=k){print(k);runFun(x,k=k,mean)})
+correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, FUN = function(x,k=k){runmed(x,k=k,endrule="constant")}, ...){
   aref = obj  
   a1=data
   #remove missing values
@@ -31,8 +33,8 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
   rtow = rto[idx]
   
   #diffa1ref  = a1w - arefw
-  medianref = runmed( arefw , k=k ,endrule="constant")
-  mediana1w = runmed( a1w ,k = k,endrule="constant")
+  medianref = FUN( arefw , k=k)# ,endrule="constant")
+  mediana1w = FUN( a1w ,k=k)# ,endrule="constant")
   # adjust intensities
   scalefactor = medianref/mediana1w
   a1wc = a1w * scalefactor
@@ -40,10 +42,10 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, ...){
   if(plot){
     plot(rtow , arefw , pch=".", cex=0.4 , col="gray" )
     points( rtow , a1w ,pch=".",cex=0.4,col="gray")
-    lines(rtow , medianref,col="red",lwd=2)
+    lines(rtow , medianref,col="red",lwd=4)
     lines(rtow , mediana1w,col="blue",lwd=2)
-    abline(h=0,col=2)
-    mediana1wc = runmed( a1wc ,k = k,endrule="constant")
+    #abline(h=0,col=2)
+    mediana1wc = FUN( a1wc ,k = k )#endrule="constant")
     lines(rtow,mediana1wc,col="black",lwd=2)
     legend("topleft",legend=c("ref","before","after"),col=c("red","blue","black"),lty=c(1,1,1))
   }

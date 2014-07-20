@@ -32,7 +32,7 @@ runrobscale = function(arefw,k=101,scale=TRUE){
 #' running total ion count scaling (TIC)
 #' @export
 #' @examples
-#' res = c(rnorm(1000,3,2),rnorm(2000,1,1))
+#' res = c(rnorm(1000,3,2),rnorm(2000,4,1))
 #' res2 = runTIC(res)
 #' plot(res,type="p",pch="x",col=1)
 #' lines(1:length(res),res2$tic,col=3)
@@ -40,8 +40,8 @@ runrobscale = function(arefw,k=101,scale=TRUE){
 #' length(res2$scaled)
 #' 
 #' @seealso correctIntRTv2 for context
-runTIC = function(arefw,k=101,scale=TRUE){
-  madref <- runFun(arefw,k=k,function(x,...){return(mean(x))})
+runTIC = function(arefw,k=101,scale=NULL){
+  madref <- runFun(arefw,k=k,mean)
   mediana1w <- arefw / madref
   return(list("scaled"  = mediana1w, "tic" = madref))
 }
@@ -66,7 +66,7 @@ correctIntRTv2 <- function(obj, ... ){
 #' res[sample(1:length(res),100)] = NA
 #' rto = as.numeric(1:length(res))
 #' res2 = correctIntRTv2(res ,rto )
-correctIntRTv2.default = function(obj, rto , scale=FALSE, plot=TRUE, k=501, func=runrobscale, ...){
+correctIntRTv2.default = function(obj, rto ,k=501, scale=FALSE, plot=TRUE,  func=runrobscale, ...){
   aref= obj
   idxref = is.na(aref) | is.infinite(aref)
   arefw = aref[!idxref]
@@ -90,13 +90,15 @@ correctIntRTv2.default = function(obj, rto , scale=FALSE, plot=TRUE, k=501, func
 #' with largest median as reference.
 #' @param experiment - object of class msexperiment
 #' @param k - smoothing with
+#' @param scale  should scaling also be applied
+#' @param fun function to use fore scaling: \code{\link{runrobscale}} or \code{\link{runTIC}}
 #' @return msexperiment object with RT normalized intensities
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
 #' @examples
 #' data(SDat)
 #' res = correctIntRTv2(SDat)
-correctIntRTv2.msexperiment = function(obj , k=501,plot=FALSE , scale=FALSE, func = runrobscale, ... )
+correctIntRTv2.msexperiment = function(obj , k=501 ,  scale=FALSE, func = runrobscale,plot=FALSE , ... )
 {
   experiment = obj
   experiment = removeDecoys(experiment)
