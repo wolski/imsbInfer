@@ -169,6 +169,8 @@ subset.msexperiment<- function(x,idx,...){
 convertLF2Wideformat=function(aligtable){
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
+  
+  
   aligtable = as.data.table(aligtable)
   idx = grep("m*z" , colnames(aligtable) )
   setnames(aligtable,  idx, "mz")

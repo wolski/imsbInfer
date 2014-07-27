@@ -144,7 +144,7 @@ pairsDifference = function(dataf,RT,main="",ylim=NULL, maxPanel=8 ){
 mypairs = function(dataframesel,...){
   pairs(dataframesel, panel = function(x,y){
     points(x, y, pch=".")
-    abline(0,1,col=2)
+    abline(a=0,b=1,v=0,h=0,col=2)
   }
   , lower.panel=NULL,...
   )
@@ -177,7 +177,11 @@ simpleheatmap = function(pln,main="",
 }
 #' volcano plot
 #' @param foldchange - fold change values
-#' @param pvals - pvalues
+#' @param pvals pvalues
+#' @param pthresh pvalue threshold
+#' @param ratiothresh threshold of foldchange
+#' @param labals - optional labels
+#' @param cex size of labels
 #' @export
 #' @examples
 #' foldchange <- rnorm(1000) 
@@ -189,22 +193,36 @@ volcanoplot = function(foldchange,
                        pthresh = 0.05,
                        ratiothresh = 2,
                        xlab ="log2(T/N)" ,
-                       ylab = "-log10(P)"
+                       ylab = "-log10(P)",
+                       labels = NULL,
+                       cex=0.6
 ){
   d <- data.frame(ratio = foldchange, pvals = pvals )
+  rownames(d) = labels 
+  
   bla = tryCatch( plot(d$ratio,-log10(d$pvals),col="#00000033",pch=19,xlab=xlab, ylab=ylab),
                   warning=function(bla){ dev.off(); return(1)} 
   )
   if(!is.null(bla)){
     plot(d$ratio,-log10(d$pvals),col=1,pch=19,xlab=xlab, ylab=ylab)
   }
+  
+  
   upsubset<-subset(d,pvals < pthresh & ratio > ratiothresh)
   points(upsubset$ratio,-log10(upsubset$pvals),col=2,pch=19)
   points(upsubset$ratio,-log10(upsubset$pvals),col=1,pch=1)
+  if(length(rownames(upsubset)) > 0){
+    text(upsubset$ratio, -log10(upsubset$pvals),rownames(upsubset),cex=cex,pos=4)
+  }
+  
   abline(h=-log10(pthresh),col="gray")
   downsubset<-subset(d,pvals<pthresh & ratio < -ratiothresh)
   points(downsubset$ratio,-log10(downsubset$pvals),col=3,pch=19)
   points(downsubset$ratio,-log10(downsubset$pvals),col=1,pch=1)
+  if(length(rownames(downsubset)) > 0){
+    text(downsubset$ratio, -log10(downsubset$pvals),rownames(upsubset),cex=cex,pos=2)
+  }
+  
   abline(v=c(-ratiothresh,ratiothresh),lty=2)
   abline(v =0,lty=2,lwd=1.5)
   return(list(upsubset=upsubset,downsubset=downsubset))
