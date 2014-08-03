@@ -220,7 +220,7 @@ volcanoplot = function(foldchange,
   points(downsubset$ratio,-log10(downsubset$pvals),col=3,pch=19)
   points(downsubset$ratio,-log10(downsubset$pvals),col=1,pch=1)
   if(length(rownames(downsubset)) > 0){
-    text(downsubset$ratio, -log10(downsubset$pvals),rownames(upsubset),cex=cex,pos=2)
+    text(downsubset$ratio, -log10(downsubset$pvals),rownames(downsubset),cex=cex,pos=2)
   }
   
   abline(v=c(-ratiothresh,ratiothresh),lty=2)
