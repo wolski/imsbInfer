@@ -195,16 +195,17 @@ volcanoplot = function(foldchange,
                        xlab ="log2(T/N)" ,
                        ylab = "-log10(P)",
                        labels = NULL,
-                       cex=0.6
+                       cex=0.6,
+                       xlim=NULL
 ){
   d <- data.frame(ratio = foldchange, pvals = pvals )
   rownames(d) = labels 
   
-  bla = tryCatch( plot(d$ratio,-log10(d$pvals),col="#00000033",pch=19,xlab=xlab, ylab=ylab),
+  bla = tryCatch( plot(d$ratio,-log10(d$pvals),col="#00000033",pch=19,xlab=xlab, ylab=ylab,xlim=xlim),
                   warning=function(bla){ dev.off(); return(1)} 
   )
   if(!is.null(bla)){
-    plot(d$ratio,-log10(d$pvals),col=1,pch=19,xlab=xlab, ylab=ylab)
+    plot(d$ratio,-log10(d$pvals),col=1,pch=19,xlab=xlab, ylab=ylab ,xlim=xlim)
   }
   
   
