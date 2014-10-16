@@ -183,7 +183,6 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   Sys.setlocale("LC_COLLATE", "C")
   
   #newprot = merge(msexp$pepinfo[,c("transition_group_id","ProteinName")],agrpeptide,by.x="transition_group_id",by.y="transition_group_id")
-  msexp
   #compute median and create table with id's
   medxx = apply(msexp$Intensity , 1,median,na.rm=TRUE)
   xxmex = cbind( msexp$pepinfo[,c("transition_group_id","ProteinName")] , medxx)
@@ -212,13 +211,18 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
   }
   
   res = res[1:end,]
-  colnames(res) = c("ProteinName","transition_group_id","medxx")
+  head(res)
+  colnames(res) = c("transition_group_id","ProteinName","medxx")
   res = data.table(res)
   dim(res)
   length(unique(msexp$pepinfo$ProteinName))
   length(unique(res$ProteinName))
   
   res2 = subset(msexp, match(res$transition_group_id, rownames(msexp$Intensity)))
+  head(msexp$pepinfo$transition_group_id)
+  rownames(msexp$Intensity)
+  
+  head(res2$pepinfo)
   
   #postconditions
   stopifnot(res2$pepinfo$ProteinName==res$ProteinName)
