@@ -10,35 +10,39 @@
 
 \maketitle
 
-We analyse the distribution of correlations (spearman) among features over multiple samples, and how this correlation is influenced by the samplewise normalization of the data.
+We analyse the distribution of correlations (spearman) among features (rows) over multiple samples (columns), and how this correlation is influenced by the samplewise normalization of the data.
 
 We have 5 different cases:
 \begin{itemize}
-\item random - Features/Peakgroups  can be randomly drawn from the dataset.
-\item unique - Features/Peakgroups can be randomly drawn from among those which uniquely represent proteins.
-\item protein - correlation among peakgroups derived from the same protein can be computed.
-\item proteinTOP - The correlation among peaks derived from the same protein and having good intensities.
-\item peptide - correlation of peaks representing the same peptide but with different charge.
+\item random - features can be randomly drawn from the dataset.
+\item unique - features can be randomly drawn from among those which uniquely represent proteins (ensures that they are not from the same protein).
+\item protein - correlation among features of the same protein are computed.
+\item proteinTOP - The correlation among top features of the same protein are computed.
+\item peptide - correlation among features representing the same peptide but having a different different charge are computed.
 \end{itemize}
 
+One would expect that while, on average the correlation for features randomly drawn from the dataset is on average zero, features representing the same protein or peptde are positively correlated.
 
 <<sp1,echo=FALSE,results=hide>>=
 rm(list=ls())
 library(imsbInfer)
-#PanHuman = ("data/E1405020812-PanHuman-canonical/feature_alignment_requant.tsv")
+Tissue = ("/Volumes/data/googledrive/tissuecomparison/OpenSWATH/E1502201409_feature_alignment_requant.tsv")
 #SpecLib = ("data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
-data(feature_alignment_requant) 
+feature_alignment_requant = fread(Tissue)
+feature_alignment_requant = prepareDF(feature_alignment_requant)
 specLib = read2msExperiment(feature_alignment_requant)
 specLib$Intensity = asinh(specLib$Intensity)
 dim(specLib)
 @
+
+In the next code block we remove decoys and requantified values from the dataset.
 
 <<fig=FALSE>>=
 specLib = removeDecoys(specLib)
 library(imsbInfer)
 nriterations = 40
 
-specLib$Intensity[specLib$score==2] = NA
+#specLib$Intensity[specLib$score==2] = NA
 #image(asinh(specLib$Intensity))
 @
 
@@ -52,7 +56,6 @@ boxplot(specLib$Intensity,main="Raw intensities")
 
 <<analyseDuplicated,echo=TRUE,results=hide>>=
 res = compPeptideCorrelations(specLib,countmax=nriterations)
-
 @
 
 

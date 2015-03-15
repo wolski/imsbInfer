@@ -1,12 +1,10 @@
-#' correctIntRTv1
+#' correct intensity over RT for entire msexperiment
 #'
 #' @export
 correctIntRTv1 <- function(obj, ... ){
   UseMethod('correctIntRTv1')
 }
-#' correct Intensity RT
-#' Computes difference between aref and data and adjust data
-#'  that the median of differences is equal 0
+#' correct intensity over RT for entire msexperiment
 #' @param obj  reference data - ordered by retention time
 #' @param data to correct
 #' @param rto  retention time (ordered)
@@ -53,7 +51,7 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, FUN = funct
   bb[idx] = a1wc
   return(bb)
 }
-#' correct columns in data frame given RT.
+#' correct intensity over RT for entire msexperiment
 #'
 #' @export
 # select reference dataset
