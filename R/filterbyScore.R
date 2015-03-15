@@ -2,7 +2,7 @@
 #' @description require that at least n features have a mscore less than maxscore
 #' @param object of class msexperiment
 #' @param maxscore - score threshold
-#' @param n - number of features 
+#' @param n - number of samples which need to have a score for this feature below the threshold
 #' @export
 #' @examples
 #' NULL
