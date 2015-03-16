@@ -26,9 +26,10 @@ One would expect that while, on average the correlation for features randomly dr
 <<sp1,echo=FALSE,results=hide>>=
 rm(list=ls())
 library(imsbInfer)
-Tissue = ("/Volumes/data/googledrive/tissuecomparison/OpenSWATH/E1502201409_feature_alignment_requant.tsv")
+#Tissue = ("/Volumes/data/googledrive/tissuecomparison/OpenSWATH/E1502201409_feature_alignment_requant.tsv")
 #SpecLib = ("data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
-feature_alignment_requant = fread(Tissue)
+#feature_alignment_requant = fread(Tissue)
+data(feature_alignment_requant)
 feature_alignment_requant = prepareDF(feature_alignment_requant)
 specLib = read2msExperiment(feature_alignment_requant)
 specLib$Intensity = asinh(specLib$Intensity)
