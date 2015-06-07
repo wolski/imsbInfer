@@ -131,10 +131,7 @@ keepRTRange.msexperiment<- function(obj,rtrange=c(1000,7000),...){
   idx = RT > rtrange[1] &  RT < rtrange[2]
   return( subset( data , idx ) )
 }
-## @export
-#subset <- function(obj, ...){
-#  UseMethod('subset')
-#}
+
 #' subset data given idx vector
 #' @aliases subset
 #' @param data msexperiment
