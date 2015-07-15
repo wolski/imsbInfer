@@ -10,15 +10,15 @@
 
 \maketitle
 
-We analyse the distribution of correlations (spearman) among features (peptides) over multiple samples, and how this correlation is influenced by the samplewise normalization of the data.
+We analyse the distribution of correlations (spearman) among transitions (signals of peptide fragments) over multiple samples, and how this correlation is influenced by the samplewise normalization of the data.
 
-There are 5 different ways how pairs of features can be sampled from the dataset:
+There are 5 different ways how pairs of transitions can be sampled from the dataset:
 \begin{itemize}
-\item random - pairs of features are randomly drawn from the dataset.
-\item different protein - pairs of features are drawn in such way that they belong to different peptides.
-\item same protein - pairs of features are randomly drawn among peptides of the same protein.
-\item same protein TOP - pairs of features are randomly drawn among peptides of the same protein and having good intensities.
-\item same peptide - pairs of features are of the same peptide but with different charge.
+\item random - pairs of transitions are randomly drawn from the dataset.
+\item different protein - pairs of transitions are drawn in such way that they belong to different peptides.
+\item same protein - pairs of transitions are randomly drawn among peptides of the same protein.
+\item same protein TOP - pairs of transitions are randomly drawn among peptides of the same protein and having good intensities.
+\item same peptide - pairs of transitions are of the same peptide but with different charge.
 \end{itemize}
 
 
@@ -32,7 +32,6 @@ rm(list=ls())
 library(imsbInfer)
 #SpecLib = "feature_alignment_requant.tsv"
 args <- commandArgs(TRUE)
-
 if(length(args)>0){
   SpecLib <- args[1]
   print(SpecLib)
@@ -67,7 +66,7 @@ specLib = setRequantToNA(specLib)
 barplot(table(table(specLib$pepinfo$ProteinName)), xlab = "number of peptides per protein",ylab="number of proteins")
 @
 
-What are the RT ranges of the features in the samples?
+What are the RT ranges of the transitions in the samples?
 <<>>=
 rtrange<-t(apply(specLib$rt,2,range,na.rm=TRUE))
 colnames(rtrange)<-c("min","max")
