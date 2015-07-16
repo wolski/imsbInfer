@@ -87,13 +87,15 @@ orderByKey.msexperiment = function(obj){
   }
   return(experiment)
 }
+
 #' remove decoys
 #' @param obj object
 #' @export
 removeDecoys = function(obj,...){
   UseMethod('removeDecoys')
 }
-#' remove decoys from msexperiment
+
+#' remove decoys and decoy column from msexperiment
 #' @param data msexperiment
 #' @export
 #' 
@@ -106,7 +108,8 @@ removeDecoys = function(obj,...){
 #' 
 removeDecoys.msexperiment = function(obj,...){
   data = obj
-  return(subset(data,!data$pepinfo$decoy))
+  return(subset(data,!data$pepinfo$decoy)[,!colnames(data) %in% "decoy"])
+  
 }
 #' removes unwanted RT ranges
 #' @param obj object
@@ -207,7 +210,7 @@ convertLF2Wideformat=function(aligtable){
   pepinfo=split2table(nams,split="\\_|\\/")
   pepinfo = pepinfo[,-dim(pepinfo)[2]]
   colnames(pepinfo)=c("id","PeptideSequence","PrecursorCharge")
-  pepinfo = data.frame(pepinfo,decoy =decoy,stringsAsFactors = FALSE)
+  pepinfo = data.frame(pepinfo,decoy=decoy,stringsAsFactors = FALSE)
   return(pepinfo)
 }
 #' converts to msExperiment (exported more for debugging purpose)
@@ -268,7 +271,7 @@ convert2msExperiment = function(data){
 read2msExperiment=function(obj,...){
   UseMethod('read2msExperiment')
 }
-#' read 2 feature alginer long format and generate an msexperiment
+#' read 2 feature alginer long format and generate an msexperiment (takes peptide quantifications of feature aligner)
 #' @aliases read2msExperiment
 #' @param filename filename to an openswath feature alignment output.
 #' @return msexperiment
@@ -283,6 +286,7 @@ read2msExperiment.default=function(obj,...){
   print("read2msExperiment.default")
   aligtable=fread(filename)
   aligtable=prepareDF(aligtable)
+  dim(aligtable)
   data = convertLF2Wideformat(aligtable)
   data = convert2msExperiment(data)
   return(data)
@@ -302,6 +306,7 @@ read2msExperiment.data.frame=function(obj,...){
   data = prepareDF(obj)
   data = convertLF2Wideformat(data)
   data = convert2msExperiment(data)
+  
   return(data)
 }
 #' dimension

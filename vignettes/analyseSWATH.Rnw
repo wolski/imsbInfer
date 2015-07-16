@@ -14,11 +14,11 @@ We analyse the distribution of correlations (spearman) among transitions (signal
 
 There are 5 different ways how pairs of transitions can be sampled from the dataset:
 \begin{itemize}
-\item random - pairs of transitions are randomly drawn from the dataset.
-\item different protein - pairs of transitions are drawn in such way that they belong to different peptides.
-\item same protein - pairs of transitions are randomly drawn among peptides of the same protein.
-\item same protein TOP - pairs of transitions are randomly drawn among peptides of the same protein and having good intensities.
-\item same peptide - pairs of transitions are of the same peptide but with different charge.
+\item random - pairs of peptide intensities are randomly drawn from the dataset.
+\item different protein - pairs of peptide intensities are drawn in such way that they belong to different peptides.
+\item same protein - pairs of peptide intensities are randomly drawn among peptides of the same protein.
+\item same protein TOP - pairs of peptide intensities are randomly drawn among peptides of the same protein and having good intensities.
+\item same peptide - pairs of peptide intensities are of the same peptide but with different charge.
 \end{itemize}
 
 
@@ -30,7 +30,7 @@ We start with loading the data:
 <<sp1,echo=TRUE,results=hide>>=
 rm(list=ls())
 library(imsbInfer)
-#SpecLib = "feature_alignment_requant.tsv"
+SpecLib = NULL
 args <- commandArgs(TRUE)
 if(length(args)>0){
   SpecLib <- args[1]
@@ -40,7 +40,6 @@ if(length(args)>0){
   SpecLib = feature_alignment_requant
 }
 
-
 specLib = read2msExperiment(SpecLib)
 specLib = removeDecoys(specLib)
 
@@ -48,12 +47,27 @@ specLib$Intensity = asinh(specLib$Intensity)
 dim(specLib)
 @
 
-
-What is the number of requant values / run.
+What is the number of NA's on transition level in the dataset?
 
 <<fig=TRUE>>=
 par(mar=c(10,5,1,1))
-barplot(apply(specLib$score,2,function(x){sum(x==2)/length(x)*100}),ylab="% of requant values",xlab="run",las=2)
+barplot(apply(specLib$Intensity,2,function(x){sum(is.na(x))} ),las=2,main="missing data")
+@
+
+What is the number of requant values / run?
+
+<<fig=TRUE>>=
+par(mar=c(10,5,1,1))
+barplot(apply(specLib$score,2,function(x){sum(x==2,na.rm=TRUE)/length(x)*100}),ylab="% of requant values",xlab="run",las=2)
+dim(specLib$score)
+@
+
+
+What is the total Instensity per sample?
+
+<<fig=TRUE>>=
+par(mar=c(10,5,1,1))
+barplot(apply(specLib$Intensity,2,sum,na.rm=TRUE ),ylab="total intensity",xlab="run",las=2)
 dim(specLib$score)
 @
 

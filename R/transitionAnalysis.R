@@ -13,8 +13,8 @@ prepareDF <- function(df){
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
-  required = c("transition_group_id","align_runid","align_origfilename","RT",
-               "mz","Intensity","ProteinName","decoy","m_score","aggr_Fragment_Annotation","aggr_Peak_Area")
+  required = c("transition_group_id","align_origfilename","RT",
+               "mz","Intensity","ProteinName","m_score","aggr_Fragment_Annotation","aggr_Peak_Area")
   df  = data.table(df)
   
   setnames(df, sub("m.z","mz",colnames(df)))
@@ -50,7 +50,7 @@ transitions2wide = function(far){
   apa = as.character(far$aggr_Peak_Area)
   afa = as.character(far$aggr_Fragment_Annotation)
   orig = basename(as.character(far$align_origfilename))
-  orig = sub("_SW_with_dscore.csv","",orig)
+  orig = sub("_SW_with_dscore.*","",orig)
   
   # split transition intensities
   transints = lapply(apa,function(x){unlist(strsplit(x,";"))})
@@ -268,12 +268,13 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   ptm <- proc.time()
   cat("reading extended peptide information (creating msexperiment)\n - please be patient it make take a while (minutes)\n")
 
+  head(obj)
   msexp = read2msExperiment(obj)
-  
   
   # long running function
   cat("extracting single transtion intensities\n - please be patient it make take a while (minutes)\n")
   data =  transitions2wide(obj)
+  head(data)
   # this will read in also the full annotation (which peptide belongs to which protein)
   #rm(obj)
   gc()
@@ -321,10 +322,6 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
     
     newkey = paste(msexp$pepinfo$transition_group_id,msexp$pepinfo$aggr_Fragment_Annotation,sep="-")
     rownames(msexp$pepinfo) = newkey
-    
-    # expand rt
-    # sum(!rownames(msexp$rt) %in% msexp$pepinfo$transition_group_id)
-    # sum(!msexp$pepinfo$transition_group_id %in% rownames(msexp$rt))
     
     msexp$rt = as.matrix(msexp$rt[msexp$pepinfo$transition_group_id , ])
     class(msexp$pepinfo$transition_group_id)

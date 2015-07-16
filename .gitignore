@@ -1,3 +1,5 @@
+*.zip
+*.txt
 *.R~
 *.r~
 *~
@@ -16,6 +18,8 @@
 *.mgf
 .RData
 *.dvi
+*.tsv
+*.csv
 .Rproj.user
 .Rbuildignore
 findMFDIA.Rproj
@@ -26,4 +30,4 @@ deprec
 core
 *synctex.gz
 NAMESPACE
-
+playground
