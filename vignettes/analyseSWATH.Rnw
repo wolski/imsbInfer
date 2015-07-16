@@ -41,6 +41,9 @@ if(length(args)>0){
 }
 
 specLib = read2msExperiment(SpecLib)
+names(specLib)
+head(specLib$pepinfo)
+
 specLib = removeDecoys(specLib)
 
 specLib$Intensity = asinh(specLib$Intensity)
@@ -50,6 +53,7 @@ dim(specLib)
 What is the number of NA's on transition level in the dataset?
 
 <<fig=TRUE>>=
+specLib$Intensity
 par(mar=c(10,5,1,1))
 barplot(apply(specLib$Intensity,2,function(x){sum(is.na(x))} ),las=2,main="missing data")
 @
