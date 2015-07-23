@@ -2,6 +2,7 @@
 #' @export
 #' @description convert msexp to msstats compatible output
 #' @examples
+#' @param msexperiment to convert
 #' NULL
 convert2MSstats=function(msexp){
   #merge Intensity and pepinfo dataframes

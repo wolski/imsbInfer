@@ -110,7 +110,7 @@ analyzeDuplicatedPeptides = function(data,countmax = 1000){
   dups=getListOfDuplicated( rownames )
   analyzeDuplicated( data ,dups, countmax = countmax )
 }
-#' analyse duplicated protein - same protein id different peptide
+#' analyse duplicated protein peptide - same protein id different peptide
 #'
 #' @export
 #' @examples
@@ -125,12 +125,13 @@ analyzeDuplicatedPeptides = function(data,countmax = 1000){
 #' @seealso  \code{\link{analyzeDuplicated}}
 #' @param data an object of class msexperiment
 #' @param countmax maximum number of duplicate comparisons
+#' @param maxpep number of peptides to compare
 analyzeDuplicatedProteins = function(data,maxpep=3,countmax = 1000){
   rownames = data$pepinfo$ProteinName
   dups=getListOfDuplicated( rownames )
   analyzeDuplicated( data ,dups , maxpep= maxpep,countmax=countmax)
 }
-#' analyse duplicated protein - same protein id different peptide take top peptides
+#' analyse duplicated protein peptides - same protein id different peptide take top peptides
 #'
 #' @export
 #' @examples
@@ -144,6 +145,7 @@ analyzeDuplicatedProteins = function(data,maxpep=3,countmax = 1000){
 #' @seealso \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedPeptides}}
 #' @seealso  \code{\link{analyzeDuplicated}}
 #' @param data an object of class msexperiment
+#' @param maxpep maximum number of peptides to compare
 #' @param countmax maximum number of duplicate comparisons
 analyzeDuplicatedProteinsTOP = function(data,maxpep=3,countmax = 1000){
   rownames = data$pepinfo$ProteinName

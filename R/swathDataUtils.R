@@ -352,13 +352,51 @@ mycolnames  = function(data,newNames)
 #' dimnames(SDat)
 reordercolumns  = function( data, ord = NULL )
 {
-  columns = c("Intensity", "score", "rt", "mz") 
-  for(i in columns)
+  elements = c("Intensity", "score", "rt", "mz") 
+  for(i in elements)
   {
     if(length(ord)==0){
       ord= order(colnames(data[[i]]))
     }
     data[[i]] = data[[i]][,ord]
+  }
+  return(data)
+}
+#'remove a specific samples from the dataset
+#'@export
+#'@examples
+#'data(SDat)
+#'colnames(SDat$Intensity)
+#'new = removeSamples(SDat, sample=c("chludwig_L110830_20_SW","chludwig_L110830_22_SW"))
+#'colnames(new$Intensity)
+#'new = removeSamples(SDat, NULL)
+#'colnames(new$Intensity)
+#'
+removeSamples = function(data, samples){
+  for(sample in samples){
+    data = removeSample(data,sample)
+  }
+  return(data)
+}
+#'remove sample from dataset
+#'@export
+#'@examples
+#'data(SDat)
+#'new = removeSample(SDat, sample="chludwig_L110830_20_SW")
+#'colnames(new$Intensity)
+#'new = removeSample(SDat, sample=NULL)
+#'colnames(new$Intensity)
+removeSample = function(data, sample){
+  if(is.null(sample)){
+    return(data)
+  }
+  colnam = colnames(data$Intensity)
+  if(sample %in% colnam){
+    elements = c("Intensity", "score", "rt", "mz") 
+    for(element in elements)
+    {
+      data[[element]] = data[[element]] [,colnames(data[[element]]) != sample,drop=FALSE]
+    }
   }
   return(data)
 }

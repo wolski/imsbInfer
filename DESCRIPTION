@@ -14,4 +14,4 @@ Description: Objects and functions (S3) to import, export,
 Version: 0.2.3
 Date: 2014-04-01
 Depends:
-    roxygen2,data.table, gplots, reshape2
+    roxygen2,data.table, gplots, reshape2, scales, RColorBrewer

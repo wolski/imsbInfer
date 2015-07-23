@@ -50,7 +50,7 @@ transitions2wide = function(far){
   apa = as.character(far$aggr_Peak_Area)
   afa = as.character(far$aggr_Fragment_Annotation)
   orig = basename(as.character(far$align_origfilename))
-  orig = sub("_SW_with_dscore.*","",orig)
+  orig = sub("_with_dscore.*","",orig)
   
   # split transition intensities
   transints = lapply(apa,function(x){unlist(strsplit(x,";"))})
