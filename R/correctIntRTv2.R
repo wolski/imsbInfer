@@ -4,11 +4,11 @@
 #' res = c(rnorm(1000,0,1),rnorm(2000,4,3))
 #' res2 = runrobscale(res)
 #' par(mfrow=c(2,1))
-#' plot(res,type="p",pch="x",col=1)
+#' plot(res,type="p",pch="x",col=1,cex=0.3)
 #' lines(res2$runmed,col=3)
 #' 
 #' y = runFun( res2$scaled, k=51, func=mad )
-#' hist(y)
+#' #hist(y)
 #' y2 = runFun(res2$scaled,k=51,func=median)
 #' plot(res2$scaled,pch="*")
 #' lines(y2,col=2,lwd=3)
@@ -32,15 +32,14 @@ runrobscale = function(arefw,k=101,scale=TRUE){
 #' running total ion count scaling (TIC)
 #' @export
 #' @examples
-#' res = c(rnorm(1000,3,2),rnorm(2000,4,1))
-#' res2 = runTIC(res)
-#' plot(res,type="p",pch="x",col=1)
+#' res = c(rnorm(1000,3,2),rnorm(2000,8,1))
+#' res2 = runTICscale(res)
+#' plot(res,type="p",pch=".",col=1,cex=0.5)
 #' lines(1:length(res),res2$tic,col=3)
 #' points(res2$scaled, pch=".",cex=3,col=2)
-#' length(res2$scaled)
 #' 
 #' @seealso correctIntRTv2 for context
-runTIC = function(arefw,k=101,scale=NULL){
+runTICscale = function(arefw,k=101,scale=NULL){
   madref <- runFun(arefw,k=k,mean)
   mediana1w <- arefw / madref
   return(list("scaled"  = mediana1w, "tic" = madref))
@@ -50,7 +49,7 @@ runTIC = function(arefw,k=101,scale=NULL){
 correctIntRTv2 <- function(obj, ... ){
   UseMethod('correctIntRTv2')
 }
-#' correct Intensity RT using func
+#' correct Intensity RT using func, i.e. runrobscale (default)
 #' @aliases correctIntRTv2
 #' @param obj to correct
 #' @param rto  retention time
@@ -62,6 +61,7 @@ correctIntRTv2 <- function(obj, ... ){
 #' @export
 #' @author Witold Wolski 
 #' @examples
+#' @seealso runrobscale runTic
 #' res = c(rnorm(1000,0,1),rnorm(2000,0,3))
 #' res[sample(1:length(res),100)] = NA
 #' rto = as.numeric(1:length(res))

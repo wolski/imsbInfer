@@ -6,6 +6,12 @@
 #' @param dim - should rows (1) or columns (2:default) be scaled
 #' @param center - subract median (default:TRUE)
 #' @param scale - scale by mad  (default:FALSE)
+#' @examples 
+#' data(SDat)
+#' boxplot(SDat$Intensity)
+#' tmp = asinh(SDat$Intensity)
+#' tmp = robustscale(tmp)
+#' boxplot(tmp)
 robustscale <- function(data, dim=2, center=TRUE, scale=TRUE){
   if(center){
     medians <- apply(data,dim,median,na.rm=TRUE)

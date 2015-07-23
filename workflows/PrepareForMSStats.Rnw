@@ -1,0 +1,100 @@
+\documentclass{article}
+
+\title{Prepare Data for Analysis}
+\author{W. Wolski}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+
+\title{TISSUES}
+
+<<eval=FALSE>>=
+rm(list=ls())
+SpecLib = ("data/E1503161309_feature_alignment_requant.tsv")
+Samples2Remove = "ywu_K150219_007_SW"
+FileSampleMapping = "data/mappingNew.tsv"
+
+#ouptups
+MSSTATS_INPUT="output/MSStatsInputFile.tsv"
+MSEXPERIMENT="output/msexporiTrans.rda"
+
+#parameters - map ms stats Conditions to Tissue
+Condition="Tissue"
+BioReplicate="Strain"
+
+#filter transitions/peptides by mscore
+scorethresh=0.005
+fraction=0.25
+
+#how many transitions to select
+maxNRTransitions = 5
+maxNRPeptides = 10
+@
+
+<<eval=TRUE>>=
+library(imsbInfer)
+library(compiler)
+enableJIT(2)
+@
+
+<<eval=TRUE>>=
+# load the data
+obj = fread(SpecLib)
+
+# number of transitions / peptide
+nrt = maxNRTransitions
+# nr of peptides per protein
+peptop = maxNRPeptides
+
+obj=prepareDF(obj)
+colnames(obj)
+msexpori = loadTransitonsMSExperiment(obj,nrt=nrt,peptop=peptop)
+length(unique(msexpori$pepinfo$transition_group_id))
+stopifnot(nrt==length(msexpori$pepinfo$transition_group_id) / length(unique(msexpori$pepinfo$transition_group_id)))
+
+msexpori = removeDecoys(msexpori)
+
+tmp = grep("^1\\/",msexpori$pepinfo$ProteinName)
+msexpori = subset(msexpori, tmp)
+#msexpori = setRequantToNA(msexpori)
+
+dim(msexpori)
+msexporif = filterByScore(msexpori, scorethresh =scorethresh, n = round(dim(msexpori)[2] * fraction))
+dim(msexporif)
+@
+
+<<>>=
+msexpori = msexporif
+
+msexpori = removeSamples(msexpori, sample=Samples2Remove)
+
+ncn = read.table(FileSampleMapping,header=T,stringsAsFactors = FALSE)
+ncn = ncn[ ncn$Filename != Samples2Remove, ]
+
+stopifnot(ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),"Filename"] == colnames(msexpori$Intensity))
+
+msstatsformat = convert2MSstats(msexpori)
+ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),2]
+
+
+msexpori = mycolnames(msexpori,ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),1])
+colnames(msexpori$Intensity)
+save(msexpori,file="output/msexporiTrans.rda")
+@
+
+<<>>=
+msstatsformat$Intensity = msstatsformat$Intensity+1
+dim(msstatsformat)
+head(msstatsformat)
+msstatsformat  = merge(msstatsformat, ncn, by.x = "Run", by.y = "Filename")
+colnames(msstatsformat)[which(colnames(msstatsformat) == Condition)] = "Condition"
+colnames(msstatsformat)[which(colnames(msstatsformat) == BioReplicate)] = "BioReplicate"
+
+write.table(msstatsformat,file=MSSTATS_INPUT)
+
+@
+
+
+
+
+\end{document}

@@ -1,30 +1,28 @@
 \documentclass{article}
 
-\title{Aggregate Proteins}
+\title{Aggregate Proteins and normalize data}
 \author{W. Wolski}
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 \maketitle
 
-\maketitle
-
 Before running this Sweave File run the PrerpareForMSStatsEH2.Rnw file.
 
 <<echo=FALSE>>=
-rm(list=ls())
 library(compiler)
 enableJIT(2)
 
 @
 
 Parameter setup
-<<parameter setup>>=
+<<parameter setup,eval=TRUE>>=
+rm(list=ls())
 library(imsbInfer)
 TOPPeptidesPerProtein = 3
 # this file is generated using the PrepareForMSStatsEH2 script...
 RAW_OUTPUT="output/ProteinQuant3TOP3TOPRAW.txt"
 TRANSFORMED_OUTPUT="output/ProteinQuant3TOP3TOPRAWTransformed.txt"
-load("msexporiTrans.rda")
+TRANSFORMED_RT_OUTPUT="output/ProteinQuant3TOP3TOPRAWTransformed_RT.txt"
 
 
 @
@@ -32,6 +30,8 @@ load("msexporiTrans.rda")
 Compute peptide intensities from transitions:
 
 <<aggregateProteins>>=
+load("output/msexporiTrans.rda")
+
 specPep = aggregatePeptides(msexpori)
 specPep = orderByRT(specPep)
 @
@@ -64,6 +64,36 @@ write.table(specProtST$Intensity,TRANSFORMED_OUTPUT)
 <<fig=TRUE>>=
 pln = specProtST$Intensity
 colnames(pln)
+sampcol<-split2table(colnames(pln))[,1]
+
+pln = robustscale(pln)
+par(mar=c(4,4,4,4))
+
+classes = as.numeric(as.factor(sampcol))
+nrclasses = length(unique(classes))
+nrclasses = max(3,min(11,nrclasses))
+library(RColorBrewer)
+colors = brewer.pal(nrclasses, "PiYG")
+simpleheatmap(pln,ColSideColors= colors[classes])
+@
+
+
+RT dependent normalization
+<<>>=
+specPepRT = correctIntRTv1(specPep,plot=T)
+dim(specPepRT)
+
+specPepST = selectTopPeptidesPerProtein(specPepRT,peptop = TOPPeptidesPerProtein)
+dim(specPepST)
+specProtST= aggregateProteins(specPepST)
+
+specProtST$Intensity = asinh(specProtST$Intensity)
+specProtST$Intensity = robustscale(specProtST$Intensity)
+
+pln = specProtST$Intensity
+
+write.table(specProtST$Intensity,file = TRANSFORMED_RT_OUTPUT)
+
 sampcol<-split2table(colnames(pln))[,1]
 
 pln = robustscale(pln)
