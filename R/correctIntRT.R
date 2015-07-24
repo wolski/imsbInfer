@@ -1,6 +1,7 @@
 #' correct intensity over RT for entire msexperiment
 #'
 #' @export
+#' @param obj object
 correctIntRTv1 <- function(obj, ... ){
   UseMethod('correctIntRTv1')
 }
@@ -10,6 +11,7 @@ correctIntRTv1 <- function(obj, ... ){
 #' @param rto  retention time (ordered)
 #' @param k  smoothing with
 #' @param FUN running function - for equal median use runmed, for equal max use i.e. runFUN(x,k=300,max)
+#' @param plot if TRUE create debug plot
 #' @return corrected data
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
@@ -54,8 +56,11 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, FUN = funct
 #' correct intensity over RT for entire msexperiment
 #'
 #' @export
+#' @param obj a matrix
+#' @param rt retention time
+#' @param k smoothing with (data points)
 # select reference dataset
-correctIntRTv1.matrix = function(obj,rt,k=501,plot=F,...)
+correctIntRTv1.matrix = function(obj,rt,k=501,...)
 {
   intensity = obj
   nas = apply( intensity, 2 , function(x){sum(is.na(x))} )
@@ -71,7 +76,7 @@ correctIntRTv1.matrix = function(obj,rt,k=501,plot=F,...)
   for(i in 1:dim(intensity)[2])
   {
     intensV = intensity[,i]
-    corrected = correctIntRTv1( obj  = unlist(reference), data = unlist(intensV) , rto = rt , plot=plot , k=k )
+    corrected = correctIntRTv1( obj  = unlist(reference), data = unlist(intensV) , rto = rt ,  k=k )
     intensity[,i] = corrected
   }
   return(intensity)
@@ -90,11 +95,11 @@ correctIntRTv1.matrix = function(obj,rt,k=501,plot=F,...)
 #' data(SDat)
 #' SDatal = correctIntRTv1(SDat,plot=F)
 #' 
-correctIntRTv1.msexperiment = function(obj,k=501,plot=F, ...){
+correctIntRTv1.msexperiment = function(obj,k=501, ...){
   experiment = obj
   experiment = removeDecoys(experiment)
   experiment = orderByRT(experiment)
-  experiment$Intensity = correctIntRTv1(obj = experiment$Intensity,rt = experiment$RT,k=501,plot=F,...)
+  experiment$Intensity = correctIntRTv1(obj = experiment$Intensity,rt = experiment$RT,k=501,...)
   return(experiment)
 }
 

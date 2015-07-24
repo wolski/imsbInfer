@@ -232,6 +232,8 @@ analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000,
 #' \item proteinTOP - The correlation among peaks derived from the same protein and having good intensities.
 #' \item peptide - correlation of peaks representing the same peptide but with different charge.
 #' }
+#' @param specLib msexperiment
+#' @param countmax max number of comparisons
 #' @export
 compPeptideCorrelations = function(specLib,countmax= 500){
   xxPeptide = analyzeDuplicatedPeptides( specLib , countmax=countmax )
