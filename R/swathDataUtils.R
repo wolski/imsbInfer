@@ -163,6 +163,7 @@ subset.msexperiment<- function(x,idx,...){
 #' @export
 #' @examples
 #' data(feature_alignment_requant) 
+#' feature_alignment_requant = prepareDF(feature_alignment_requant)
 #' SDat =  convertLF2Wideformat(  feature_alignment_requant  ) 
 #' @seealso \code{\link{convert2msExperiment}} for contex
 convertLF2Wideformat=function(aligtable){
@@ -196,7 +197,8 @@ convertLF2Wideformat=function(aligtable){
   mz = aligtable[,as.list(mz),by=transition_group_id]
   setnames(mz,c("transition_group_id", unique(aligtable$align_origfilename )))
   Sys.setlocale("LC_COLLATE", loccoll)
-  return(list(protmapping=unique(protmapping), Intensity=ints, rt=rt,score=score,mz=mz, aligtable=aligtable))
+  tmp = list(protmapping=unique(protmapping), Intensity=ints, rt=rt,score=score,mz=mz, aligtable=aligtable)
+  return(tmp)
 }
 # gnerate peptide information from transition_group_id
 .preparePepinfo <- function (nams) {
@@ -282,7 +284,6 @@ read2msExperiment=function(obj,...){
 #' \dontrun{res = read2msExperiment("path/to/feature_alignment_requant.tsv")}
 read2msExperiment.default=function(obj,...){
   filename = obj
-  print("read2msExperiment.default")
   aligtable=fread(filename)
   aligtable=prepareDF(aligtable)
   dim(aligtable)
@@ -296,6 +297,7 @@ read2msExperiment.default=function(obj,...){
 #' @export
 #' @examples
 #' data(feature_alignment_requant)
+#' obj=feature_alignment_requant
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' stopifnot(dim(SDat)==c(964,3))
 #' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))

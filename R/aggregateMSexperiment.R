@@ -4,6 +4,7 @@
 #' @param FUN aggregation function
 #' @examples
 #' data(feature_alignment_requant)
+#' colnames(feature_alignment_requant)
 #' dim(feature_alignment_requant)/3
 #' msexp = loadTransitonsMSExperiment( feature_alignment_requant , nrt = 3 , peptop = 3 )
 #' dim(msexp)
