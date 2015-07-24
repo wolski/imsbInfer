@@ -9,19 +9,11 @@ Overwiev
 - visualization
 - QC on peptide and protein level
 
-## How to build:
-
-- download the repository as a zip archive (see button __Download Zip__ to the right)
-- then run the sequence of commands below:
-
+## How to install:
 ```sh
-unzip imsbInfer-master.zip
-mv imsbInfer-master imsbInfer
-# to create the package documentation 
-cp imsbInfer/runrox2.R .
-Rscript runrox2.R 
-# install the package
-R CMD INSTALL imsbInfer
+install.packages("devtools")
+library(devtools)
+install_github("wolski/imsbInfer")
 ```
 
 ## Description
