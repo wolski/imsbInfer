@@ -27,6 +27,8 @@ install:
   - Rscript -e 'install.packages("roxygen2", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
   - Rscript -e 'install.packages("data.table", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
   - Rscript -e 'install.packages("reshape2", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
+  - Rscript -e 'install.packages("RColorBrewer", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
+  - Rscript -e 'install.packages("scales", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
 # run tests
 script:
   - make travis
