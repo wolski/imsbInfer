@@ -4,7 +4,7 @@
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = loadTransitonsMSExperiment(feature_alignment_requant)
-#' msstatsformat = convert2MSstats(SDat2)
+#' msstatsformat = convert2MSstats(SDat)
 #' @param msexp to convert
 convert2MSstats=function(msexp){
   #merge Intensity and pepinfo dataframes
