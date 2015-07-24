@@ -21,7 +21,6 @@ obj=feature_alignment_requant
 SDat = read2msExperiment(feature_alignment_requant)
 stopifnot(dim(SDat)==c(964,3))
 stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
-rownames(SDat$pepinfo)
 \dontrun{save(SDat,file="data/SDat.rda")}
 }
 

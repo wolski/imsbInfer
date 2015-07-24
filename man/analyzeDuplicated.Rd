@@ -25,6 +25,7 @@ analyse duplicated peptides/proteins
 data(SDat)
 rownames = SDat$pepinfo$PeptideSequence
 dups = getListOfDuplicated(rownames)
+
 res = analyzeDuplicated(SDat , dups[1:25])
 dim(res)
 res[1,]
@@ -34,7 +35,9 @@ plot(res$medianRTDiff,res$cor)
 rownames = SDat$pepinfo$PeptideSequence
 nondups = getUniqueEntries(rownames)
 length(nondups)
-res = analyzeDuplicated(SDat , list(nondups[1:25]))
+if(length(nondups > 0)){
+ res = analyzeDuplicated(SDat , list(nondups[1:25]))
+}
 }
 \seealso{
 \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedPeptides}}
