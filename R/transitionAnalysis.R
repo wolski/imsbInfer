@@ -146,7 +146,6 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' data(feature_alignment_requant)
 #' tmp = transitions2wide(feature_alignment_requant)
 #' xx = selectTopFragmentsPerPeptide(tmp)
-#' dim(xx)
 #' aggr = .aggregatepeptide(xx)
 #' dim(aggr)
 .aggregatepeptide=function(toptrans, func = sum){

@@ -11,16 +11,17 @@ Selects top nrt transitions based on median transition intensity in all runs.
 Selects top nr peptides based on median peptide intensity in all runs.
 }
 \examples{
-data(feature_alignment_requant)
+library(imsbInfer)
+data( feature_alignment_requant )
 
 #SpecLib = ("C:/Users/witek/Google Drive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
 #SpecLib = ("/media/witold/data/googledrive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
 #obj  = fread(SpecLib)
-nrt = 20
-peptop = 20
-obj =feature_alignment_requant
-x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=1000)
-x = loadTransitonsMSExperiment(feature_alignment_requant)
+#nrt = 3
+#peptop = 3
+#obj =feature_alignment_requant
+x = loadTransitonsMSExperiment( feature_alignment_requant , nrt= 3, peptop=3)
+x = loadTransitonsMSExperiment( feature_alignment_requant )
 table(table(feature_alignment_requant$transition_group_id))
 table(table(x$pepinfo$transition_group_id))
 x2 = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 20, peptop=20)

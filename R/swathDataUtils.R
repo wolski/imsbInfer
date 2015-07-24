@@ -236,7 +236,6 @@ convert2msExperiment = function(data){
   setnames(data$rt, nams)
   setnames(data$mz, nams)
   
-  #setnames(data$protmapping,nams)
   nams = data$protmapping$transition_group_id
   pepinfo = .preparePepinfo(nams)
   nametable = data.frame(transition_group_id=as.character(data$protmapping$transition_group_id),
@@ -244,7 +243,6 @@ convert2msExperiment = function(data){
                          ProteinName = as.character(data$protmapping$ProteinName),
                          stringsAsFactors = FALSE)
 
-  #nametable  = nametable[order(nametable$transition_group_id),]
   nrcol = dim(data$Intensity)[2]
   SwathDat = list(Intensity = as.matrix(data$Intensity[,2:nrcol,with=F] ) ,
                   score = as.matrix(data$score[,2:nrcol,with=F] ) ,
@@ -301,7 +299,6 @@ read2msExperiment.default=function(obj,...){
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' stopifnot(dim(SDat)==c(964,3))
 #' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
-#' rownames(SDat$pepinfo)
 #' \dontrun{save(SDat,file="data/SDat.rda")}
 read2msExperiment.data.frame=function(obj,...){
   data = prepareDF(obj)

@@ -1,19 +1,27 @@
+.syncrownames = function(msexp){
+  for(fields in names(msexp)){
+    tmp = msexp[[fields]]
+    msexp[[fields]] = tmp[order(rownames(tmp)),]
+  }
+  return(msexp)
+}
 #' load msexperiment with nrt transtions and peptides
 #' 
 #' @description Selects top nrt transitions based on median transition intensity in all runs.
 #' Selects top nr peptides based on median peptide intensity in all runs.
 #' @export
 #' @examples
-#' data(feature_alignment_requant)
+#' library(imsbInfer)
+#' data( feature_alignment_requant )
 #' 
 #' #SpecLib = ("C:/Users/witek/Google Drive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
 #' #SpecLib = ("/media/witold/data/googledrive/DataAnalysis/EBhardt/data/E1404301658-sample-SpecLib/feature_alignment_requant.tsv")
 #' #obj  = fread(SpecLib)
-#' nrt = 20
-#' peptop = 20
-#' obj =feature_alignment_requant
-#' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=1000)
-#' x = loadTransitonsMSExperiment(feature_alignment_requant)
+#' #nrt = 3
+#' #peptop = 3
+#' #obj =feature_alignment_requant
+#' x = loadTransitonsMSExperiment( feature_alignment_requant , nrt= 3, peptop=3)
+#' x = loadTransitonsMSExperiment( feature_alignment_requant )
 #' table(table(feature_alignment_requant$transition_group_id))
 #' table(table(x$pepinfo$transition_group_id))
 #' x2 = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 20, peptop=20)
@@ -30,7 +38,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   obj = prepareDF(obj)
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
-  
+  print(loccoll)
   ptm <- proc.time()
   cat("reading extended peptide information (creating msexperiment)\n - please be patient it make take a while (minutes)\n")
   
@@ -48,17 +56,20 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   cat("selecting top :", nrt , " transitions\n - please be patient it make take a while (minutes)\n")
   toptrans = selectTopFragmentsPerPeptide(data , nrt=nrt)
   gc()
-  
   ##### 
   cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")
   agrpeptide = .aggregatepeptide(toptrans)
+  dim(agrpeptide)
+  
   ## update the intensities with new intensities computed from top 2 transitions
   msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]
-  
   rownames(msexp$Intensity) = agrpeptide$transition_group_id
-  stopifnot(dim(msexp$Intensity) == dim(msexp$mz))
+  msexp$Intensity = msexp$Intensity[order(rownames(msexp$Intensity)),]
   
+  msexp = .syncrownames(msexp)
+  stopifnot(dim(msexp$Intensity) == dim(msexp$mz))
   stopifnot(rownames(msexp$Intensity) ==  rownames(msexp$mz))
+  
   stopifnot(msexp$pepinfo$transition_group_id == rownames(msexp$Intensity))
   
   # select top peptides
@@ -109,6 +120,6 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   cat("processing done in : ",proc.time() - ptm," [s] \n")
   gc()
   Sys.setlocale("LC_COLLATE", loccoll)
-  
+  print(Sys.getlocale("LC_COLLATE"))
   return(msexp)
 }

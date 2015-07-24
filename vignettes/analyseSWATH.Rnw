@@ -41,8 +41,6 @@ if(length(args)>0){
 }
 
 specLib = read2msExperiment(SpecLib)
-names(specLib)
-head(specLib$pepinfo)
 
 specLib = removeDecoys(specLib)
 
