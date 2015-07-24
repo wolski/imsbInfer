@@ -60,8 +60,8 @@ correctIntRTv2 <- function(obj, ... ){
 #' @return corrected data
 #' @export
 #' @author Witold Wolski 
+#' @seealso runrobscale runTICscale
 #' @examples
-#' @seealso runrobscale runTic
 #' res = c(rnorm(1000,0,1),rnorm(2000,0,3))
 #' res[sample(1:length(res),100)] = NA
 #' rto = as.numeric(1:length(res))

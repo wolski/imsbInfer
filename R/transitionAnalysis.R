@@ -140,9 +140,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   
   return(res)
 }
-
 #' aggregate peptide from transtion
-#' @export
 #' @examples
 #' data(feature_alignment_requant)
 #' tmp = transitions2wide(feature_alignment_requant)
@@ -287,7 +285,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   
   ##### 
   cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")
-  agrpeptide = .aggregatepeptide(toptrans)
+  agrpeptide = imsbInfer:::.aggregatepeptide(toptrans)
   
   ## update the intensities with new intensities computed from top 2 transitions
   msexp$Intensity = agrpeptide[,2:dim(agrpeptide)[2]]

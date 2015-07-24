@@ -65,7 +65,6 @@ dim(msexporif)
 
 <<>>=
 msexpori = msexporif
-
 msexpori = removeSamples(msexpori, sample=Samples2Remove)
 
 ncn = read.table(FileSampleMapping,header=T,stringsAsFactors = FALSE)
@@ -75,7 +74,6 @@ stopifnot(ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),"Filename"] == c
 
 msstatsformat = convert2MSstats(msexpori)
 ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),2]
-
 
 msexpori = mycolnames(msexpori,ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),1])
 colnames(msexpori$Intensity)

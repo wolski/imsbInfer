@@ -2,6 +2,9 @@
 #' @export
 #' @description convert msexp to msstats compatible output
 #' @examples
+#' data(feature_aligment_requant)
+#' SDat = loadTransitonsMSExperiment(feature_aligment_requant)
+#' msstatsformat = convert2MSstats(SDat)
 #' @param msexperiment to convert
 #' NULL
 convert2MSstats=function(msexp){

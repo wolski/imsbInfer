@@ -1,7 +1,7 @@
 #'A package with some utility functions for the analysis of swath data
 #'@name imsbInfer
 #'@docType package
-#'@import roxygen2 data.table
+#'@import roxygen2 data.table RcolorBrewer reshape2 scales
 NULL
 #' @name feature_alignment_requant
 #' @title feature_alignment_requant - output of feature aligner requant

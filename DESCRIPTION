@@ -4,13 +4,13 @@ License: GPL
 Title: Visualization, normalization and QC of proteomics SWATH-MS data
 Type: Package
 Author: Witold Wolski
-Description: Objects and functions (S3) to import, export,
+Description: Functions and objects (S3) to import, export,
     summarize, visualize and analyze quantification results of DIA MS proteomic
     experiments. This package is used to genrate QC reports, and to suggest
     data scaling and transformations to improve data quality and reduce batch
     effects. This package is part of a workflow to analyse data independent
     aquisition (DIA) SWATH quantificaton experiments in the R. Aebersold
-    IMSB/ETH Zurich, comprising of openSWATH, pyProphet, and MSstats.
+    IMSB/ETH Zurich, comprising of OpenSWATH, pyProphet, and MSstats.
 Version: 0.2.3
 Date: 2014-04-01
 Depends:
