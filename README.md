@@ -62,6 +62,6 @@ A lot of cool stuff to do visualization of the data.
 
 * Availability of prebuild packages:
   - Example code is run with every package check and build. The time to run all examples exceeds time limits at CRAN and BIOCONDUCTOR. Therefore,
-  prebuild packages can be downloaded from [http://fgcz-data.uzh.ch/~cpanse/imsbInfer](http://fgcz-data.uzh.ch/~cpanse/imsbInfer)
+  prebuild packages can be downloaded from [https://github.com/wolski/imsbInfer/releases](https://github.com/wolski/imsbInfer/releases)
 
 
