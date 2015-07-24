@@ -91,7 +91,7 @@ correctIntRTv2.default = function(obj, rto ,k=501, scale=FALSE, plot=TRUE,  func
 #' @param experiment - object of class msexperiment
 #' @param k - smoothing with
 #' @param scale  should scaling also be applied
-#' @param fun function to use fore scaling: \code{\link{runrobscale}} or \code{\link{runTIC}}
+#' @param fun function to use fore scaling: \code{\link{runrobscale}} or \code{\link{runTICscale}}
 #' @return msexperiment object with RT normalized intensities
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}

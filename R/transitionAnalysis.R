@@ -246,6 +246,7 @@ selectTopPeptidesPerProtein = function(msexp, peptop = 3){
 #' peptop = 20
 #' obj =feature_alignment_requant
 #' x = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 3, peptop=1000)
+#' x = loadTransitonsMSExperiment(feature_alignment_requant)
 #' table(table(feature_alignment_requant$transition_group_id))
 #' table(table(x$pepinfo$transition_group_id))
 #' x2 = loadTransitonsMSExperiment(feature_alignment_requant, nrt= 20, peptop=20)

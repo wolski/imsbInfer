@@ -2,11 +2,10 @@
 #' @export
 #' @description convert msexp to msstats compatible output
 #' @examples
-#' data(feature_aligment_requant)
-#' SDat = loadTransitonsMSExperiment(feature_aligment_requant)
-#' msstatsformat = convert2MSstats(SDat)
+#' data(feature_alignment_requant)
+#' SDat = loadTransitonsMSExperiment(feature_alignment_requant)
+#' msstatsformat = convert2MSstats(SDat2)
 #' @param msexperiment to convert
-#' NULL
 convert2MSstats=function(msexp){
   #merge Intensity and pepinfo dataframes
   int = msexp$Intensity[match(rownames(msexp$Intensity), rownames(msexp$pepinfo)),]
