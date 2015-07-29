@@ -1,5 +1,12 @@
 # it is not really python, but there is no R support on Travis CI yet
 language: r
 sudo: required
-r_packages : gplots,roxygen2,data.table,reshape2,RColorBrewer,scales
-r_github_packages: wolski/quantable
+r_packages : 
+  - gplots
+  - roxygen2
+  - data.table
+  - reshape2
+  - RColorBrewer
+  - scales
+r_github_packages: 
+  - wolski/quantable
