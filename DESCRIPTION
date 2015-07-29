@@ -13,6 +13,6 @@ Description: Functions and objects (S3) to import, export,
     IMSB/ETH Zurich, comprising of OpenSWATH, pyProphet, and MSstats.
 Version: 0.2.3
 Date: 2014-04-01
-Depends: roxygen2,data.table
+Depends: quantable, roxygen2,data.table,
 Imports: gplots, reshape2, scales, RColorBrewer
 Suggests:

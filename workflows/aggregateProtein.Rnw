@@ -2,28 +2,26 @@
 
 \title{Aggregate Proteins and normalize data}
 \author{W. Wolski}
-\begin{document}
+\begin{document}.
 \SweaveOpts{concordance=TRUE}
 \maketitle
 
 Before running this Sweave File run the PrerpareForMSStatsEH2.Rnw file.
 
-<<echo=FALSE>>=
-library(compiler)
-enableJIT(2)
-
+<<eval=FALSE>>=
+TOPPeptidesPerProtein = 3
+ASINH=FALSE
 @
 
 Parameter setup
 <<parameter setup,eval=TRUE>>=
-rm(list=ls())
 library(imsbInfer)
-TOPPeptidesPerProtein = 3
+#TOPPeptidesPerProtein = 3
 # this file is generated using the PrepareForMSStatsEH2 script...
 RAW_OUTPUT="output/ProteinQuant3TOP3TOPRAW.txt"
 TRANSFORMED_OUTPUT="output/ProteinQuant3TOP3TOPRAWTransformed.txt"
 TRANSFORMED_RT_OUTPUT="output/ProteinQuant3TOP3TOPRAWTransformed_RT.txt"
-
+#ASINH=FALSE
 
 @
 
@@ -55,8 +53,16 @@ write.table(specProtST$Intensity,RAW_OUTPUT)
 Apply asinh transformation and robust scaling.
 
 <<>>=
-specProtST$Intensity = asinh(specProtST$Intensity)
-specProtST$Intensity = robustscale(specProtST$Intensity)
+if(ASINH){
+  specProtST$Intensity = asinh(specProtST$Intensity)
+  specProtST$Intensity = robustscale(specProtST$Intensity)$data
+}else{
+  specProtST$Intensity <- specProtST$Intensity + 1
+  specProtST$Intensity = log2(specProtST$Intensity)
+  specProtST$Intensity = robustscale(specProtST$Intensity)$data
+
+}
+  
 write.table(specProtST$Intensity,TRANSFORMED_OUTPUT)
 
 @
@@ -66,7 +72,7 @@ pln = specProtST$Intensity
 colnames(pln)
 sampcol<-split2table(colnames(pln))[,1]
 
-pln = robustscale(pln)
+pln = robustscale(pln)$data
 par(mar=c(4,4,4,4))
 
 classes = as.numeric(as.factor(sampcol))
@@ -88,7 +94,7 @@ dim(specPepST)
 specProtST= aggregateProteins(specPepST)
 
 specProtST$Intensity = asinh(specProtST$Intensity)
-specProtST$Intensity = robustscale(specProtST$Intensity)
+specProtST$Intensity = robustscale(specProtST$Intensity)$data
 
 pln = specProtST$Intensity
 
@@ -96,7 +102,7 @@ write.table(specProtST$Intensity,file = TRANSFORMED_RT_OUTPUT)
 
 sampcol<-split2table(colnames(pln))[,1]
 
-pln = robustscale(pln)
+pln = robustscale(pln)$data
 par(mar=c(4,4,4,4))
 
 classes = as.numeric(as.factor(sampcol))

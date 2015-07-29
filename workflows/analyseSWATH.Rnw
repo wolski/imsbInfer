@@ -109,7 +109,7 @@ boxplot(specLib$Intensity,main="Raw intensities",pars=list(pch="."),las=2)
 
 <<fig=TRUE>>=
 par(mar=c(5,5,1,1))
-imagelabels(cor(specLib$Intensity,method="spearman",use="pairwise.complete.obs"), main="spearman correlation among samples")
+imageWithLabels(cor(specLib$Intensity,method="spearman",use="pairwise.complete.obs"), main="spearman correlation among samples")
 @
 
 <<fig=TRUE>>=
@@ -132,7 +132,7 @@ After this scaling the median and the mad of all samples is equal.
 
 <<>>=
 specLib2 = specLib
-specLib2$Intensity = robustscale(specLib2$Intensity)
+specLib2$Intensity = robustscale(specLib2$Intensity)$data
 
 @
 
@@ -143,7 +143,7 @@ boxplot(specLib2$Intensity,main="Scaling samplewise",pars=list(pch="."),las=2)
 
 <<fig=TRUE>>=
 par(mar=c(5,5,1,1))
-imagelabels(cor(specLib2$Intensity,method="spearman",use="pairwise.complete.obs"), main="spearman correlation among samples")
+imageWithLabels(cor(specLib2$Intensity,method="spearman",use="pairwise.complete.obs"), main="spearman correlation among samples")
 @
 
 <<fig=TRUE>>=
@@ -183,7 +183,7 @@ boxplot(specLib4$Intensity,main="scaling RT intensities",pars=list(pch="."),las=
 
 <<fig=TRUE>>=
 par(mar=c(5,5,1,1))
-imagelabels(cor(specLib4$Intensity,method="spearman",use="pairwise.complete.obs"),main="spearman correlation among samples")
+imageWithLabels(cor(specLib4$Intensity,method="spearman",use="pairwise.complete.obs"),main="spearman correlation among samples")
 @
 
 <<fig=TRUE>>=

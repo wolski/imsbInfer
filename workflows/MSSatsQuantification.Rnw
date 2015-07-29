@@ -38,7 +38,7 @@ simpleheatmap(as.matrix(msstatsformat))
 @
 
 <<fig=TRUE,echo=FALSE>>=
-imagelabels(cor(msstatsformat))
+imageWithLabels(cor(msstatsformat))
 @
 
 
