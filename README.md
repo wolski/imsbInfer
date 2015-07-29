@@ -11,8 +11,14 @@ Overwiev
 
 ## How to install:
 ```sh
+#setup dependencies
 install.packages("devtools")
+packs <- c("roxygen2","data.table","gplots","reshape2","scales","RColorBrewer")
+install.packages(packs)
 library(devtools)
+install_github("wolski/quantable")
+
+#install the package from github
 install_github("wolski/imsbInfer")
 ```
 
