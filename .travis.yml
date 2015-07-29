@@ -1,4 +1,4 @@
-# it is not really python, but there is no R support on Travis CI yet
+
 language: r
 sudo: required
 r_packages : 
