@@ -1,34 +1,5 @@
 # it is not really python, but there is no R support on Travis CI yet
-language: python
-
-# environment variables
-env:
-  global:
-    - R_LIBS_USER=~/R
-  matrix:
-    - TARGET=travis
-    #- TARGET=integration DISPLAY=:99.0
-
-# capturing state, early exit if no integration test is needed
-before_install:
-  - env | sort
-  
-# install dependencies
-install:
-  - sudo apt-add-repository -y "deb http://cran.rstudio.com/bin/linux/ubuntu `lsb_release -cs`/"
-  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-  - sudo apt-add-repository -y ppa:marutter/c2d4u
-  - sudo apt-get update
-  - sudo apt-get install r-base-dev r-cran-xml r-cran-rcurl r-recommended r-cran-knitr
-  - "[ ! -d ${R_LIBS_USER} ] && mkdir ${R_LIBS_USER}"
-  - R --version
-  - R -e '.libPaths(); sessionInfo()'
-  - Rscript -e 'install.packages("gplots", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
-  - Rscript -e 'install.packages("roxygen2", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
-  - Rscript -e 'install.packages("data.table", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
-  - Rscript -e 'install.packages("reshape2", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
-  - Rscript -e 'install.packages("RColorBrewer", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
-  - Rscript -e 'install.packages("scales", dep = TRUE, repos = c("http://rforge.net", "http://cran.rstudio.org"))'
-# run tests
-script:
-  - make travis
+language: r
+sudo: required
+r_packages : gplots,roxygen2,data.table,reshape2,RColorBrewer,scales
+r_github_packages: wolski/quantable
