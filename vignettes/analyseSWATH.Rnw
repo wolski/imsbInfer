@@ -28,22 +28,14 @@ The analysis was created using the R-package imsbInfer which can be downloaded f
 We start with loading the data:
 
 <<sp1,echo=TRUE,results=hide>>=
-rm(list=ls())
 library(imsbInfer)
-SpecLib = NULL
-args <- commandArgs(TRUE)
-if(length(args)>0){
-  SpecLib <- args[1]
-  print(SpecLib)
-}else{
+if(!exists("SpecLib")){
   data(feature_alignment_requant)
   SpecLib = feature_alignment_requant
 }
 
 specLib = read2msExperiment(SpecLib)
-
 specLib = removeDecoys(specLib)
-
 specLib$Intensity = asinh(specLib$Intensity)
 dim(specLib)
 @
@@ -51,7 +43,6 @@ dim(specLib)
 What is the number of NA's on transition level in the dataset?
 
 <<fig=TRUE>>=
-specLib$Intensity
 par(mar=c(10,5,1,1))
 barplot(apply(specLib$Intensity,2,function(x){sum(is.na(x))} ),las=2,main="missing data")
 @

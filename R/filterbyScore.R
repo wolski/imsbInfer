@@ -3,6 +3,7 @@
 #' @param msexp object of class msexperiment
 #' @param scorethresh - score threshold
 #' @param n - number of samples which need to have a score for this feature below the threshold
+#' @return msexperiment 
 #' @export
 #' @examples
 #' NULL

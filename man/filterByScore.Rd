@@ -7,11 +7,14 @@
 filterByScore(msexp, scorethresh = 0.001, n = 2)
 }
 \arguments{
+\item{msexp}{object of class msexperiment}
+
 \item{scorethresh}{- score threshold}
 
 \item{n}{- number of samples which need to have a score for this feature below the threshold}
-
-\item{object}{of class msexperiment}
+}
+\value{
+msexperiment
 }
 \description{
 require that at least n features have a mscore less than maxscore
