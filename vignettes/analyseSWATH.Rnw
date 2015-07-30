@@ -2,9 +2,7 @@
 \usepackage{hyperref}
 
 \title{How does normalization influence feature correlation}
-
 \author{Witold Wolski}
-
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
