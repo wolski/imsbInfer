@@ -56,7 +56,7 @@ transitions2wide = function(far){
   transints = lapply(apa,function(x){unlist(strsplit(x,";"))})
   # split transition names
   transids = lapply(afa,function(x){unlist(strsplit(x,";"))})
-    # prepare output
+  # prepare output
   lx = length(transids)
   transids <<-transids
   idss = vector(length=lx,mode="list")

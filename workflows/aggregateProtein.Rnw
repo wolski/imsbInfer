@@ -18,10 +18,10 @@ Parameter setup
 library(imsbInfer)
 #TOPPeptidesPerProtein = 3
 # this file is generated using the PrepareForMSStatsEH2 script...
+
 RAW_OUTPUT="output/ProteinQuant3TOP3TOPRAW.txt"
-TRANSFORMED_OUTPUT="output/ProteinQuant3TOP3TOPRAWTransformed.txt"
+TRANSFORMED_OUTPUT="output/proteinQuant3TOP3TOPRAWTransformed.txt"
 TRANSFORMED_RT_OUTPUT="output/ProteinQuant3TOP3TOPRAWTransformed_RT.txt"
-#ASINH=FALSE
 
 @
 

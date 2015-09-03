@@ -19,7 +19,7 @@
 #' #obj  = fread(SpecLib)
 #' #nrt = 3
 #' #peptop = 3
-#' #obj =feature_alignment_requant
+#' obj =feature_alignment_requant
 #' x = loadTransitonsMSExperiment( feature_alignment_requant , nrt= 3, peptop=3)
 #' x = loadTransitonsMSExperiment( feature_alignment_requant )
 #' table(table(feature_alignment_requant$transition_group_id))
@@ -46,7 +46,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   
   # long running function
   cat("extracting single transtion intensities\n - please be patient it make take a while (minutes)\n")
-  data =  transitions2wide(obj)
+  transitiondata =  transitions2wide(obj)
   # this will read in also the full annotation (which peptide belongs to which protein)
   #rm(obj)
   gc()
@@ -54,7 +54,7 @@ loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
   ##### selecting top 2-n fragments ####
   # long running
   cat("selecting top :", nrt , " transitions\n - please be patient it make take a while (minutes)\n")
-  toptrans = selectTopFragmentsPerPeptide(data , nrt=nrt)
+  toptrans = selectTopFragmentsPerPeptide(transitiondata , nrt=nrt)
   gc()
   ##### 
   cat("aggregating peptide intensities based on top :", nrt , " transitons.\n")

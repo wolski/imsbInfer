@@ -163,6 +163,7 @@ subset.msexperiment<- function(x,idx,...){
 #' @export
 #' @examples
 #' data(feature_alignment_requant) 
+#' aligtable = feature_alignment_requant
 #' feature_alignment_requant = prepareDF(feature_alignment_requant)
 #' SDat =  convertLF2Wideformat(  feature_alignment_requant  ) 
 #' @seealso \code{\link{convert2msExperiment}} for contex
