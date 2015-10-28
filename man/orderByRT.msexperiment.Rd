@@ -7,7 +7,7 @@
 \method{orderByRT}{msexperiment}(obj)
 }
 \arguments{
-\item{experiment}{obj}
+\item{obj}{experiment}
 }
 \description{
 orders rows by retention time of peptide

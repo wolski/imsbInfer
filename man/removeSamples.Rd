@@ -6,6 +6,11 @@
 \usage{
 removeSamples(data, samples)
 }
+\arguments{
+\item{data}{msexperiment}
+
+\item{samples}{which samples to remove}
+}
 \description{
 remove a specific samples from the dataset
 }

@@ -8,6 +8,8 @@ removeDecoys(obj, ...)
 }
 \arguments{
 \item{obj}{object}
+
+\item{...}{unused}
 }
 \description{
 remove decoys

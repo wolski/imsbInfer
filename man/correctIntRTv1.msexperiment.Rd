@@ -7,9 +7,11 @@
 \method{correctIntRTv1}{msexperiment}(obj, k = 501, ...)
 }
 \arguments{
+\item{obj}{- object of class msexperiment}
+
 \item{k}{- smoothing with}
 
-\item{experiment}{- object of class msexperiment}
+\item{...}{(unused)}
 }
 \value{
 msexperiment object with RT normalized intensities

@@ -4,7 +4,10 @@
 \alias{getListOfDuplicated}
 \title{find duplicated entries in vector}
 \usage{
-getListOfDuplicated(rownames)
+getListOfDuplicated(dataw)
+}
+\arguments{
+\item{dataw}{data}
 }
 \value{
 list with indices of duplicated entries

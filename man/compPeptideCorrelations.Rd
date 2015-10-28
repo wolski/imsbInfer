@@ -20,4 +20,11 @@ compPeptideCorrelations(specLib, countmax = 500)
 \item peptide - correlation of peaks representing the same peptide but with different charge.
 }
 }
+\examples{
+data(SDat)
+specLib = orderByRT(SDat)
+pairsDifference(specLib$Intensity,specLib$RT)
+
+res = compPeptideCorrelations(specLib,countmax=100)
+}
 

@@ -2,6 +2,8 @@
 #'
 #' @export
 #' @param obj object
+#' @param ... parameters for specialized functions
+#' 
 correctIntRTv1 <- function(obj, ... ){
   UseMethod('correctIntRTv1')
 }
@@ -9,9 +11,10 @@ correctIntRTv1 <- function(obj, ... ){
 #' @param obj  reference data - ordered by retention time
 #' @param data to correct
 #' @param rto  retention time (ordered)
+#' @param plot if TRUE create debug plot
 #' @param k  smoothing with
 #' @param FUN running function - for equal median use runmed, for equal max use i.e. runFUN(x,k=300,max)
-#' @param plot if TRUE create debug plot
+#' @param ... unused
 #' @return corrected data
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}
@@ -21,7 +24,10 @@ correctIntRTv1 <- function(obj, ... ){
 #' experiment = orderByRT(experiment)
 #' cor = correctIntRTv1(experiment$Intensity[,1], experiment$Intensity[,2],experiment$RT,k=51)
 #' cor = correctIntRTv1(experiment$Intensity[,1], experiment$Intensity[,2],experiment$RT,k=51,FUN=function(x,k=k){print(k);runFun(x,k=k,mean)})
-correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, FUN = function(x,k=k){runmed(x,k=k,endrule="constant")}, ...){
+correctIntRTv1.default <- function(obj, data, rto,
+                                   plot=TRUE,k=501,
+                                   FUN = function(x,k=k){runmed(x,k=k,endrule="constant")},...)
+  {
   aref = obj  
   a1=data
   #remove missing values
@@ -59,8 +65,8 @@ correctIntRTv1.default <- function(obj, data, rto , plot=TRUE,k=501, FUN = funct
 #' @param obj a matrix
 #' @param rt retention time
 #' @param k smoothing with (data points)
-# select reference dataset
-correctIntRTv1.matrix = function(obj,rt,k=501,...)
+#' @param ... (unused)
+correctIntRTv1.matrix <- function(obj,rt,k=501,...)
 {
   intensity = obj
   nas = apply( intensity, 2 , function(x){sum(is.na(x))} )
@@ -86,8 +92,9 @@ correctIntRTv1.matrix = function(obj,rt,k=501,...)
 #' 
 #' @note reorders all entries in experiment according to RT, finds sample with fewest NA's if there are many picks that one
 #' with largest median as reference.
-#' @param experiment - object of class msexperiment
+#' @param obj - object of class msexperiment
 #' @param k - smoothing with
+#' @param ... (unused)
 #' @return msexperiment object with RT normalized intensities
 #' @export
 #' @author Witold Wolski \email{wolski@@gmail.com}

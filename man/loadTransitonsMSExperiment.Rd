@@ -6,6 +6,13 @@
 \usage{
 loadTransitonsMSExperiment(obj, nrt = 3, peptop = 3)
 }
+\arguments{
+\item{obj}{a table produced by feature alignment}
+
+\item{nrt}{number of transitions}
+
+\item{peptop}{nr of top peptides}
+}
 \description{
 Selects top nrt transitions based on median transition intensity in all runs.
 Selects top nr peptides based on median peptide intensity in all runs.

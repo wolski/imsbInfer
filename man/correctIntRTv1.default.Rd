@@ -20,6 +20,8 @@
 \item{k}{smoothing with}
 
 \item{FUN}{running function - for equal median use runmed, for equal max use i.e. runFUN(x,k=300,max)}
+
+\item{...}{unused}
 }
 \value{
 corrected data

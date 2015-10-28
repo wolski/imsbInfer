@@ -8,6 +8,8 @@ correctIntRTv1(obj, ...)
 }
 \arguments{
 \item{obj}{object}
+
+\item{...}{parameters for specialized functions}
 }
 \description{
 correct intensity over RT for entire msexperiment

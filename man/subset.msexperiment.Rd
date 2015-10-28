@@ -8,9 +8,11 @@
 \method{subset}{msexperiment}(x, idx, ...)
 }
 \arguments{
+\item{x}{msexperiment}
+
 \item{idx}{row indices to keep or of TRUE, FALSE vector}
 
-\item{data}{msexperiment}
+\item{...}{unused}
 }
 \description{
 subset data given idx vector

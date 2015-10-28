@@ -7,9 +7,11 @@
 \method{keepRTRange}{msexperiment}(obj, rtrange = c(1000, 7000), ...)
 }
 \arguments{
+\item{obj}{msexperiment}
+
 \item{rtrange}{rt range to keep default 1000 - 7000}
 
-\item{data}{msexperiment}
+\item{...}{unused}
 }
 \description{
 filter data given RT range

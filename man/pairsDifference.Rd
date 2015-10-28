@@ -11,9 +11,9 @@ pairsDifference(dataf, RT, main = "", ylim = NULL, maxPanel = 8)
 
 \item{RT}{retention time vector}
 
-\item{main}{}
+\item{main}{title}
 
-\item{ylim}{}
+\item{ylim}{axis extend}
 
 \item{maxPanel}{maximum number of datasets to display. dim(dataf)[2] > maxPanel, maxPanel columns are sampled}
 }

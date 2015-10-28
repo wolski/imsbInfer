@@ -6,6 +6,11 @@
 \usage{
 mycolnames(data, newNames)
 }
+\arguments{
+\item{data}{data}
+
+\item{newNames}{newNames}
+}
 \description{
 allows to set colnames for all the matrices in msexperiment
 }

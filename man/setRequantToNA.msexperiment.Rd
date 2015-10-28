@@ -7,7 +7,7 @@
 \method{setRequantToNA}{msexperiment}(obj)
 }
 \arguments{
-\item{experiment}{obj}
+\item{obj}{experiment}
 }
 \description{
 removes requant values from dataset

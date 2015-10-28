@@ -6,6 +6,9 @@
 \usage{
 summaryCors(res)
 }
+\arguments{
+\item{res}{result of compPeptideCorrelations}
+}
 \description{
 summaryCors
 }

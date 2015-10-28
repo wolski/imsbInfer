@@ -6,6 +6,9 @@
 \usage{
 \method{dimnames}{msexperiment}(x)
 }
+\arguments{
+\item{x}{msexperiment}
+}
 \description{
 show colnames (it does'nt let you set the columns)
 }

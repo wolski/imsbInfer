@@ -9,6 +9,9 @@
 #' 
 #' @description Selects top nrt transitions based on median transition intensity in all runs.
 #' Selects top nr peptides based on median peptide intensity in all runs.
+#' @param obj a table produced by feature alignment
+#' @param nrt number of transitions
+#' @param peptop nr of top peptides
 #' @export
 #' @examples
 #' library(imsbInfer)
@@ -34,7 +37,7 @@
 #' xx = split2table(rownames(x$pepinfo),split="-")
 #' stopifnot(xx[,1] == x$pepinfo$transition_group_id)
 #' stopifnot(xx[,2] == x$pepinfo$aggr_Fragment_Annotation)
-loadTransitonsMSExperiment = function(obj, nrt =3, peptop = 3){
+loadTransitonsMSExperiment <- function(obj, nrt =3, peptop = 3){
   obj = prepareDF(obj)
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")

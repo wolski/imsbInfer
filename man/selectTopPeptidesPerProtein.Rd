@@ -7,7 +7,9 @@
 selectTopPeptidesPerProtein(msexp, peptop = 3)
 }
 \arguments{
-\item{newprot}{data.frame with}
+\item{msexp}{data.frame with}
+
+\item{peptop}{how many top peptides}
 }
 \description{
 this function selects the top x peptides / protein

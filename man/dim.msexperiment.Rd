@@ -6,6 +6,9 @@
 \usage{
 \method{dim}{msexperiment}(x)
 }
+\arguments{
+\item{x}{msexperiment}
+}
 \description{
 dimension
 }

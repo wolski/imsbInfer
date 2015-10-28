@@ -8,7 +8,9 @@
 \method{read2msExperiment}{default}(obj, ...)
 }
 \arguments{
-\item{filename}{filename to an openswath feature alignment output.}
+\item{obj}{filename to an openswath feature alignment output}
+
+\item{...}{unused}
 }
 \value{
 msexperiment

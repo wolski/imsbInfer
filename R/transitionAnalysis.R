@@ -1,5 +1,5 @@
 #' checks input file for required columns - removes nonrequired columns from data.frame
-#'
+#' @param df ouptut fo OpenSwath feature aligner
 #' @export
 #' @examples
 #' library(imsbInfer)
@@ -32,7 +32,9 @@ prepareDF <- function(df){
 #' transition_group_id, 
 #' aggr_Peak_Area,
 #' aggr_Fragment_Annotion,
-#' align_origfilename, 
+#' align_origfilename,
+#' 
+#' @param far convert to wide format 
 #' @export
 #' @examples
 #' data(feature_alignment_requant)
@@ -41,7 +43,7 @@ prepareDF <- function(df){
 #' names(df)
 #' dim(feature_alignment_requant)
 #' dim(tmp)[1]/dim(feature_alignment_requant)[1]*3
-transitions2wide = function(far){
+transitions2wide <- function(far){
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
@@ -148,7 +150,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' xx = selectTopFragmentsPerPeptide(tmp)
 #' aggr = .aggregatepeptide(xx)
 #' dim(aggr)
-.aggregatepeptide=function(toptrans, func = sum){
+.aggregatepeptide <- function(toptrans, func = sum){
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
@@ -166,7 +168,8 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 }
 
 #' this function selects the top x peptides / protein
-#' @param newprot data.frame with 
+#' @param msexp data.frame with
+#' @param peptop how many top peptides
 #' @export
 #' @examples
 #' data(SDat)
@@ -176,7 +179,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
 #' table(table(x$pepinfo$ProteinName))
 #' stopifnot(rownames(x$pepinfo)[1:10]==rownames(x$Intensity)[1:10])
 #' stopifnot( length(unique(SDat$pepinfo$ProteinName)) == length(unique(x$pepinfo$ProteinName)) )
-selectTopPeptidesPerProtein = function(msexp, peptop = 3){
+selectTopPeptidesPerProtein <- function(msexp, peptop = 3){
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   

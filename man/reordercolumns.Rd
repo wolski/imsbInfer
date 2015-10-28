@@ -7,9 +7,9 @@
 reordercolumns(data, ord = NULL)
 }
 \arguments{
-\item{ord}{new ordering - if null then use ordering by column names}
+\item{data}{msexperiment to reorder}
 
-\item{msexperiment}{to reorder}
+\item{ord}{new ordering - if null then use ordering by column names}
 }
 \description{
 reorders all the matrices by the columnnames

@@ -6,6 +6,13 @@
 \usage{
 plotPairCors(res, main = "", xlim = c(-1, 1))
 }
+\arguments{
+\item{res}{result of compPeptideCorrelations}
+
+\item{main}{title}
+
+\item{xlim}{image range}
+}
 \description{
 plot the output of compPeptideCorrelations
 }

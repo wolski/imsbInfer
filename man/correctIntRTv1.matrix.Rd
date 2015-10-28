@@ -12,6 +12,8 @@
 \item{rt}{retention time}
 
 \item{k}{smoothing with (data points)}
+
+\item{...}{(unused)}
 }
 \description{
 correct intensity over RT for entire msexperiment

@@ -6,6 +6,9 @@
 \usage{
 prepareDF(df)
 }
+\arguments{
+\item{df}{ouptut fo OpenSwath feature aligner}
+}
 \description{
 checks input file for required columns - removes nonrequired columns from data.frame
 }

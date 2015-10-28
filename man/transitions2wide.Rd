@@ -6,6 +6,9 @@
 \usage{
 transitions2wide(far)
 }
+\arguments{
+\item{far}{convert to wide format}
+}
 \description{
 the input table required fields are:
 transition_group_id,

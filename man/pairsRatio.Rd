@@ -4,7 +4,16 @@
 \alias{pairsRatio}
 \title{plot log2(x/y) against retention time}
 \usage{
-pairsRatio(dataframesel, RT, main = "", ylim = c(-2, 2))
+pairsRatio(data, RT, main = "", ylim = c(-2, 2))
+}
+\arguments{
+\item{data}{data.frame with intensities}
+
+\item{RT}{rt information (same langth as nrow(data))}
+
+\item{main}{main title}
+
+\item{ylim}{y image extend}
 }
 \description{
 plot log2(x/y) against retention time

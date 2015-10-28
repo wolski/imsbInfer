@@ -6,6 +6,11 @@
 \usage{
 getListOfDuplicatedOrderedByIntensity(rownames, intensities)
 }
+\arguments{
+\item{rownames}{rownames}
+
+\item{intensities}{intensities}
+}
 \description{
 get a list of duplicates (their indices) ordered by intensity
 }

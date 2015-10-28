@@ -7,7 +7,9 @@
 \method{read2msExperiment}{data.frame}(obj, ...)
 }
 \arguments{
-\item{data}{a data.frame in long format}
+\item{obj}{a data.frame in long format}
+
+\item{...}{unused}
 }
 \value{
 msexperiment

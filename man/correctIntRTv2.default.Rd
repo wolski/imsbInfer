@@ -20,6 +20,8 @@
 \item{plot}{show diagnostic plot}
 
 \item{func}{function to apply for scaling see runrobscale}
+
+\item{...}{(unused)}
 }
 \value{
 corrected data

@@ -36,8 +36,9 @@ randomPairs = function(n, pepidx)
   return(res)
 }
 #' find duplicated entries in vector
-#' @return list with indices of duplicated entries 
+#' @return list with indices of duplicated entries
 #' 
+#' @param dataw data
 #' @export
 #' @examples
 #' data(SDat)
@@ -54,16 +55,18 @@ randomPairs = function(n, pepidx)
 #' stopifnot((unlist(lapply(res,length)) >= 2) == TRUE)
 #' rownames[res[[1]]]
 #' @seealso \code{\link{analyzeDuplicated}} for contex
-getListOfDuplicated = function(  rownames ){
-  dups = unique(rownames[which(duplicated(rownames))])
+getListOfDuplicated <- function(  dataw ){
+  dups = unique(dataw[which(duplicated(dataw))])
   res = list(length(dups))
   for(i in 1:length(dups)){
-    res[[i]]= which(rownames %in% dups[i])
+    res[[i]]= which(dataw %in% dups[i])
   }
   return(res)
 }
 #' get a list of duplicates (their indices) ordered by intensity
 #' 
+#' @param rownames rownames
+#' @param intensities intensities
 #' @export
 #' @examples
 #' nam = c('a','a','b','e','c','d','f','e','e')
@@ -80,7 +83,7 @@ getListOfDuplicated = function(  rownames ){
 #' res
 #' intens[res[[81]]]
 #' rownames[res[[81]]]
-getListOfDuplicatedOrderedByIntensity = function(  rownames, intensities ){
+getListOfDuplicatedOrderedByIntensity <- function( rownames, intensities ){
   dups = unique(rownames[which(duplicated(rownames))])
   res = list(length(dups))
   for(i in 1:length(dups)){
@@ -105,7 +108,11 @@ getListOfDuplicatedOrderedByIntensity = function(  rownames, intensities ){
 #' @seealso \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedProteins}}
 #' @param data msExperiment
 #' @param countmax maximum number of duplicate comparisons
-analyzeDuplicatedPeptides = function(data,countmax = 1000){
+#' @examples
+#' data(SDat)
+#' analyzeDuplicatedPeptides(SDat)
+#' 
+analyzeDuplicatedPeptides <- function(data,countmax = 1000){
   rownames = data$pepinfo$PeptideSequence
   dups=getListOfDuplicated( rownames )
   analyzeDuplicated( data ,dups, countmax = countmax )
@@ -113,6 +120,11 @@ analyzeDuplicatedPeptides = function(data,countmax = 1000){
 #' analyse duplicated protein peptide - same protein id different peptide
 #'
 #' @export
+#' @seealso \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedPeptides}}
+#' @seealso  \code{\link{analyzeDuplicated}}
+#' @param data an object of class msexperiment
+#' @param countmax maximum number of duplicate comparisons
+#' @param maxpep number of peptides to compare
 #' @examples
 #' data(SDat)
 #' res = analyzeDuplicatedProteins(SDat)
@@ -121,11 +133,7 @@ analyzeDuplicatedPeptides = function(data,countmax = 1000){
 #' plot(res$medianRTDiff,res$cor)
 #' #same for proteins
 #' rownames = as.character(SDat$pepinfo$ProteinName)
-#' @seealso \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedPeptides}}
-#' @seealso  \code{\link{analyzeDuplicated}}
-#' @param data an object of class msexperiment
-#' @param countmax maximum number of duplicate comparisons
-#' @param maxpep number of peptides to compare
+#' 
 analyzeDuplicatedProteins = function(data,maxpep=3,countmax = 1000){
   rownames = data$pepinfo$ProteinName
   dups=getListOfDuplicated( rownames )
@@ -134,6 +142,11 @@ analyzeDuplicatedProteins = function(data,maxpep=3,countmax = 1000){
 #' analyse duplicated protein peptides - same protein id different peptide take top peptides
 #'
 #' @export
+#' @seealso \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedPeptides}}
+#' @seealso  \code{\link{analyzeDuplicated}}
+#' @param data an object of class msexperiment
+#' @param maxpep maximum number of peptides to compare
+#' @param countmax maximum number of duplicate comparisons
 #' @examples
 #' data(SDat)
 #' res = analyzeDuplicatedProteinsTOP(SDat)
@@ -142,11 +155,7 @@ analyzeDuplicatedProteins = function(data,maxpep=3,countmax = 1000){
 #' plot(res$medianRTDiff,res$cor)
 #' #same for proteins
 #' rownames = as.character(SDat$pepinfo$ProteinName)
-#' @seealso \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedPeptides}}
-#' @seealso  \code{\link{analyzeDuplicated}}
-#' @param data an object of class msexperiment
-#' @param maxpep maximum number of peptides to compare
-#' @param countmax maximum number of duplicate comparisons
+#' 
 analyzeDuplicatedProteinsTOP = function(data,maxpep=3,countmax = 1000){
   rownames = data$pepinfo$ProteinName
   dups=getListOfDuplicatedOrderedByIntensity( rownames, apply(data$Intensity,1,mean) )
@@ -154,6 +163,13 @@ analyzeDuplicatedProteinsTOP = function(data,maxpep=3,countmax = 1000){
 }
 
 #' analyse duplicated peptides/proteins
+#' @seealso \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedPeptides}}
+#' @export
+#' @param data - msExperiment
+#' @param dups - list as returned by function \code{\link{getListOfDuplicated}}
+#' @param maxpep - limit the number of duplicated peptides
+#' @param countmax - limit the total number of comparisons
+#' @param method - type of correlation to compute
 #' @examples
 #' data(SDat)
 #' rownames = SDat$pepinfo$PeptideSequence
@@ -171,13 +187,6 @@ analyzeDuplicatedProteinsTOP = function(data,maxpep=3,countmax = 1000){
 #' if(length(nondups > 0)){
 #'  res = analyzeDuplicated(SDat , list(nondups[1:25]))
 #' }
-#' @seealso \code{\link{getListOfDuplicated}} \code{\link{analyzeDuplicatedPeptides}}
-#' @export
-#' @param data - msExperiment
-#' @param dups - list as returned by function \code{\link{getListOfDuplicated}}
-#' @param maxpep - limit the number of duplicated peptides
-#' @param countmax - limit the total number of comparisons
-#' @param method - type of correlation to compute
 analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000,
                              method="spearman"){
   res = NULL
@@ -237,6 +246,13 @@ analyzeDuplicated = function(data, dups, maxpep=3, countmax = 1000,
 #' @param specLib msexperiment
 #' @param countmax max number of comparisons
 #' @export
+#' @examples
+#' data(SDat)
+#' specLib = orderByRT(SDat)
+#' pairsDifference(specLib$Intensity,specLib$RT)
+#' 
+#' res = compPeptideCorrelations(specLib,countmax=100)
+#' 
 compPeptideCorrelations = function(specLib,countmax= 500){
   xxPeptide = analyzeDuplicatedPeptides( specLib , countmax=countmax )
   xxProt = analyzeDuplicatedProteins( specLib , countmax=countmax )
@@ -253,8 +269,12 @@ compPeptideCorrelations = function(specLib,countmax= 500){
   return(pp)
 }
 #' plot the output of compPeptideCorrelations
+#' @param  res result of compPeptideCorrelations
+#' @param main title
+#' @param xlim image range
 #' @export
-plotPairCors=function(res,main="",xlim=c(-1,1))
+#' 
+plotPairCors <- function(res, main="",xlim = c( -1, 1 ))
 {
   Dpep = density(res$peptide$cor, na.rm = TRUE)
   Drandom = density(res$random$cor, na.rm = TRUE)
@@ -274,8 +294,10 @@ plotPairCors=function(res,main="",xlim=c(-1,1))
   abline(v=0)
 }
 #' summaryCors
+#' @param res result of compPeptideCorrelations
 #' @export
-summaryCors = function(res){
+#' 
+summaryCors <- function(res){
   xx = cbind(summary(res[[1]]$cor),
              summary(res[[2]]$cor)
              ,summary(res[[3]]$cor)

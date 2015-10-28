@@ -8,6 +8,8 @@ keepRTRange(obj, ...)
 }
 \arguments{
 \item{obj}{object}
+
+\item{...}{unused}
 }
 \description{
 removes unwanted RT ranges

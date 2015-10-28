@@ -8,13 +8,17 @@
   func = runrobscale, plot = FALSE, ...)
 }
 \arguments{
-\item{k}{- smoothing with}
+\item{obj}{object of class msexperiment}
+
+\item{k}{smoothing with}
 
 \item{scale}{should scaling also be applied}
 
-\item{experiment}{- object of class msexperiment}
+\item{func}{function to use fore scaling: \code{\link{runrobscale}} or \code{\link{runTICscale}}}
 
-\item{fun}{function to use fore scaling: \code{\link{runrobscale}} or \code{\link{runTICscale}}}
+\item{plot}{plot}
+
+\item{...}{unused}
 }
 \value{
 msexperiment object with RT normalized intensities

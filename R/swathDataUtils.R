@@ -2,11 +2,11 @@ if(getRversion() >= "3.1.0") utils::suppressForeignCheck("localvariable")
 #' removes requant values from dataset
 #' @param obj obj
 #' @export
-setRequantToNA = function(obj){
+setRequantToNA <- function(obj){
   UseMethod('setRequantToNA')
 }
 #'  removes requant values from dataset
-#' @param experiment obj
+#' @param obj experiment
 #' @export
 #' @examples
 #' data(SDat)
@@ -15,7 +15,7 @@ setRequantToNA = function(obj){
 #' SDatRT$RT[1:10] 
 #' SDat = setRequantToNA(SDat)
 #' head(SDat$rt)
-setRequantToNA.msexperiment = function(obj){
+setRequantToNA.msexperiment <- function(obj){
   experiment = obj
   idx = experiment$score < 1
   experiment$Intensity[!idx] = NA
@@ -33,11 +33,11 @@ setRequantToNA.msexperiment = function(obj){
 #' order by RT
 #' @param obj obj
 #' @export
-orderByRT = function(obj){
+orderByRT <- function(obj){
   UseMethod('orderByRT')
 }
 #' orders rows by retention time of peptide
-#' @param experiment obj
+#' @param obj experiment 
 #' @export
 #' @examples
 #' data(SDat)
@@ -45,7 +45,7 @@ orderByRT = function(obj){
 #' SDat=orderByRT(SDat)
 #' head(SDat$rt)
 #' SDat$RT[1:10] 
-orderByRT.msexperiment = function(obj){
+orderByRT.msexperiment <- function(obj){
   experiment = obj
   RT = apply(experiment$rt , 1 , median, na.rm=TRUE )
   #order relevant data by retention time
@@ -61,11 +61,11 @@ orderByRT.msexperiment = function(obj){
 #' order by Key
 #' @param obj obj
 #' @export
-orderByKey = function(obj){
+orderByKey <- function(obj){
   UseMethod('orderByKey')
 }
 #' orders rows by rowkey
-#' @param experiment obj
+#' @param obj experiment 
 #' @export
 #' @examples
 #' data(SDat)
@@ -73,7 +73,7 @@ orderByKey = function(obj){
 #' SDat=orderByKey(SDat)
 #' rownames(SDat$Intensity)
 #' 
-orderByKey.msexperiment = function(obj){
+orderByKey.msexperiment <- function(obj){
   experiment = obj
   #order relevant data by retention time
   rto = order(rownames(experiment$Intensity))
@@ -90,13 +90,15 @@ orderByKey.msexperiment = function(obj){
 
 #' remove decoys
 #' @param obj object
+#' @param ... unused
 #' @export
-removeDecoys = function(obj,...){
+removeDecoys <- function(obj,...){
   UseMethod('removeDecoys')
 }
 
 #' remove decoys and decoy column from msexperiment
-#' @param data msexperiment
+#' @param obj msexperiment
+#' @param ... unused
 #' @export
 #' 
 #' @examples
@@ -106,20 +108,22 @@ removeDecoys = function(obj,...){
 #' SDat = removeDecoys(SDat)
 #' lapply(SDat,dim)
 #' 
-removeDecoys.msexperiment = function(obj,...){
+removeDecoys.msexperiment <- function(obj,...){
   data = obj
   return(subset(data,!data$pepinfo$decoy))
 }
 #' removes unwanted RT ranges
 #' @param obj object
+#' @param ... unused
 #' @export
-keepRTRange <- function(obj, ...){
+keepRTRange <- function(obj, ... ){
   UseMethod('keepRTRange')
 }
 #' filter data given RT range
 #'
-#' @param data msexperiment
+#' @param obj msexperiment
 #' @param rtrange rt range to keep default 1000 - 7000
+#' @param ... unused
 #' @export
 #' @examples
 #' data(feature_alignment_requant)
@@ -127,7 +131,7 @@ keepRTRange <- function(obj, ...){
 #' dim(SDat)
 #' SD2 = keepRTRange(SDat,c(3000,4000))
 #' dim(SD2)
-keepRTRange.msexperiment<- function(obj,rtrange=c(1000,7000),...){
+keepRTRange.msexperiment <- function(obj , rtrange=c(1000,7000),...){
   data = obj
   RT = apply( data$rt , 1 , median )
   idx = RT > rtrange[1] &  RT < rtrange[2]
@@ -136,8 +140,9 @@ keepRTRange.msexperiment<- function(obj,rtrange=c(1000,7000),...){
 
 #' subset data given idx vector
 #' @aliases subset
-#' @param data msexperiment
+#' @param x msexperiment
 #' @param idx row indices to keep or of TRUE, FALSE vector
+#' @param ... unused
 #' @export
 #' @examples
 #' data(SDat)
@@ -146,7 +151,7 @@ keepRTRange.msexperiment<- function(obj,rtrange=c(1000,7000),...){
 #' dim(SDat)
 #' SDatr = subset(SDat, mass < 800)
 #' dim(SDatr)
-subset.msexperiment<- function(x,idx,...){
+subset.msexperiment <- function(x,idx,...){
   data=x
   data$Intensity = data$Intensity[idx,,drop=FALSE]
   data$score = data$score[idx,,drop=FALSE]
@@ -166,7 +171,8 @@ subset.msexperiment<- function(x,idx,...){
 #' feature_alignment_requant = prepareDF(feature_alignment_requant)
 #' SDat =  convertLF2Wideformat(  feature_alignment_requant  ) 
 #' @seealso \code{\link{convert2msExperiment}} for contex
-convertLF2Wideformat=function(aligtable){
+#' 
+convertLF2Wideformat <- function(aligtable){
   loccoll = Sys.getlocale("LC_COLLATE")
   Sys.setlocale("LC_COLLATE", "C")
   
@@ -225,7 +231,7 @@ convertLF2Wideformat=function(aligtable){
 #' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
 #' stopifnot(dim(SDat$Intensity) == dim(SDat$mz), dim(SDat$mz) == dim(SDat$score))
 #' @seealso \code{\link{read2msExperiment}} and \code{\link{convertLF2Wideformat}} for contex
-convert2msExperiment = function(data){
+convert2msExperiment <- function(data){
   nams=colnames(data$Intensity)
   # prepare the column names
   nams = sub("Intensity_","",nams)
@@ -267,12 +273,13 @@ convert2msExperiment = function(data){
 }
 
 #' @export
-read2msExperiment=function(obj,...){
+read2msExperiment <- function(obj,...){
   UseMethod('read2msExperiment')
 }
 #' read 2 feature alginer long format and generate an msexperiment (takes peptide quantifications of feature aligner)
 #' @aliases read2msExperiment
-#' @param filename filename to an openswath feature alignment output.
+#' @param obj filename to an openswath feature alignment output
+#' @param ... unused
 #' @return msexperiment
 #' @export
 #' @examples
@@ -280,7 +287,7 @@ read2msExperiment=function(obj,...){
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
 #' \dontrun{res = read2msExperiment("path/to/feature_alignment_requant.tsv")}
-read2msExperiment.default=function(obj,...){
+read2msExperiment.default <- function(obj,...){
   filename = obj
   aligtable=fread(filename)
   aligtable=prepareDF(aligtable)
@@ -290,7 +297,8 @@ read2msExperiment.default=function(obj,...){
   return(data)
 }
 #' convert data.frame 2 msexperiment
-#' @param data a data.frame in long format
+#' @param obj a data.frame in long format
+#' @param ... unused
 #' @return msexperiment
 #' @export
 #' @examples
@@ -300,7 +308,7 @@ read2msExperiment.default=function(obj,...){
 #' stopifnot(dim(SDat)==c(964,3))
 #' stopifnot(rownames(SDat$pepinfo)==rownames(SDat$Intensity))
 #' \dontrun{save(SDat,file="data/SDat.rda")}
-read2msExperiment.data.frame=function(obj,...){
+read2msExperiment.data.frame <- function(obj,...){
   data = prepareDF(obj)
   data = convertLF2Wideformat(data)
   data = convert2msExperiment(data)
@@ -309,28 +317,33 @@ read2msExperiment.data.frame=function(obj,...){
 }
 #' dimension
 #'
+#' @param x msexperiment
 #' @export
 dim.msexperiment<-function(x){
   return(dim(x$Intensity))
 }
 #' show colnames (it does'nt let you set the columns)
 #' 
+#' @param x msexperiment
 #' @examples
 #' data(feature_alignment_requant)
 #' SDat = read2msExperiment(feature_alignment_requant)
 #' dimnames(SDat)
 #' @export
-dimnames.msexperiment<-function(x){
+dimnames.msexperiment <- function(x){
   return(colnames(x$Intensity))
 }
 #' allows to set colnames for all the matrices in msexperiment
 #'
+#' @param data data
+#' @param newNames newNames
 #' @export
 #' @examples
+#' 
 #' data(SDat)
 #' SDat = mycolnames(SDat, c("bal1","bla2","bla3"))
 #' 
-mycolnames  = function(data,newNames)
+mycolnames <- function(data,newNames)
 {
   columns = c("Intensity", "score", "rt", "mz") 
   for(i in columns)
@@ -340,7 +353,7 @@ mycolnames  = function(data,newNames)
   return(data)
 }
 #' reorders all the matrices by the columnnames
-#' @param msexperiment to reorder
+#' @param data msexperiment to reorder
 #' @param ord new ordering - if null then use ordering by column names
 #' @export
 #' @examples
@@ -349,7 +362,7 @@ mycolnames  = function(data,newNames)
 #' dimnames(SDat)
 #' SDat = reordercolumns(SDat)
 #' dimnames(SDat)
-reordercolumns  = function( data, ord = NULL )
+reordercolumns  <- function( data, ord = NULL )
 {
   elements = c("Intensity", "score", "rt", "mz") 
   for(i in elements)
@@ -361,31 +374,38 @@ reordercolumns  = function( data, ord = NULL )
   }
   return(data)
 }
-#'remove a specific samples from the dataset
-#'@export
-#'@examples
-#'data(SDat)
-#'colnames(SDat$Intensity)
-#'new = removeSamples(SDat, sample=c("chludwig_L110830_20_SW","chludwig_L110830_22_SW"))
-#'colnames(new$Intensity)
-#'new = removeSamples(SDat, NULL)
-#'colnames(new$Intensity)
+#' remove a specific samples from the dataset
+#' @param data msexperiment
+#' @param samples which samples to remove
+#' @export
+#' 
+#' 
+#' @examples
+#' 
+#' data(SDat)
+#' colnames(SDat$Intensity)
+#' new = removeSamples(SDat, sample=c("chludwig_L110830_20_SW","chludwig_L110830_22_SW"))
+#' colnames(new$Intensity)
+#' new = removeSamples(SDat, NULL)
+#' colnames(new$Intensity)
 #'
-removeSamples = function(data, samples){
+removeSamples <- function(data, samples){
   for(sample in samples){
     data = removeSample(data,sample)
   }
   return(data)
 }
-#'remove sample from dataset
-#'@export
-#'@examples
-#'data(SDat)
-#'new = removeSample(SDat, sample="chludwig_L110830_20_SW")
-#'colnames(new$Intensity)
-#'new = removeSample(SDat, sample=NULL)
-#'colnames(new$Intensity)
-removeSample = function(data, sample){
+#' remove sample from dataset
+#' @export
+#' @param data msexperiment
+#' @param sample which sample to remove
+#' @examples
+#' data(SDat)
+#' new = removeSample(SDat, sample="chludwig_L110830_20_SW")
+#' colnames(new$Intensity)
+#' new = removeSample(SDat, sample=NULL)
+#' colnames(new$Intensity)
+removeSample <- function(data, sample){
   if(is.null(sample)){
     return(data)
   }

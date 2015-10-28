@@ -7,7 +7,9 @@
 \method{removeDecoys}{msexperiment}(obj, ...)
 }
 \arguments{
-\item{data}{msexperiment}
+\item{obj}{msexperiment}
+
+\item{...}{unused}
 }
 \description{
 remove decoys and decoy column from msexperiment
