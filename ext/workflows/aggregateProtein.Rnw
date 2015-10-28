@@ -29,9 +29,9 @@ Compute peptide intensities from transitions:
 
 <<aggregateProteins>>=
 load("output/msexporiTrans.rda")
-
 specPep = aggregatePeptides(msexpori)
 specPep = orderByRT(specPep)
+
 @
 
 Remove peptides that have a missing values:
@@ -39,6 +39,7 @@ Remove peptides that have a missing values:
 <<keepOnlyNonNa,echo=FALSE>>=
 tmp = apply(specPep$Intensity, 1, function(x){ sum(is.na(x)) == 0 })
 specPep = subset( specPep, tmp )
+
 @
 
 Next protein quantities for downstream analysis are computed using the function aggregateProteins
@@ -46,8 +47,8 @@ Next protein quantities for downstream analysis are computed using the function 
 <<echo=FALSE>>=
 specPepST = selectTopPeptidesPerProtein(specPep,peptop = TOPPeptidesPerProtein)
 specProtST= aggregateProteins(specPepST)
-
 write.table(specProtST$Intensity,RAW_OUTPUT)
+
 @
 
 Apply asinh transformation and robust scaling.
@@ -68,24 +69,26 @@ write.table(specProtST$Intensity,TRANSFORMED_OUTPUT)
 @
 
 <<fig=TRUE>>=
+
 pln = specProtST$Intensity
 colnames(pln)
 sampcol<-split2table(colnames(pln))[,1]
 
 pln = robustscale(pln)$data
-par(mar=c(4,4,4,4))
 
 classes = as.numeric(as.factor(sampcol))
 nrclasses = length(unique(classes))
 nrclasses = max(3,min(11,nrclasses))
 library(RColorBrewer)
 colors = brewer.pal(nrclasses, "PiYG")
-simpleheatmap(pln,ColSideColors= colors[classes])
+par(mar=c(8,4,4,4))
+simpleheatmap(pln,ColSideColors= colors[classes], main="test")
+
 @
 
 
 RT dependent normalization
-<<>>=
+<<fig=TRUE>>=
 specPepRT = correctIntRTv1(specPep,plot=T)
 dim(specPepRT)
 

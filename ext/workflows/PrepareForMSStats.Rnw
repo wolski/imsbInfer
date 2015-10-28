@@ -66,17 +66,16 @@ dim(msexporif)
 <<>>=
 msexpori = msexporif
 msexpori = removeSamples(msexpori, sample=Samples2Remove)
-
 ncn = read.table(FileSampleMapping,header=T,stringsAsFactors = FALSE)
+
 ncn = ncn[ ncn$Filename != Samples2Remove, ]
 
-stopifnot(ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),"Filename"] == colnames(msexpori$Intensity))
+ncnOrdering <- match(colnames(msexpori$Intensity),ncn$Filename )
+stopifnot(ncn$Filename[ncnOrdering] == colnames(msexpori$Intensity))
 
 msstatsformat = convert2MSstats(msexpori)
-ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),2]
 
-msexpori = mycolnames(msexpori,ncn[match(ncn$Filename ,colnames(msexpori$Intensity)),1])
-colnames(msexpori$Intensity)
+msexpori = mycolnames(msexpori,ncn[ncnOrdering,1])
 save(msexpori,file="output/msexporiTrans.rda")
 @
 
