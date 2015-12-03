@@ -81,7 +81,7 @@ nrclasses = max(3,min(11,nrclasses))
 library(RColorBrewer)
 colors = brewer.pal(nrclasses, "PiYG")
 par(mar=c(8,4,4,4))
-simpleheatmap(pln,ColSideColors= colors[classes], main="test")
+simpleheatmap(pln,ColSideColors= colors[classes], dendrogram = "column")
 
 @
 

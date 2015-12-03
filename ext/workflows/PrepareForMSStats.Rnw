@@ -80,6 +80,7 @@ stopifnot(ncn$Filename[ncnOrdering] == colnames(msexpori$Intensity))
 
 msstatsformat = convert2MSstats(msexpori)
 msexpori = mycolnames(msexpori,ncn[ncnOrdering,1])
+save(msexpori,file=MSEXPERIMENT)
 @
 
 <<>>=
