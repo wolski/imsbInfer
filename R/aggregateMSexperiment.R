@@ -1,4 +1,7 @@
-#' aggregate peptides - given msexperiment with transitons
+#' aggregate peptides
+#' 
+#' Given msexperiment with transitons aggregate the transitions to produce precursor intensities
+#'
 #' @export
 #' @param msexp msexperiment object
 #' @param FUN aggregation function
@@ -25,7 +28,7 @@ aggregatePeptides=function(msexp, FUN = sum)
     x = x[, -1]
     return(as.matrix(x))
   }
-  stopifnot(rownames(msexp$Intensity) == rownames(msexp$pepinfo))
+  stopifnot( rownames(msexp$Intensity) == rownames(msexp$pepinfo) )
   aggval = list(msexp$pepinfo$transition_group_id)
   intensity = aggregate(msexp$Intensity, by = aggval, FUN = FUN)
   res = msexp

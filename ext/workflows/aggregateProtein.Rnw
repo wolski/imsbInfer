@@ -61,7 +61,6 @@ if(ASINH){
   specProtST$Intensity <- specProtST$Intensity + 1
   specProtST$Intensity = log2(specProtST$Intensity)
   specProtST$Intensity = robustscale(specProtST$Intensity)$data
-
 }
   
 write.table(specProtST$Intensity,TRANSFORMED_OUTPUT)
@@ -88,7 +87,7 @@ simpleheatmap(pln,ColSideColors= colors[classes], main="test")
 
 
 RT dependent normalization
-<<fig=TRUE>>=
+<<fig=FALSE, eval=FALSE>>=
 specPepRT = correctIntRTv1(specPep,plot=T)
 dim(specPepRT)
 

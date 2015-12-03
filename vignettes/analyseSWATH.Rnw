@@ -33,7 +33,9 @@ if(!exists("SpecLib")){
 }
 
 specLib = read2msExperiment(SpecLib)
+
 specLib = removeDecoys(specLib)
+
 specLib$Intensity = asinh(specLib$Intensity)
 dim(specLib)
 @
@@ -51,6 +53,15 @@ What is the number of requant values / run?
 par(mar=c(10,5,1,1))
 barplot(apply(specLib$score,2,function(x){sum(x==2,na.rm=TRUE)/length(x)*100}),ylab="% of requant values",xlab="run",las=2)
 dim(specLib$score)
+@
+
+
+
+<<fig=TRUE>>=
+#par(mar=c(10,5,1,1))
+tmp<-apply(specLib$score,1,function(x){sum(x==2,na.rm=TRUE)})
+nrcols<-ncol(specLib$score)
+plot(cumsum(table(tmp))/sum(table(tmp)),type="l",ylim=c(0,1),xlab="nr of requant", ylab="% of precursor")
 @
 
 
