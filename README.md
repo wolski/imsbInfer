@@ -64,7 +64,7 @@ A lot of cool stuff to do visualization of the data.
   - correlations among samples
   - similarity of distributions among samples (ks.test).
 
-* nice looking volcanoplot (moved to package [quantable](https://github.com/protviz/quantable)
+* nice looking volcanoplot (moved to package [quantable](https://github.com/protviz/quantable))
 
 * Availability of prebuild packages:
   - Example code is run with every package check and build. The time to run all examples exceeds time limits at CRAN and BIOCONDUCTOR. Therefore,
@@ -72,5 +72,5 @@ A lot of cool stuff to do visualization of the data.
 
 # Related work
 
-(SWATH2stats)[http://www.bioconductor.org/packages/release/bioc/html/SWATH2stats.html]
-
+* [SWATH2stats](http://www.bioconductor.org/packages/release/bioc/html/SWATH2stats.html)
+* [aLFQ](https://cran.r-project.org/web/packages/aLFQ/index.html)
