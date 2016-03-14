@@ -17,17 +17,17 @@
 #' dim(y)
 #' stopifnot(table(table(y$pepinfo$transition_group_id)) == 247)
 #' @seealso aggregateProtein
-aggregatePeptides=function(msexp, FUN = sum)
+aggregatePeptides = function(msexp, FUN = sum)
 {
   # fixing incopatibility with data.table
   loccoll = Sys.getlocale("LC_COLLATE")
-  loccoll
   Sys.setlocale("LC_COLLATE", "C")
   tomatrix = function(x) {
     rownames(x) = x[, 1]
     x = x[, -1]
     return(as.matrix(x))
   }
+  
   stopifnot( rownames(msexp$Intensity) == rownames(msexp$pepinfo) )
   aggval = list(msexp$pepinfo$transition_group_id)
   intensity = aggregate(msexp$Intensity, by = aggval, FUN = FUN)

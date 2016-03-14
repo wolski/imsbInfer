@@ -76,7 +76,7 @@ transitions2wide <- function(far){
                    aggr_Peak_Area = as.numeric(unlist(transints)),
                    aggr_Fragment_Annotation =  as.character(unlist( transids) ) )
   #got wide format here...
-  data = dcast(tmp, transition_group_id + aggr_Fragment_Annotation ~ align_origfilename , value.var="aggr_Peak_Area")
+    data = dcast(tmp, transition_group_id + aggr_Fragment_Annotation ~ align_origfilename , value.var="aggr_Peak_Area")
   Sys.setlocale("LC_COLLATE", loccoll)
   
   return(data)
@@ -104,7 +104,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   Sys.setlocale("LC_COLLATE", "C")
   
   #compute median and create table with id's
-  medxx = apply(data[,3:dim(data)[2]],1,median,na.rm=TRUE)
+  medxx = apply(data[,3:ncol(data)],1, mean ,na.rm=TRUE)
   xxmex= cbind( data[,c("transition_group_id","aggr_Fragment_Annotation")] , medxx)
   tmpdt = data.table(xxmex)
   # fixing column types
@@ -113,7 +113,7 @@ selectTopFragmentsPerPeptide = function(data, nrt = 2  ){
   
   setkey(tmpdt , transition_group_id,aggr_Fragment_Annotation)
   
-  # we are going to select the top peptides for each transition group.
+  # we are going to select the top transitions for each transition group.
   transgroupid = unique( as.character(tmpdt$transition_group_id) )
   
   # prepare output matrix
@@ -185,7 +185,7 @@ selectTopPeptidesPerProtein <- function(msexp, peptop = 3){
   
   #newprot = merge(msexp$pepinfo[,c("transition_group_id","ProteinName")],agrpeptide,by.x="transition_group_id",by.y="transition_group_id")
   #compute median and create table with id's
-  medxx = apply(msexp$Intensity , 1,median,na.rm=TRUE)
+  medxx = apply(msexp$Intensity , 1,mean,na.rm=TRUE)
   xxmex = cbind( msexp$pepinfo[,c("transition_group_id","ProteinName")] , medxx)
   tmpdt = data.table(xxmex)
   
