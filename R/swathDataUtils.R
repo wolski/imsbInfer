@@ -110,7 +110,7 @@ removeDecoys <- function(obj,...){
 #' 
 removeDecoys.msexperiment <- function(obj,...){
   data = obj
-  return(subset(data,!data$pepinfo$decoy))
+  return(subset(data, !data$pepinfo$decoy) )
 }
 #' removes unwanted RT ranges
 #' @param obj object
