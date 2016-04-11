@@ -22,7 +22,7 @@
 *.tsv
 *.csv
 .Rproj.user
-.Rbuildignore
+#.Rbuildignore
 findMFDIA.Rproj
 inst
 .roxygen
