@@ -1,6 +1,20 @@
-split2long <- function(far){
+prepareDF <- function (df)
+{
+  
+  colnames(df) <- gsub("m/z","mz",colnames(df))
+  required = c("transition_group_id", "align_origfilename","decoy","FullPeptideName",
+               "RT", "mz", "Intensity", "ProteinName", "m_score", "aggr_Fragment_Annotation",
+               "aggr_Peak_Area" )
+  
+  x = match(tolower(required), tolower(colnames(df)))
+  stopifnot(required == colnames(df)[x])
+  df = df[, x]
+  df$align_origfilename <- gsub("_with_dscore_filtered.csv","", basename(df$align_origfilename))
+  return(df)
+}
+
+prepareOpenSwathData <- function(far){
   far <- data2
-  #far = feature_alignment_requant
   apa = as.character(far$aggr_Peak_Area)
   afa = as.character(far$aggr_Fragment_Annotation)
   # split transition intensities
@@ -11,7 +25,8 @@ split2long <- function(far){
   lx = length(transids)
   stopifnot(lx == nrow(far))
 
-  far<- far[, !(names(far) %in% c("aggr_Peak_Area","aggr_Fragment_Annotation"))]
+  far <- far[, !(names(far) %in% c("aggr_Peak_Area","aggr_Fragment_Annotation"))]
+  
   message("prepared dataframe")
   # extend
   lengths <-sapply(transids,length)
@@ -19,20 +34,15 @@ split2long <- function(far){
   range(idx)
   far <- far[idx, ]
   message("and finally nrow " , nrow(far), " ncol ", ncol(far))
-  far <- data.frame(far, aggr_Peak_Area = as.numeric(unlist(transints)),
-                    aggr_Fragment_Annotation =  as.character(unlist( transids) ) )
+  transids <- unlist(transids)
+  transids <- gsub("DECOY_","DECOY", transids, fixed=TRUE )
+  
+  cnamessplit <- strsplit(as.character(transids),split="_",fixed=TRUE)
+  transids <- do.call("rbind",cnamessplit)
+  
+  colnames(transids)<-c("frag_id", "ion_type","frag_charge","pep_sequence","pep_charge")
+  far <- data.frame(far, aggr_Peak_Area = as.numeric(unlist(transints)), transids )
+  head(far)
   return(far)
 }
 
-prepareDF <- function (df)
-{
-  colnames(df) <- gsub("m/z","mz",colnames(df))
-  required = c("transition_group_id", "align_origfilename","decoy",
-               "RT", "mz", "Intensity", "ProteinName", "m_score", "aggr_Fragment_Annotation",
-               "aggr_Peak_Area" )
-  x = match(tolower(required), tolower(colnames(df)))
-  stopifnot(required == colnames(df)[x])
-  df = df[, x]
-  df <- df[order(df$transition_group_id), ]
-  return(df)
-}

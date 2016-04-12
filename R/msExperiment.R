@@ -1,51 +1,22 @@
 ## a simple editor for matrix objects.  Method  $edit() changes some
 ## range of values; method $undo() undoes the last edit.
-mEdit <- setRefClass("mEdit",
-                     fields = list( data = "matrix",
-                                    edits = "list"),
+msTransitions <- setRefClass("msTransitions",
+                     fields = list( rawdata = "data.frame"),
                      methods = list(
-                       edit = function(i, j, value) {
-                         ## the following string documents the edit method
-                         'Replaces the range [i, j] of the
-                         object by value.
-                         '
-                         backup <-
-                           list(i, j, data[i,j])
-                         data[i,j] <<- value
-                         edits <<- c(edits, list(backup))
-                         invisible(value)
+                       
+                       getRT = function() {
+                         'precursor intensity matrix'
+                         
                        },
-                       undo = function() {
-                         'Undoes the last edit() operation
-                         and update the edits field accordingly.
-                         '
-                         prev <- edits
-                         if(length(prev)) prev <- prev[[length(prev)]]
-                         else stop("No more edits to undo")
-                         edit(prev[[1]], prev[[2]], prev[[3]])
-                         ## trim the edits list
-                         length(edits) <<- length(edits) - 2
-                         invisible(prev)
-                       },
-                       show = function() {
-                         'Method for automatically printing matrix editors'
-                         cat("Reference matrix editor object of class",
-                             classLabel(class(.self)), "\n")
-                         cat("Data: \n")
-                         methods::show(data)
-                         cat("Undo list is of length", length(edits), "\n")
+                       getIntensity = function() {
+                         'precursor intensity'
+                         
+                       }
+                       getInfo = function() {
+                         'precurso information'
                        }
                      ))
 
-xMat <- matrix(1:12,4,3)
-xx <- mEdit(data = xMat)
-xx$edit(2, 2, 0)
-xx
-xx$undo()
-mEdit$help("undo")
-stopifnot(all.equal(xx$data, xMat))
-
-utils::str(xx) # show fields and names of non-trivial methods
 
 ## add a method to save the object
 mEdit$methods(
