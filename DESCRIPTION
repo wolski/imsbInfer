@@ -15,11 +15,8 @@ Version: 0.2.4
 Date: 2014-04-01
 Depends:
     quantable,
-    roxygen2,data.table,
+    roxygen2,
+    reshape2
 Imports:
-    gplots,
-    reshape2,
-    scales,
-    RColorBrewer
 Suggests:
 RoxygenNote: 5.0.1
