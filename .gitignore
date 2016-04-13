@@ -24,7 +24,6 @@
 .Rproj.user
 .Rbuildignore
 findMFDIA.Rproj
-inst
 .roxygen
 deprec
 core
