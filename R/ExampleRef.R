@@ -38,7 +38,9 @@ mEdit <- setRefClass("mEdit",
                      ))
 
 xMat <- matrix(1:12,4,3)
-xx <- mEdit(data = xMat)
+xx <- mEdit()
+xx$data
+
 xx$edit(2, 2, 0)
 xx
 xx$undo()

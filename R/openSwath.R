@@ -1,3 +1,16 @@
+.formalOpenSwathMap <-list("z" = "pep_charge",
+                          "RT"="RT",
+                          "ModifiedSequence"="FullPeptideName",
+                          "Sequence"="pep_sequence",
+                          "Filename"="align_origfilename",
+                          "Decoy"="decoy", 
+                          "mz"= "mz",
+                          "Score"="m_score",
+                          "IonType"="ion_type",
+                          "FragZ"="frag_charge",
+                          "Intensity"="aggr_Peak_Area")
+
+
 prepareDF <- function (df)
 {
   
@@ -42,7 +55,10 @@ prepareOpenSwathData <- function(far){
   
   colnames(transids)<-c("frag_id", "ion_type","frag_charge","pep_sequence","pep_charge")
   far <- data.frame(far, aggr_Peak_Area = as.numeric(unlist(transints)), transids )
-  head(far)
+  
+  far <-far[,unlist(.formalOpenSwathMap)]
+  colnames(far) <- names(.formalOpenSwathMap)
+  
   return(far)
 }
 

@@ -7,31 +7,25 @@ library(readr)
 data <- read_tsv(SpecLib,col_names = TRUE)
 #tmp <-read.csv(SpecLib, stringsAsFactors = F,sep="\t",header=T)
 
-source("R/openSwath.R")
-head(data)
 
-glimpse(data)
+source("R/openSwath.R")
+
 data2 <- prepareDF(data)
-head(data2)
 data3 <- prepareOpenSwathData(data2)
-head(data3)
-dim(transids)
+
+
+
+
+dim(precData)
 
 library(reshape2)
-transIntensities = dcast(data3, transition_group_id + ion_type + frag_charge + pep_sequence ~ align_origfilename , value.var="aggr_Peak_Area")
 
-tmp <-split2table(as.character(transIntensities$aggr_Fragment_Annotation) , split = "_")
-colnames(tmp)<-c("frag_id", "ion_type","fragCharge","pepSequence","pepCharge")
+transIntensities = dcast(data4, ModifiedSequence + z + IonType + FragZ + Sequence ~ Filename , value.var="Intensity")
 
+transScore = dcast(precData, ModifiedSequence + z + Sequence ~ Filename , value.var="Score")
+transRT = dcast(precData, ModifiedSequence + z + Sequence  ~ Filename , value.var="RT")
+transMz = dcast(precData, ModifiedSequence + z + Sequence  ~ Filename , value.var="mz")
 
-head(transIntensities)
-
-
-mscore = dcast(data2, transition_group_id  ~ align_origfilename , value.var="m_score")
-rt = dcast(data2, transition_group_id ~ align_origfilename , value.var="RT")
-mz = dcast(data2, transition_group_id ~ align_origfilename , value.var="mz")
-pepIntensities = dcast(data2,  transition_group_id ~ align_origfilename , value.var="Intensity")
-
-head(data3)
-split2table(data)
-
+head(transScore)
+head(transRT)
+head(transMz)

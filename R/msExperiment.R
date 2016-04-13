@@ -1,23 +1,87 @@
+formalAllDef <-c("z", "RT",  "ModifiedSequence",
+                 "Sequence", "Filename", "Decoy",
+                 "mz", "Score", "IonType",
+                 "FragCharges", "Intensity")
+
+formalPrecDef <- c("z", "RT",  "ModifiedSequence",
+                   "Sequence", "Filename", "Decoy",
+                   "mz", "Score")
+
+
+
 ## a simple editor for matrix objects.  Method  $edit() changes some
 ## range of values; method $undo() undoes the last edit.
 msTransitions <- setRefClass("msTransitions",
-                     fields = list( rawdata = "data.frame"),
-                     methods = list(
-                       
-                       getRT = function() {
-                         'precursor intensity matrix'
-                         
-                       },
-                       getIntensity = function() {
-                         'precursor intensity'
-                         
-                       }
-                       getInfo = function() {
-                         'precurso information'
-                       }
-                     ))
+                             fields = list( transitiondata = "data.frame",
+                                            precdata = "data.frame",
+                                            columnsAll="character",
+                                            columnsPrecursor="character"),
+                             methods = list(
+                               initialize = function(...) {
+                                 .formalAllDef <-c("z", "RT",  "ModifiedSequence",
+                                                  "Sequence", "Filename", "Decoy",
+                                                  "mz", "Score", "IonType",
+                                                  "FragCharges", "Intensity")
+                                 
+                                 .formalPrecDef <- c("z", "RT",  "ModifiedSequence",
+                                                    "Sequence", "Filename", "Decoy",
+                                                    "mz", "Score")
+                                 
+                                 columnsAll <<- formalAllDef
+                                 columnsPrecursor <<- formalPrecDef
+                               },
+                               
+                               .validateColumns = function(colnames){
+                                 if(sum(columnsAll %in% colnames) != length(columnsAll)){
+                                   message("missing columns : ")
+                                   message(columnsAll[!(columnsAll %in% colnames)])
+                                   return(FALSE)
+                                   
+                                 }
+                                 return(TRUE)
+                               },
+                               
+                               setData = function(data){
+                                 'set the data'
+                                 if(.validateColumns(colnames(data))){
+                                   transitiondata <<- data[,.formalAllDef]
+                                   precdata <<- unique(transitiondata[,.formalPrecDef])
+                                   
+                                 }
+                               },
+                               
+                               getTransIntensity = function() {
+                                 'matrix with transitions intensities'
+                                 transIntensities = dcast(transitiondata, ModifiedSequence + z + IonType + FragZ + Sequence ~ Filename , value.var="Intensity")
+                                 return(transIntensities)
+                               },
+                               
+                               getRT = function() {
+                                 'matrix with precursor retention times'
+                                 transRT = dcast(precData, ModifiedSequence + z + Sequence  ~ Filename , value.var="RT")
+                                 
+                               },
+                               
+                               getScore = function() {
+                                 'matrix with precursor scores'
+                                 transScore = dcast(precData, ModifiedSequence + z + Sequence ~ Filename , value.var="Score")
+                                 return(transScore)
+                               }
+                               
+                               getMZ = function() {
+                                 'matrix with precursor mz'
+                                 transMz = dcast(precData, ModifiedSequence + z + Sequence  ~ Filename , value.var="mz")
+                                 return(transMz)
+                               }
+                               
+                             ))
 
+huhu <- msTransitions()
+huhu$columnsAll
+huhu$columnsPrecursor
+huhu$rawdata
 
+huhu$setData()
 ## add a method to save the object
 mEdit$methods(
   save = function(file) {
