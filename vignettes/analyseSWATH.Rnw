@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage{hyperref}
-\VignetteIndexEntry
+%\VignetteIndexEntry{How does normalization influence feature correlation}
 
 \title{How does normalization influence feature correlation}
 \author{Witold Wolski}
