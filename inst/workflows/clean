@@ -1,0 +1,6 @@
+rm *.log
+rm *-*.pdf
+rm *.tex
+rm *.aux
+rm *.rda
+rm *.synctex.gz
