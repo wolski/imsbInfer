@@ -1,16 +1,35 @@
-formalAllDef <-c("z", "RT",  "ModifiedSequence",
+.formalAllDef <-c("z", "RT",  "ModifiedSequence",
                  "Sequence", "Filename", "Decoy",
                  "mz", "Score", "IonType",
-                 "FragCharges", "Intensity")
+                 "FragZ", "Intensity")
 
-formalPrecDef <- c("z", "RT",  "ModifiedSequence",
+.formalPrecDef <- c("z", "RT",  "ModifiedSequence",
                    "Sequence", "Filename", "Decoy",
                    "mz", "Score")
 
 
-
-## a simple editor for matrix objects.  Method  $edit() changes some
-## range of values; method $undo() undoes the last edit.
+#' Holds Transition level data
+#' 
+#' @field transitiondata transtion data table
+#' @field precdata precursor data table
+#' @field columnsAll required columns for transitiondata
+#' @field columnsPrecursor required columns for precursor
+#' @import methods
+#' @export msTransitions
+#' @exportClass msTransitions
+#' @examples 
+#' huhu <- msTransitions()
+#' huhu$columnsAll
+#' huhu$columnsPrecursor
+#' huhu$transitiondata
+#' file = file.path(path.package("imsbInfer2"),"extdata/E1603291025_feature_alignment_requant.tsv.gz")
+#' data <- read_tsv(file,col_names = TRUE)
+#' data <- prepareOpenSwathData(data)
+#' head(data)
+#' huhu$setData(data)
+#' intensity <- huhu$getTransIntensity()
+#' dim(intensity)
+#' rt <-huhu$getRT()
 msTransitions <- setRefClass("msTransitions",
                              fields = list( transitiondata = "data.frame",
                                             precdata = "data.frame",
@@ -18,17 +37,9 @@ msTransitions <- setRefClass("msTransitions",
                                             columnsPrecursor="character"),
                              methods = list(
                                initialize = function(...) {
-                                 .formalAllDef <-c("z", "RT",  "ModifiedSequence",
-                                                  "Sequence", "Filename", "Decoy",
-                                                  "mz", "Score", "IonType",
-                                                  "FragCharges", "Intensity")
-                                 
-                                 .formalPrecDef <- c("z", "RT",  "ModifiedSequence",
-                                                    "Sequence", "Filename", "Decoy",
-                                                    "mz", "Score")
-                                 
-                                 columnsAll <<- formalAllDef
-                                 columnsPrecursor <<- formalPrecDef
+                                 require(reshape2)
+                                 columnsAll <<- .formalAllDef
+                                 columnsPrecursor <<- .formalPrecDef
                                },
                                
                                .validateColumns = function(colnames){
@@ -58,77 +69,22 @@ msTransitions <- setRefClass("msTransitions",
                                
                                getRT = function() {
                                  'matrix with precursor retention times'
-                                 transRT = dcast(precData, ModifiedSequence + z + Sequence  ~ Filename , value.var="RT")
+                                 transRT = dcast(precdata, ModifiedSequence + z + Sequence  ~ Filename , value.var="RT")
                                  
                                },
                                
                                getScore = function() {
                                  'matrix with precursor scores'
-                                 transScore = dcast(precData, ModifiedSequence + z + Sequence ~ Filename , value.var="Score")
+                                 transScore = dcast(precdata, ModifiedSequence + z + Sequence ~ Filename , value.var="Score")
                                  return(transScore)
-                               }
+                               },
                                
                                getMZ = function() {
                                  'matrix with precursor mz'
-                                 transMz = dcast(precData, ModifiedSequence + z + Sequence  ~ Filename , value.var="mz")
+                                 transMz = dcast(precdata, ModifiedSequence + z + Sequence  ~ Filename , value.var="mz")
                                  return(transMz)
                                }
                                
                              ))
 
-huhu <- msTransitions()
-huhu$columnsAll
-huhu$columnsPrecursor
-huhu$rawdata
 
-huhu$setData()
-## add a method to save the object
-mEdit$methods(
-  save = function(file) {
-    'Save the current object on the file
-    in R external object format.
-    '
-    base::save(.self, file = file)
-  }
-)
-
-tf <- tempfile()
-xx$save(tf)
-
-
-
-## Not run:
-## Inheriting a reference class:  a matrix viewer
-mv <- setRefClass("matrixViewer",
-                  fields = c("viewerDevice", "viewerFile"),
-                  contains = "mEdit",
-                  methods = list( view = function() {
-                    dd <- dev.cur(); dev.set(viewerDevice)
-                    devAskNewPage(FALSE)
-                    matplot(data, main = paste("After",length(edits),"edits"))
-                    dev.set(dd)},
-                    edit = # invoke previous method, then replot
-                      function(i, j, value) {
-                        callSuper(i, j, value)
-                        view()
-                      }))
-
-## initialize and finalize methods
-mv$methods( initialize =
-              function(file = "./matrixView.pdf", ...) {
-                viewerFile <<- file
-                pdf(viewerFile)
-                viewerDevice <<- dev.cur()
-                dev.set(dev.prev())
-                callSuper(...)
-              },
-            finalize = function() {
-              dev.off(viewerDevice)
-            })
-
-## debugging an object: call browser() in method $edit()
-xx$trace(edit, browser)
-
-## debugging all objects from class mEdit in method $undo()
-mEdit$trace(undo, browser)
-## End(Not run)

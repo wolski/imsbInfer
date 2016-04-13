@@ -11,9 +11,8 @@
                           "Intensity"="aggr_Peak_Area")
 
 
-prepareDF <- function (df)
+.prepareDF <- function (df)
 {
-  
   colnames(df) <- gsub("m/z","mz",colnames(df))
   required = c("transition_group_id", "align_origfilename","decoy","FullPeptideName",
                "RT", "mz", "Intensity", "ProteinName", "m_score", "aggr_Fragment_Annotation",
@@ -26,7 +25,17 @@ prepareDF <- function (df)
   return(df)
 }
 
+#' Prepare data from OpenSwathOutput
+#' @export
+#' @examples 
+#' library(readr)
+#' library(imsbInfer2)
+#' file = file.path(path.package("imsbInfer2"),"extdata/E1603291025_feature_alignment_requant.tsv.gz")
+#' data <- read_tsv(file,col_names = TRUE)
+#' data <- prepareOpenSwathData(data)
+#'
 prepareOpenSwathData <- function(far){
+  data2 <- .prepareDF(far)
   far <- data2
   apa = as.character(far$aggr_Peak_Area)
   afa = as.character(far$aggr_Fragment_Annotation)
