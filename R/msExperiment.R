@@ -7,6 +7,18 @@
                    "Sequence", "Filename", "Decoy",
                    "mz", "Score")
 
+
+sumtop <- function( x , top=3 ){
+  if(nrow(x) > top){
+    topN = min(nrow(x),top)
+    medrow <- apply(x, 1 , median)
+    ord<-order(medrow, decreasing = TRUE)[1:topN]
+    medrow[ord]
+    x<-x[ord,]
+  }
+  return(apply(x,2,sum,na.rm=TRUE))
+}
+
 #' Holds Transition level data
 #' 
 #' @field transitiondata transtion data table
@@ -17,15 +29,20 @@
 #' @export msTransitions
 #' @exportClass msTransitions
 #' @examples 
+#' rm(list=ls())
 #' library(imsbInfer2)
+#' library(readr)
 #' huhu <- msTransitions()
 #' huhu$columnsAll
 #' huhu$columnsPrecursor
 #' huhu$transitiondata
-#' file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz")
+#' file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
 #' data <- read_tsv(file,col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
 #' head(data)
+#' 
+#' table(data$Decoy)
+#' 
 #' huhu$setData(data)
 #' intensity <- huhu$getTransIntensity()
 #' dim(intensity)

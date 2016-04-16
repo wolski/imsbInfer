@@ -1,20 +1,21 @@
-.formalOpenSwathMap <-list("z" = "pep_charge",
-                          "RT"="RT",
-                          "ModifiedSequence"="FullPeptideName",
-                          "Sequence"="pep_sequence",
-                          "Filename"="align_origfilename",
-                          "Decoy"="decoy", 
-                          "mz"= "mz",
-                          "Score"="m_score",
-                          "IonType"="ion_type",
-                          "FragZ"="frag_charge",
-                          "Intensity"="aggr_Peak_Area")
+.formalOpenSwathMap <-list("Protein"="ProteinName",
+                           "z" = "pep_charge",
+                           "RT"="RT",
+                           "ModifiedSequence"="FullPeptideName",
+                           "Sequence"="pep_sequence",
+                           "Filename"="align_origfilename",
+                           "Decoy"="decoy", 
+                           "mz"= "mz",
+                           "Score"="m_score",
+                           "IonType"="ion_type",
+                           "FragZ"="frag_charge",
+                           "Intensity"="aggr_Peak_Area")
 
 
 .prepareDF <- function (df)
 {
   colnames(df) <- gsub("m/z","mz",colnames(df))
-  required = c("transition_group_id", "align_origfilename","decoy","FullPeptideName",
+  required = c("ProteinName","transition_group_id", "align_origfilename","decoy","FullPeptideName",
                "RT", "mz", "Intensity", "ProteinName", "m_score", "aggr_Fragment_Annotation",
                "aggr_Peak_Area" )
   
@@ -46,7 +47,7 @@ prepareOpenSwathData <- function(far){
   # prepare output
   lx = length(transids)
   stopifnot(lx == nrow(far))
-
+  
   far <- far[, !(names(far) %in% c("aggr_Peak_Area","aggr_Fragment_Annotation"))]
   
   message("prepared dataframe")
