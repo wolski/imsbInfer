@@ -7,7 +7,6 @@
                    "Sequence", "Filename", "Decoy",
                    "mz", "Score")
 
-
 #' Holds Transition level data
 #' 
 #' @field transitiondata transtion data table
@@ -18,11 +17,12 @@
 #' @export msTransitions
 #' @exportClass msTransitions
 #' @examples 
+#' library(imsbInfer2)
 #' huhu <- msTransitions()
 #' huhu$columnsAll
 #' huhu$columnsPrecursor
 #' huhu$transitiondata
-#' file = file.path(path.package("imsbInfer2"),"extdata/E1603291025_feature_alignment_requant.tsv.gz")
+#' file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz")
 #' data <- read_tsv(file,col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
 #' head(data)
@@ -30,6 +30,8 @@
 #' intensity <- huhu$getTransIntensity()
 #' dim(intensity)
 #' rt <-huhu$getRT()
+
+"c:/Users/Google "
 msTransitions <- setRefClass("msTransitions",
                              fields = list( transitiondata = "data.frame",
                                             precdata = "data.frame",
@@ -63,14 +65,20 @@ msTransitions <- setRefClass("msTransitions",
                                
                                getTransIntensity = function() {
                                  'matrix with transitions intensities'
-                                 transIntensities = dcast(transitiondata, ModifiedSequence + z + IonType + FragZ + Sequence ~ Filename , value.var="Intensity")
+                                 transIntensities <- dcast(transitiondata, ModifiedSequence + z + IonType + FragZ + Sequence ~ Filename , value.var="Intensity")
                                  return(transIntensities)
+                               },
+                               
+                               getPrecursorIntensity=function(FUN=sum){
+                                 transIntensities <- getTransIntensity()
+                                 key <- paste(transIntensities$ModifiedSequence, ModifiedSequence$z, sep="_")
+                                 res <- by(transIntensities,INDICES=key,FUN=FUN)
+                                 do.call("rbind",res)
                                },
                                
                                getRT = function() {
                                  'matrix with precursor retention times'
                                  transRT = dcast(precdata, ModifiedSequence + z + Sequence  ~ Filename , value.var="RT")
-                                 
                                },
                                
                                getScore = function() {

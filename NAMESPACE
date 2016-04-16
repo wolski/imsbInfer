@@ -3,4 +3,3 @@
 export(msTransitions)
 export(prepareOpenSwathData)
 exportClasses(msTransitions)
-import(methods)
