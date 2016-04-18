@@ -1,11 +1,19 @@
-.formalAllDef <-c("z","Protein", "RT",  "ModifiedSequence",
-                 "Sequence", "Filename", "Decoy",
-                 "mz", "Score", "IonType",
-                 "FragZ", "Intensity")
+.PrecursorDefs <- c("Filename",
+                    "ProteinName",
+                    "Decoy",
+                    "Sequence",
+                    "ModifiedSequence",
+                    "IsotopeLabelType",
+                    "PrecursorCharge",
+                    "PrecursorMZ",
+                    "PrecursorRT",
+                    "PrecursorScore"
+)
 
-.formalPrecDef <- c("z", "RT","Protein",  "ModifiedSequence",
-                   "Sequence", "Filename", "Decoy",
-                   "mz", "Score")
+.FragmentDefs <-c("FragmentIonType",
+                  "FragmentCharge",
+                  "FragmentIntensity")
+
 
 
 sumtop <- function( x , top=3 ){
@@ -18,7 +26,7 @@ sumtop <- function( x , top=3 ){
   }
   return(apply(x,2,sum,na.rm=TRUE))
 }
-
+"d:/googledrive/tissuecomparison/OpenSWATH/AllAligned/"
 #' Holds Transition level data
 #' 
 #' @field transitiondata transtion data table
@@ -36,6 +44,8 @@ sumtop <- function( x , top=3 ){
 #' huhu$columnsPrecursor
 #' huhu$transitiondata
 #' file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
+#' file = "d:/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
+#' 
 #' data <- read_tsv(file,col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
 #' head(data)

@@ -1,26 +1,30 @@
-.formalOpenSwathMap <-list("Protein"="ProteinName",
-                           "z" = "pep_charge",
-                           "RT"="RT",
-                           "ModifiedSequence"="FullPeptideName",
-                           "Sequence"="pep_sequence",
-                           "Filename"="align_origfilename",
-                           "Decoy"="decoy", 
-                           "mz"= "mz",
-                           "Score"="m_score",
-                           "IonType"="ion_type",
-                           "FragZ"="frag_charge",
-                           "Intensity"="aggr_Peak_Area")
+.OpenMSPrecursorDefsMapping <- list("Filename"="align_origfilename",
+                    "ProteinName"="ProteinName",
+                    "Decoy"="decoy",
+                    "Sequence"="pep_sequence",
+                    "ModifiedSequence"="FullPeptideName",
+                    "IsotopeLabelType"=NULL,
+                    "PrecursorCharge" = "pep_charge",
+                    "PrecursorMZ"= "mz",
+                    "PrecursorRT"="RT",
+                    "PrecursorScore"="m_score")
 
+.OpenMSFragmentDefsMapping <-c("FragmentIonType"="ion_type",
+                  "FragmentCharge"="frag_charge",
+                  "FragmentIntensity"="aggr_Peak_Area")
 
 .prepareDF <- function (df)
 {
+  df<-data
   colnames(df) <- gsub("m/z","mz",colnames(df))
-  required = c("ProteinName","transition_group_id", "align_origfilename","decoy","FullPeptideName",
-               "RT", "mz", "Intensity", "ProteinName", "m_score", "aggr_Fragment_Annotation",
-               "aggr_Peak_Area" )
-  
-  x = match(tolower(required), tolower(colnames(df)))
-  stopifnot(required == colnames(df)[x])
+  colnames(df) <- tolower(colnames(df))
+  required = tolower(c("ProteinName","transition_group_id", "align_origfilename","decoy","FullPeptideName",
+                                  "RT", "mz", "Intensity", "ProteinName", "m_score", "aggr_Fragment_Annotation",
+                                  "aggr_Peak_Area" ))
+  x = match(required, colnames(df))
+  if(sum(is.na(x)) > 0){
+    warning("missing required columns : ", required[is.na(x)])
+  }
   df = df[, x]
   df$align_origfilename <- gsub("_with_dscore_filtered.csv","", basename(df$align_origfilename))
   return(df)
@@ -31,15 +35,16 @@
 #' @examples 
 #' library(readr)
 #' library(imsbInfer2)
-#' file = file.path(path.package("imsbInfer2"),"extdata/E1603291025_feature_alignment_requant.tsv.gz")
+#' file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
 #' data <- read_tsv(file,col_names = TRUE)
-#' data <- prepareOpenSwathData(data)
-#'
+#' data2 <- prepareOpenSwathData(data)
+#' data <- .prepareDF(data)
+#' 
 prepareOpenSwathData <- function(far){
   data2 <- .prepareDF(far)
   far <- data2
-  apa = as.character(far$aggr_Peak_Area)
-  afa = as.character(far$aggr_Fragment_Annotation)
+  apa = as.character(far$aggr_peak_area)
+  afa = as.character(far$aggr_fragment_annotation)
   # split transition intensities
   transints = lapply(apa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
   # split transition names
@@ -48,7 +53,7 @@ prepareOpenSwathData <- function(far){
   lx = length(transids)
   stopifnot(lx == nrow(far))
   
-  far <- far[, !(names(far) %in% c("aggr_Peak_Area","aggr_Fragment_Annotation"))]
+  far <- far[, !(names(far) %in% c("aggr_peak_Area","aggr_fragment_annotation"))]
   
   message("prepared dataframe")
   # extend
@@ -64,10 +69,10 @@ prepareOpenSwathData <- function(far){
   transids <- do.call("rbind",cnamessplit)
   
   colnames(transids)<-c("frag_id", "ion_type","frag_charge","pep_sequence","pep_charge")
-  far <- data.frame(far, aggr_Peak_Area = as.numeric(unlist(transints)), transids )
+  far <- data.frame(far, aggr_peak_area = as.numeric(unlist(transints)), transids )
   
-  far <-far[,unlist(.formalOpenSwathMap)]
-  colnames(far) <- names(.formalOpenSwathMap)
+  far <-far[,unlist()]
+  colnames(far) <- names()
   
   return(far)
 }
