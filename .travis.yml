@@ -10,3 +10,4 @@ r_packages :
   - scales
 r_github_packages: 
   - wolski/quantable
+warnings_are_errors: false
