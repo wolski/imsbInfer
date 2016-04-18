@@ -22,6 +22,10 @@ Holds Transition level data
 \section{Methods}{
 
 \describe{
+\item{\code{getDecoy()}}{matrix with decoy information}
+
+\item{\code{getFDR()}}{compute FDR for dataset}
+
 \item{\code{getMZ()}}{matrix with precursor mz}
 
 \item{\code{getRT()}}{matrix with precursor retention times}
@@ -30,18 +34,36 @@ Holds Transition level data
 
 \item{\code{getTransIntensity()}}{matrix with transitions intensities}
 
+\item{\code{plotFDR(log = "")}}{plot FDR versus Score}
+
 \item{\code{setData(data)}}{set the data}
 }}
 \examples{
-huhu <- msTransitions()
+rm(list=ls())
+library(imsbInfer2)
+library(readr)
 huhu$columnsAll
 huhu$columnsPrecursor
 huhu$transitiondata
-file = file.path(path.package("imsbInfer2"),"extdata/E1603291025_feature_alignment_requant.tsv.gz")
+file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
+file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
+
 data <- read_tsv(file,col_names = TRUE)
 data <- prepareOpenSwathData(data)
 head(data)
-huhu$setData(data)
+prepOS <- data
+save(prepOS, file="inst/temp/prepOS.Rd")
+load(file="inst/temp/prepOS.Rd")
+huhu <- msTransitions()
+huhu$setData(prepOS)
+huhu$getFDR()
+huhu$plotFDR()
+decs<-huhu$getDecoy()
+head(decs)
+head(decs)
+xx <- apply(decs[,4:ncol(decs)] , 1, sum)
+table(xx)[2]/table(xx)[1] * 100
+
 intensity <- huhu$getTransIntensity()
 dim(intensity)
 rt <-huhu$getRT()

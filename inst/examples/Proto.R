@@ -1,25 +1,30 @@
-rm(list=ls())
-gc()
-
-
-SpecLib = "/data/E1603291025_feature_alignment_requant.tsv"
-
 library(readr)
-#tmp <-read.csv(SpecLib, stringsAsFactors = F,sep="\t",header=T)
 
+data2 <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
+dim(data2)
 
-source("R/openSwath.R")
+data3 <- prepareOpenSwathData(data)
 
-data2 <- prepareDF(data)
-data3 <- prepareOpenSwathData(data2)
+colnames(data3)
 
+.ProteinDefs <- c("ProteinName",
+                  "StrippedSequence","IsotopeLabelType")
 
+.PrecursorDefs <- c("Filename",
+                    "StrippedSequence",
+                    "ModifiedSequence",
+                    "PrecursorCharge",
+                    "PrecursorMZ",
+                    "PrecursorRT",
+                    "PrecursorScore")
 
+.FragmentDefs <-c("Filename",
+                  "ModifiedSequence",
+                  "PrecursorCharge",
+                  "FragmentIonType",
+                  "FragmentCharge",
+                  "FragmentIntensity")
 
-dim(precData)
-
-
-
-head(transScore)
-head(transRT)
-head(transMz)
+protein <- data.frame(unique(data[, .ProteinDefs]),stringsAsFactors = FALSE)
+precursor <- data.frame(unique(data[, .PrecursorDefs]),stringsAsFactors = FALSE)
+transition <- data.frame(unique(data[, .FragmentDefs]),stringsAsFactors = FALSE)

@@ -12,9 +12,10 @@ Prepare data from OpenSwathOutput
 \examples{
 library(readr)
 library(imsbInfer2)
-file = file.path(path.package("imsbInfer2"),"extdata/E1603291025_feature_alignment_requant.tsv.gz")
+file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
 data <- read_tsv(file,col_names = TRUE)
-data <- prepareOpenSwathData(data)
+data2 <- .prepareDF(data)
+data2 <- prepareOpenSwathData(data2)
 
 }
 

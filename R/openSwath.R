@@ -35,9 +35,11 @@
 #' library(readr)
 #' library(imsbInfer2)
 #' file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
+#' file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
 #' data <- read_tsv(file,col_names = TRUE)
-#' data2 <- .prepareDF(data)
-#' data2 <- prepareOpenSwathData(data2)
+#' 
+#' far <- .prepareDF(data)
+#' data3 <- prepareOpenSwathData(data)
 #' 
 prepareOpenSwathData <- function(far){
   far <- .prepareDF(far)
@@ -53,7 +55,7 @@ prepareOpenSwathData <- function(far){
   lx = length(transids)
   stopifnot(lx == nrow(far))
 
-  far <- far[, !(names(far) %in% c("aggr_peak_Area","aggr_fragment_annotation"))]
+  far <- far[, !(names(far) %in% c("aggr_peak_area","aggr_fragment_annotation"))]
 
   # extend
   lengths <-sapply(transids,length)
@@ -67,13 +69,13 @@ prepareOpenSwathData <- function(far){
   cnamessplit <- strsplit(as.character(transids),split="_",fixed=TRUE)
   transids <- do.call("rbind",cnamessplit)
   colnames(transids)<-c("frag_id", "ion_type","frag_charge","pep_sequence","pep_charge")
-  
+  length(as.numeric(unlist(transints)))
   far <- data.frame(far, aggr_peak_area = as.numeric(unlist(transints)), transids )
   
   far <-far[,tolower(unlist(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping)))]
   names(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping))
   colnames(far) <- names(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping))
-  
+  far <- data.frame(far, IsotopeLabelType = "L")
   return(far)
 }
 
