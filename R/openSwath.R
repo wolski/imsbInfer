@@ -1,9 +1,9 @@
 .OpenMSPrecursorDefsMapping <- list("Filename"="align_origfilename",
                     "ProteinName"="ProteinName",
                     "Decoy"="decoy",
-                    "Sequence"="pep_sequence",
+                    "StrippedSequence"="pep_sequence",
                     "ModifiedSequence"="FullPeptideName",
-                    "IsotopeLabelType"=NULL,
+                    #"IsotopeLabelType"=NULL,
                     "PrecursorCharge" = "pep_charge",
                     "PrecursorMZ"= "mz",
                     "PrecursorRT"="RT",
@@ -15,7 +15,6 @@
 
 .prepareDF <- function (df)
 {
-  df<-data
   colnames(df) <- gsub("m/z","mz",colnames(df))
   colnames(df) <- tolower(colnames(df))
   required = tolower(c("ProteinName","transition_group_id", "align_origfilename","decoy","FullPeptideName",
@@ -37,42 +36,43 @@
 #' library(imsbInfer2)
 #' file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
 #' data <- read_tsv(file,col_names = TRUE)
-#' data2 <- prepareOpenSwathData(data)
-#' data <- .prepareDF(data)
+#' data2 <- .prepareDF(data)
+#' data2 <- prepareOpenSwathData(data2)
 #' 
 prepareOpenSwathData <- function(far){
-  data2 <- .prepareDF(far)
-  far <- data2
+  far <- .prepareDF(far)
   apa = as.character(far$aggr_peak_area)
   afa = as.character(far$aggr_fragment_annotation)
   # split transition intensities
   transints = lapply(apa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
   # split transition names
   transids = lapply(afa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
+  
+  
   # prepare output
   lx = length(transids)
   stopifnot(lx == nrow(far))
-  
+
   far <- far[, !(names(far) %in% c("aggr_peak_Area","aggr_fragment_annotation"))]
-  
-  message("prepared dataframe")
+
   # extend
   lengths <-sapply(transids,length)
   idx <- rep(1:lx, lengths)
-  range(idx)
   far <- far[idx, ]
-  message("and finally nrow " , nrow(far), " ncol ", ncol(far))
+  
+  
+  #
   transids <- unlist(transids)
   transids <- gsub("DECOY_","DECOY", transids, fixed=TRUE )
-  
   cnamessplit <- strsplit(as.character(transids),split="_",fixed=TRUE)
   transids <- do.call("rbind",cnamessplit)
-  
   colnames(transids)<-c("frag_id", "ion_type","frag_charge","pep_sequence","pep_charge")
+  
   far <- data.frame(far, aggr_peak_area = as.numeric(unlist(transints)), transids )
   
-  far <-far[,unlist()]
-  colnames(far) <- names()
+  far <-far[,tolower(unlist(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping)))]
+  names(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping))
+  colnames(far) <- names(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping))
   
   return(far)
 }

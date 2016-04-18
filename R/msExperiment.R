@@ -1,7 +1,7 @@
 .PrecursorDefs <- c("Filename",
                     "ProteinName",
                     "Decoy",
-                    "Sequence",
+                    "StrippedSequence",
                     "ModifiedSequence",
                     "IsotopeLabelType",
                     "PrecursorCharge",
@@ -44,11 +44,10 @@ sumtop <- function( x , top=3 ){
 #' huhu$columnsPrecursor
 #' huhu$transitiondata
 #' file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
-#' file = "d:/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
+#' file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
 #' 
 #' data <- read_tsv(file,col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
-#' head(data)
 #' 
 #' prepOS <- data
 #' save(prepOS, file="inst/temp/prepOS.Rd")
@@ -67,17 +66,16 @@ sumtop <- function( x , top=3 ){
 #' dim(intensity)
 #' rt <-huhu$getRT()
 
-"c:/Users/Google "
 msTransitions <- setRefClass("msTransitions",
-                             fields = list( transitiondata = "data.frame",
-                                            precdata = "data.frame",
-                                            columnsAll="character",
-                                            columnsPrecursor="character"),
+                             fields = list( allData = "data.frame",
+                                            precursorData = "data.frame",
+                                            precursorColumns="character",
+                                            fragmentColumns="character"),
                              methods = list(
                                initialize = function(...) {
                                  require(reshape2)
-                                 columnsAll <<- .formalAllDef
-                                 columnsPrecursor <<- .formalPrecDef
+                                 precursorColumns <<- .PrecursorDefs
+                                 fragmentColumns <<- .FragmentDefs
                                },
                                
                                .validateColumns = function(colnames){
