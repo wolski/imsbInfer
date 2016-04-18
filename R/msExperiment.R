@@ -1,9 +1,9 @@
-.formalAllDef <-c("z", "RT",  "ModifiedSequence",
+.formalAllDef <-c("z","Protein", "RT",  "ModifiedSequence",
                  "Sequence", "Filename", "Decoy",
                  "mz", "Score", "IonType",
                  "FragZ", "Intensity")
 
-.formalPrecDef <- c("z", "RT",  "ModifiedSequence",
+.formalPrecDef <- c("z", "RT","Protein",  "ModifiedSequence",
                    "Sequence", "Filename", "Decoy",
                    "mz", "Score")
 
@@ -32,7 +32,6 @@ sumtop <- function( x , top=3 ){
 #' rm(list=ls())
 #' library(imsbInfer2)
 #' library(readr)
-#' huhu <- msTransitions()
 #' huhu$columnsAll
 #' huhu$columnsPrecursor
 #' huhu$transitiondata
@@ -41,9 +40,19 @@ sumtop <- function( x , top=3 ){
 #' data <- prepareOpenSwathData(data)
 #' head(data)
 #' 
-#' table(data$Decoy)
+#' prepOS <- data
+#' save(prepOS, file="inst/temp/prepOS.Rd")
+#' load(file="inst/temp/prepOS.Rd")
+#' huhu <- msTransitions()
+#' huhu$setData(prepOS)
+#' huhu$getFDR()
+#' huhu$plotFDR()
+#' decs<-huhu$getDecoy()
+#' head(decs)
+#' head(decs)
+#' xx <- apply(decs[,4:ncol(decs)] , 1, sum)
+#' table(xx)[2]/table(xx)[1] * 100
 #' 
-#' huhu$setData(data)
 #' intensity <- huhu$getTransIntensity()
 #' dim(intensity)
 #' rt <-huhu$getRT()
@@ -103,11 +112,29 @@ msTransitions <- setRefClass("msTransitions",
                                  transScore = dcast(precdata, ModifiedSequence + z + Sequence ~ Filename , value.var="Score")
                                  return(transScore)
                                },
-                               
                                getMZ = function() {
                                  'matrix with precursor mz'
                                  transMz = dcast(precdata, ModifiedSequence + z + Sequence  ~ Filename , value.var="mz")
                                  return(transMz)
+                               },
+                               getDecoy= function(){
+                                 'matrix with decoy information'
+                                 transDecoy = dcast(precdata, ModifiedSequence + z + Sequence  ~ Filename , value.var="Decoy")
+                                 return(transDecoy)
+                               },
+                               getFDR = function(){
+                                 'compute FDR for dataset'
+                                tmp <-data.frame(Protein = precdata$Protein,Decoy = precdata$Decoy,Score = precdata$Score)
+                                tmp <- tmp[tmp$Score < 2,] # not sure how to treat requant values in this context
+                                fdr <- (sum(tmp$Decoy) / length(tmp$Protein))
+                                return(fdr)
+                               },
+                               plotFDR = function(log=""){
+                                 'plot FDR versus Score'
+                                 tmp <-data.frame(Protein = precdata$Protein,Decoy = precdata$Decoy,Score = precdata$Score)
+                                 tmp <- tmp[tmp$Score < 2,] # not sure how to treat requant values in this context
+                                 tmp <- tmp[order(tmp$Score),]
+                                 plot(tmp$Score,cumsum(tmp$Decoy) / nrow(tmp) * 100 ,type="l",xlab="Score", ylab="FDR",log=log)
                                }
                                
                              ))
