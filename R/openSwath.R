@@ -1,7 +1,7 @@
 .OpenMSPrecursorDefsMapping <- list("Filename"="align_origfilename",
                     "ProteinName"="ProteinName",
                     "Decoy"="decoy",
-                    "StrippedSequence"="pep_sequence",
+                    "StrippedSequence"="Sequence",
                     "ModifiedSequence"="FullPeptideName",
                     #"IsotopeLabelType"=NULL,
                     "PrecursorCharge" = "pep_charge",
@@ -17,7 +17,7 @@
 {
   colnames(df) <- gsub("m/z","mz",colnames(df))
   colnames(df) <- tolower(colnames(df))
-  required = tolower(c("ProteinName","transition_group_id", "align_origfilename","decoy","FullPeptideName",
+  required = tolower(c("ProteinName","transition_group_id", "align_origfilename","decoy","FullPeptideName","Sequence",
                                   "RT", "mz", "Intensity", "ProteinName", "m_score", "aggr_Fragment_Annotation",
                                   "aggr_Peak_Area" ))
   x = match(required, colnames(df))
