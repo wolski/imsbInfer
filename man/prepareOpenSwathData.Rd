@@ -13,9 +13,11 @@ Prepare data from OpenSwathOutput
 library(readr)
 library(imsbInfer2)
 file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
+file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
 data <- read_tsv(file,col_names = TRUE)
-data2 <- .prepareDF(data)
-data2 <- prepareOpenSwathData(data2)
+
+far <- .prepareDF(data)
+data3 <- prepareOpenSwathData(data)
 
 }
 
