@@ -86,6 +86,7 @@ sumtop <- function( x , top=3 ){
 #' 
 #' idx <-which(duplicated(pep$StrippedSequence))
 #' pep[c(idx[1]-1,idx[1]),]
+#' pep[c(idx[2]-1,idx[2]),]
 #' dim(unique(huhu$peptide[,1:2]))
 #' 
 #' test <- (huhu$getPrecursorIntensity())
