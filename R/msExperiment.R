@@ -64,22 +64,32 @@ sumtop <- function( x , top=3 ){
 #' huhu <- msTransitionExperiment()
 #' huhu$setData(data)
 #' intTrans <- huhu$getFragmentIntensities()
+#' colnames(intTrans)
+#' mypairs(intTrans[,5:ncol(intTrans)],log="xy")
 #' precRT <- huhu$getPrecursorRT()
+#' library(quantable)
+
+#' mypairs(precRT[,3:ncol(precRT)])
 #' precMZ <- huhu$getPrecursorMZ()
+#' mypairs(precMZ[,3:ncol(precMZ)])
+#' altmanbland(precRT[,3],precRT[,4])
 #' precScore <- huhu$getPrecursorScore()
-#' dim(precRT)
-#' 
-#' head(precRT)
-#' dim(intTrans)
-#' head(intTrans)
-#' test <- (huhu$getPrecursorIntensity())
-#' dim(huhu$precursor)
-#' colnames(huhu$peptide)
-#' dim(huhu$peptide)
-#' dim(unique(huhu$peptide))
-#' head(huhu$peptide)
+#' mypairs(precScore[,3:ncol(precScore)],log="xy")
 #' colnames(huhu$precursor)
-#' huhu$plotGlobalFDR()
+#' colnames(huhu$peptide)
+#' head(huhu$peptide[huhu$peptide$Decoy==1,])
+#' dim(huhu$peptide)
+#' length(unique(huhu$peptide$StrippedSequence))
+#' length(unique(huhu$peptide$ProteinName))
+#' pep <- huhu$peptide
+#' pep<-pep[order(pep$StrippedSequence),]
+#' 
+#' idx <-which(duplicated(pep$StrippedSequence))
+#' pep[c(idx[1]-1,idx[1]),]
+#' dim(unique(huhu$peptide[,1:2]))
+#' 
+#' test <- (huhu$getPrecursorIntensity())
+#' huhu$getGlobalFDR()
 #' decs<-huhu$getDecoy()
 
 msTransitionExperiment <- 
@@ -157,6 +167,7 @@ msTransitionExperiment <-
                 
                 getGlobalFDR = function(){
                   'compute FDR for dataset'
+                  
                   tmp <- precursor[, c("ProteinName", "Decoy", "PrecursorScore")]
                   tmp <- tmp[tmp$Score < 2,] # not sure how to treat requant values in this context
                   fdr <- (sum(tmp$Decoy) / length(tmp$ProteinName))

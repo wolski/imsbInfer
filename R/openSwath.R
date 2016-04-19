@@ -32,24 +32,35 @@
 #' Prepare data from OpenSwathOutput
 #' @export
 #' @examples 
+#' rm(list=ls())
 #' library(readr)
 #' library(imsbInfer2)
-#' file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
-#' file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
-#' data <- read_tsv(file,col_names = TRUE)
+#' data2 <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
+#' head(data2)
 #' 
-#' far <- .prepareDF(data)
-#' data3 <- prepareOpenSwathData(data)
+#' far <- .prepareDF(data2)
+#' head(far)
+#' tmp[1:3]
+#' data3 <- prepareOpenSwathData(data2)
 #' 
 prepareOpenSwathData <- function(far){
   far <- .prepareDF(far)
   apa = as.character(far$aggr_peak_area)
   afa = as.character(far$aggr_fragment_annotation)
   # split transition intensities
-  transints = lapply(apa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
-  # split transition names
-  transids = lapply(afa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
   
+  #transints = lapply(apa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
+  transints = strsplit(apa,";",fixed=TRUE)
+  
+  # split transition names
+  #transids = lapply(afa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
+  transids = strsplit(afa,";",fixed=TRUE)  
+  
+  # Fix protein names
+  protnames <-strsplit(far$proteinname, split="/", fixed=TRUE)
+  protnames <-lapply(protnames, function(x){ c(x[1], sort(x[2:length(x)])) })
+  protnames <- sapply(protnames, function(x){paste(x,collapse="/")})
+  far$proteinname <- protnames
   
   # prepare output
   lx = length(transids)
@@ -61,8 +72,7 @@ prepareOpenSwathData <- function(far){
   lengths <-sapply(transids,length)
   idx <- rep(1:lx, lengths)
   far <- far[idx, ]
-  
-  
+
   #
   transids <- unlist(transids)
   transids <- gsub("DECOY_","DECOY", transids, fixed=TRUE )
