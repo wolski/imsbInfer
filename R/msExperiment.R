@@ -65,13 +65,12 @@ sumtop <- function( x , top=3 ){
 #' huhu$setData(data)
 #' intTrans <- huhu$getFragmentIntensities()
 #' colnames(intTrans)
-#' mypairs(intTrans[,5:ncol(intTrans)],log="xy")
+#' pairs(intTrans[,5:ncol(intTrans)],log="xy",pch=".")
 #' precRT <- huhu$getPrecursorRT()
 #' library(quantable)
-
-#' mypairs(precRT[,3:ncol(precRT)])
+#' pairs(precRT[,3:ncol(precRT)],pch=".")
 #' precMZ <- huhu$getPrecursorMZ()
-#' mypairs(precMZ[,3:ncol(precMZ)])
+#' pairs(precMZ[,3:ncol(precMZ)],pch=".")
 #' altmanbland(precRT[,3],precRT[,4])
 #' precScore <- huhu$getPrecursorScore()
 #' mypairs(precScore[,3:ncol(precScore)],log="xy")
@@ -85,6 +84,7 @@ sumtop <- function( x , top=3 ){
 #' pep<-pep[order(pep$StrippedSequence),]
 #' 
 #' idx <-which(duplicated(pep$StrippedSequence))
+#' length(idx)
 #' pep[c(idx[1]-1,idx[1]),]
 #' pep[c(idx[2]-1,idx[2]),]
 #' dim(unique(huhu$peptide[,1:2]))

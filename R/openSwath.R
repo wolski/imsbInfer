@@ -2,6 +2,7 @@
                     "ProteinName"="ProteinName",
                     "Decoy"="decoy",
                     "StrippedSequence"="Sequence",
+                    #"StrippedSequence"="pep_sequence",
                     "ModifiedSequence"="FullPeptideName",
                     #"IsotopeLabelType"=NULL,
                     "PrecursorCharge" = "pep_charge",
