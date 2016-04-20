@@ -10,14 +10,16 @@ prepareOpenSwathData(far)
 Prepare data from OpenSwathOutput
 }
 \examples{
+rm(list=ls())
 library(readr)
 library(imsbInfer2)
-file = "d:/GoogleDrive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
-file = "C:/Users/wewol/Google Drive/tissuecomparison/OpenSWATH/BAT_19strains/data/E1603291025_feature_alignment_requant.tsv.gz"
-data <- read_tsv(file,col_names = TRUE)
+data2 <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
+head(data2)
 
-far <- .prepareDF(data)
-data3 <- prepareOpenSwathData(data)
+far <- .prepareDF(data2)
+head(far)
+tmp[1:3]
+data3 <- prepareOpenSwathData(data2)
 
 }
 
