@@ -92,9 +92,8 @@ sumtop <- function( x , top=3 ){
 #' test <- (huhu$getPrecursorIntensity())
 #' huhu$getGlobalFDR()
 #' decs<-huhu$getDecoy()
-
-msTransitionExperiment <- 
-  setRefClass("msTransitionExperiment",
+#' 
+msTransitionExperiment <- setRefClass("msTransitionExperiment",
               fields = list( .data="list", isotopeLabelType = "character",
                              
                              peptide = function(x){
