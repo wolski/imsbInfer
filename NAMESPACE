@@ -2,5 +2,9 @@
 
 export(msTransitionExperiment)
 export(prepareOpenSwathData)
+exportClasses(Foo)
 exportClasses(msTransitionExperiment)
+import(RSQLite)
+import(dplyr)
 import(methods)
+import(reshape2)

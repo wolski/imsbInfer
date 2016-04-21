@@ -62,40 +62,47 @@ sumtop <- function( x , top=3 ){
 #' library(dplyr)
 #' data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
-#' my_mqdb <- src_sqlite(file.path(".","my_mqdb.sqlite3"), create=TRUE)
-#' tmp<-copy_to(my_mqdb, data, "longformat", temporary = FALSE)
 #' 
 #' huhu <- msTransitionExperiment()
 #' huhu$setData(data)
+#' data <- huhu$getData() 
+#' x<-huhu$peptide
+#' head(x)
+#' x <- huhu$
+#' dumm <- msTransitionExperiment(path=".", name="mydb.sql")
+#' dumm$name
+#' dumm$setData(data)
+#' huhu <- dumm
 #' intTrans <- huhu$getFragmentIntensities()
+#' dim(intTrans)
+#' huhu$noDecoy()
 #' colnames(intTrans)
+#' intTrans <- huhu$getFragmentIntensities()
+#' dim(intTrans)
 #' pairs(intTrans[,5:ncol(intTrans)],log="xy",pch=".")
 #' precRT <- huhu$getPrecursorRT()
-#' library(quantable)
 #' precMZ <- huhu$getPrecursorMZ()
 #' precScore <- huhu$getPrecursorScore()
-#' mypairs(precScore[,3:ncol(precScore)],log="xy")
+#' pairs(precScore[,3:ncol(precScore)],log="xy",pch=".")
 #' colnames(huhu$precursor)
 #' colnames(huhu$peptide)
 #'
 #' head(huhu$peptide[huhu$peptide$Decoy==1,])
+#' huhu$withDecoy()
+#' head(huhu$peptide[huhu$peptide$Decoy==1,])
+#' huhu$noDecoy()
 #' length(unique(huhu$peptide$StrippedSequence))
 #' length(unique(huhu$peptide$ProteinName))
-#' 
-#' length(idx)
-#' pep[c(idx[1]-1,idx[1]),]
-#' dim(unique(huhu$peptide[,2:3]))
-#' dim(huhu$precursor)
-#' dim(merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor ))
 #' xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
-#' xx[xx$Decoy ]
-#' dim(huhu$precursor)
+#' head(xx)
 #' 
 #' test <- (huhu$getPrecursorIntensity())
 #' huhu$getGlobalFDR()
 #' decs<-huhu$getDecoy()
 #' 
-msTransitionExperiment <- setRefClass("msTransitionExperiment",
+setOldClass("src_sqlite")
+msTransitionExperiment <-
+  setRefClass("msTransitionExperiment",
               fields = list( .data="src_sqlite",
                              isotopeLabelType = "character", 
                              name="character",
@@ -103,72 +110,93 @@ msTransitionExperiment <- setRefClass("msTransitionExperiment",
                              removeDecoy='logical',
                              
                              peptide = function(x){
+                               print("in peptide")
                                if(missing(x)){
-                                 pepcols <- paste(.PeptideDefs, collapse=", ")
-                                 query <- c("Select", pepcols, ", count(*) as OrigFreq from LongFormat group by ", pepcols)
-                                 query <-paste(tt,collapse=" ")
+                                 where <- ""
+                                 if(removeDecoy){
+                                   where <- " where Decoy = 0 "
+                                 }
+                                 peptideCols <- paste(.PeptideDefs, collapse=", ")
+                                 query <- c("Select", peptideCols, ", count(*) as Freq from LongFormat ", where , " group by ", peptideCols)
+                                 query <-paste(query,collapse=" ")
                                  return( dbGetQuery(.data$con,query) ) 
                                }
                              },
                              precursor = function(x){
-                               pepcols <- paste(.PeptideDefs, collapse=", ")
-                               query <- c("Select", pepcols, ", count(*) as OrigFreq from LongFormat group by ", pepcols)
-                               query <-paste(tt,collapse=" ")
-                               return( dbGetQuery(.data$con,query) ) 
-                               
-                               if(missing(x)){}
-#                                  if( removeDecoy ){
-                               
-#                                    .precursor <- merge(unique(peptide[,c("StrippedSequence","Decoy")]), .data$precursor )
-#                                    .precursor <- .precursor[.precursor$Decoy == 0]
-#                                    return(.data$precursor)
-#                                  }
-#                                  return(.data$precursor)
-#                                }
-#                                #.data$precursor <<-data.frame(unique(x[, .PrecursorDefs]),stringsAsFactors = FALSE)
+                               if(missing(x)){
+                                 where <- ""
+                                 if(removeDecoy){
+                                   where <- " where Decoy = 0 "
+                                 }
+                                 
+                                 precursorCols <- paste(.PrecursorDefs, collapse=", ")
+                                 query <- c("Select", precursorCols, ", count(*) as Freq from LongFormat " , where , " group by ", precursorCols)
+                                 query <-paste(query,collapse=" ")
+                                 return( dbGetQuery(.data$con,query) ) 
+                               }
                              },
-                            transition = function(x){
-#                                if(missing(x)){
-#                                  if( removeDecoy ){
-#                                    .transition <- merge(unique(peptide[,c("StrippedSequence","Decoy")]),.data$transition )
-#                                    .transition <- .transition[.transition$Decoy == 0]
-#                                    return(.transition)
-#                                  }
-#                                  return(.data$transition)
-#                                }
-                               #.data$transition <<-data.frame(unique(x[, .FragmentDefs]),stringsAsFactors = FALSE)
+                             transition = function(x){
+                               if(missing(x)){
+                                 where <- ""
+                                 if(removeDecoy){
+                                   where <- " where Decoy = 0 "
+                                 }
+                                 
+                                 fragmentCols <- paste(.FragmentDefs, collapse=", ")
+                                 query <- c("Select", fragmentCols, ", count(*) as Freq from LongFormat " , where , " group by ", fragmentCols)
+                                 query <-paste(query,collapse=" ")
+                                 return( dbGetQuery(.data$con,query) ) 
+                               }
                              }
               ),
               methods = list(
-                initialize = function(...) {
+                initialize = function(name=paste( uuid::UUIDgenerate(), ".sqlite",sep=""),
+                                      path=".",
+                                      removeDecoy=FALSE,
+                                      isotopeLabelType="L",
+                                      ...) {
+                  print(match.call())
                   require(reshape2)
-                  isotopeLabelType <<- "L"
-                  name <<- uuid::UUIDgenerate()
-                  .data <- src_sqlite(file.path(path , name), create=TRUE)
+                  
+                  name <<- name
+                  path <<- path
+                  isotopeLabelType <<- isotopeLabelType
+                  removeDecoy <<- removeDecoy
+                  
+                  dbfile <- file.path(path , name)
+                  print(dbfile)
+                  .data <<- src_sqlite(dbfile, create=TRUE)
+                  print('done')
                 },
-                finilize = function(...){
-                  dbDisconnect(.data$con)
-                }
+                finalize  = function(){
+                  print("infinalize")
+                  require("RSQLite")
+                  dbDisconnect(.self$.data$con)
+                  print("disconnected")
+                },
                 setData = function(data, IsotopeLabelType = "L"){
                   'set the data'
                   library(dplyr)
                   isotopeLabelType<<-"L"
                   data<-data[data$IsotopeLabelType=="L",]
-                  tmp<-copy_to(.data, data, "LongFormat", temporary = FALSE)
-                  pepcols <- paste(.PeptideDefs, collapse=", ")
-                  tt <- c("Select", pepcols, ", count(*) as OrigFreq from LongFormat group by ", pepcols)
-                  paste(tt,collapse=" ")  
+                  tmp <- copy_to(.data, data, "LongFormat", temporary = FALSE)
+                  dbListTables(.data$con)
+                },
+                getData = function(){
+                  print(dbListTables(.data$con))
+                  
+                  as.data.frame(dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT * FROM LongFormat"))))
                 },
                 noDecoy = function(){
-                 removeDecoy <<- TRUE 
+                  removeDecoy <<- TRUE 
                 },
                 withDecoy = function(){
-                 removeDecoy <<- FALSE 
+                  removeDecoy <<- FALSE 
                 },
                 getFragmentIntensities = function() {
                   'matrix with transitions intensities'
                   
-                  transInt <- dcast(.transition,
+                  transInt <- dcast(transition,
                                     ModifiedSequence + PrecursorCharge + FragmentIonType + FragmentCharge ~ Filename ,
                                     value.var="FragmentIntensity")
                   return(transInt)
@@ -191,8 +219,9 @@ msTransitionExperiment <- setRefClass("msTransitionExperiment",
                   return(transMz)
                 },
                 
-              
+                
                 getPrecursorIntensity=function(FUN=sum){
+                  "!!!don't use. work in progress!!!"
                   transIntensities <- getFragmentIntensities()
                   key <- paste(transIntensities$ModifiedSequence, ModifiedSequence$z, sep="_")
                   res <- by(transIntensities,INDICES=key)
