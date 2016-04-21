@@ -44,15 +44,25 @@ sumtop <- function( x , top=3 ){
   }
   return(apply(x,2,sum,na.rm=TRUE))
 }
-
+#' "src_sqlite" class
+#'
+#' @name src_sqlite
+#' @aliases src_sqlite
+#' @family src_sqlite
+#'
+#' @exportClass Foo
+setOldClass("src_sqlite")
 
 #' Holds Transition level data
-#' 
-#' #@field transitiondata transtion data table
-#' #@field precdata precursor data table
-#' #@field columnsAll required columns for transitiondata
-#' #@field columnsPrecursor required columns for precursor
+#' @field name name of experiment
+#' @field path where to store data
+#' @field peptide transtion data table
+#' @field precursor precursor data table
+#' @field transition required columns for transitiondata
 #' @import methods
+#' @import dplyr
+#' @import reshape2
+#' @import RSQLite
 #' @export msTransitionExperiment
 #' @exportClass msTransitionExperiment
 #' @examples 
@@ -94,26 +104,25 @@ sumtop <- function( x , top=3 ){
 #' length(unique(huhu$peptide$StrippedSequence))
 #' length(unique(huhu$peptide$ProteinName))
 #' xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
-#' head(xx)
 #' 
 #' test <- (huhu$getPrecursorIntensity())
 #' huhu$getGlobalFDR()
 #' decs<-huhu$getDecoy()
-#' 
-setOldClass("src_sqlite")
+#'
+
 msTransitionExperiment <-
   setRefClass("msTransitionExperiment",
               fields = list( .data="src_sqlite",
                              isotopeLabelType = "character", 
                              name="character",
                              path="character",
-                             removeDecoy='logical',
+                             .removeDecoy='logical',
                              
                              peptide = function(x){
                                print("in peptide")
                                if(missing(x)){
                                  where <- ""
-                                 if(removeDecoy){
+                                 if(.removeDecoy){
                                    where <- " where Decoy = 0 "
                                  }
                                  peptideCols <- paste(.PeptideDefs, collapse=", ")
@@ -125,7 +134,7 @@ msTransitionExperiment <-
                              precursor = function(x){
                                if(missing(x)){
                                  where <- ""
-                                 if(removeDecoy){
+                                 if(.removeDecoy){
                                    where <- " where Decoy = 0 "
                                  }
                                  
@@ -138,7 +147,7 @@ msTransitionExperiment <-
                              transition = function(x){
                                if(missing(x)){
                                  where <- ""
-                                 if(removeDecoy){
+                                 if(.removeDecoy){
                                    where <- " where Decoy = 0 "
                                  }
                                  
@@ -152,7 +161,7 @@ msTransitionExperiment <-
               methods = list(
                 initialize = function(name=paste( uuid::UUIDgenerate(), ".sqlite",sep=""),
                                       path=".",
-                                      removeDecoy=FALSE,
+                                      .removeDecoy=FALSE,
                                       isotopeLabelType="L",
                                       ...) {
                   print(match.call())
@@ -161,7 +170,7 @@ msTransitionExperiment <-
                   name <<- name
                   path <<- path
                   isotopeLabelType <<- isotopeLabelType
-                  removeDecoy <<- removeDecoy
+                  .removeDecoy <<- .removeDecoy
                   
                   dbfile <- file.path(path , name)
                   print(dbfile)
@@ -188,10 +197,10 @@ msTransitionExperiment <-
                   as.data.frame(dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT * FROM LongFormat"))))
                 },
                 noDecoy = function(){
-                  removeDecoy <<- TRUE 
+                  .removeDecoy <<- TRUE 
                 },
                 withDecoy = function(){
-                  removeDecoy <<- FALSE 
+                  .removeDecoy <<- FALSE 
                 },
                 getFragmentIntensities = function() {
                   'matrix with transitions intensities'
