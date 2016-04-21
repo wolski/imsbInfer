@@ -19,3 +19,4 @@ Depends:
 Imports:
 Suggests:
 RoxygenNote: 5.0.1
+Collate: hello.R msExperiment.R msConditions.R openSwath.R

@@ -1,4 +1,4 @@
-.OpenMSPrecursorDefsMapping <- list("Filename"="align_origfilename",
+.OpenMSPrecursorDefsMapping <- list("FileName"="align_origfilename",
                     "ProteinName"="ProteinName",
                     "Decoy"="decoy",
                     "StrippedSequence"="Sequence",
@@ -46,22 +46,26 @@
 #' 
 prepareOpenSwathData <- function(far){
   far <- .prepareDF(far)
+  message("selected essential columns")
   apa = as.character(far$aggr_peak_area)
   afa = as.character(far$aggr_fragment_annotation)
   # split transition intensities
   
   #transints = lapply(apa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
   transints = strsplit(apa,";",fixed=TRUE)
-  
+  message("prepared transition intensity")
   # split transition names
   #transids = lapply(afa,function(x){unlist(strsplit(x,";",fixed=TRUE))})
-  transids = strsplit(afa,";",fixed=TRUE)  
+  transids = strsplit(afa,";",fixed=TRUE)
+  message("prepared transition ids")
   
   # Fix protein names
   protnames <-strsplit(far$proteinname, split="/", fixed=TRUE)
   protnames <-lapply(protnames, function(x){ c(x[1], sort(x[2:length(x)])) })
   protnames <- sapply(protnames, function(x){paste(x,collapse="/")})
   far$proteinname <- protnames
+  message("adjusting protein names done")
+  
   
   # prepare output
   lx = length(transids)

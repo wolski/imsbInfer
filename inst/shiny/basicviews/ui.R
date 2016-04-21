@@ -19,8 +19,8 @@ shinyUI(fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot"),
-      img(src="bigorb.png", height = 400, width = 400)
+      plotOutput("distPlot")
+     # img(src="bigorb.png", height = 400, width = 400)
     )
   )
 ))

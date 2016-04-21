@@ -2,8 +2,8 @@
 
 export(msTransitionExperiment)
 export(prepareOpenSwathData)
-exportClasses(Foo)
 exportClasses(msTransitionExperiment)
+exportClasses(src_sqlite)
 import(RSQLite)
 import(dplyr)
 import(methods)

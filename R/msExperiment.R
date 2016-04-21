@@ -1,4 +1,4 @@
-.PrecursorDefs <- c("Filename",
+.PrecursorDefs <- c("FileName",
                     "ProteinName",
                     "Decoy",
                     "StrippedSequence",
@@ -14,7 +14,7 @@
                   "StrippedSequence",
                   "Decoy")
 
-.PrecursorDefs <- c("Filename",
+.PrecursorDefs <- c("FileName",
                     "StrippedSequence",
                     "ModifiedSequence",
                     "PrecursorCharge",
@@ -22,7 +22,7 @@
                     "PrecursorRT",
                     "PrecursorScore")
 
-.FragmentDefs <-c("Filename",
+.FragmentDefs <-c("FileName",
                   "ModifiedSequence",
                   "PrecursorCharge",
                   "FragmentIonType",
@@ -50,7 +50,7 @@ sumtop <- function( x , top=3 ){
 #' @aliases src_sqlite
 #' @family src_sqlite
 #'
-#' @exportClass Foo
+#' @exportClass src_sqlite
 setOldClass("src_sqlite")
 
 #' Holds Transition level data
@@ -73,18 +73,18 @@ setOldClass("src_sqlite")
 #' data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
 #' 
-#' huhu <- msTransitionExperiment()
+#' huhu <- msTransitionExperiment(path=".", name="mydb.sql")
 #' huhu$setData(data)
-#' data <- huhu$getData() 
-#' x<-huhu$peptide
-#' head(x)
-#' x <- huhu$
-#' dumm <- msTransitionExperiment(path=".", name="mydb.sql")
-#' dumm$name
-#' dumm$setData(data)
-#' huhu <- dumm
+#' xx <-huhu$name
+#' huhu$finalize()
+#' 
+#' huhu <- msTransitionExperiment(path=".", name="mydb.sql")
 #' intTrans <- huhu$getFragmentIntensities()
 #' dim(intTrans)
+#' precInt <- huhu$getPrecursorIntensitySum()
+#' dim(precInt)
+#' colnames(precInt)
+#' pairs(precInt[,3:ncol(precInt)], pch='.',log="xy")
 #' huhu$noDecoy()
 #' colnames(intTrans)
 #' intTrans <- huhu$getFragmentIntensities()
@@ -183,6 +183,7 @@ msTransitionExperiment <-
                   dbDisconnect(.self$.data$con)
                   print("disconnected")
                 },
+                
                 setData = function(data, IsotopeLabelType = "L"){
                   'set the data'
                   library(dplyr)
@@ -195,6 +196,9 @@ msTransitionExperiment <-
                   print(dbListTables(.data$con))
                   
                   as.data.frame(dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT * FROM LongFormat"))))
+                },
+                getFilenames = function(){
+                  as.data.frame(dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT DISTINCT FileName FROM LongFormat"))))
                 },
                 noDecoy = function(){
                   .removeDecoy <<- TRUE 
@@ -227,14 +231,21 @@ msTransitionExperiment <-
                   transMz = dcast(precursor, ModifiedSequence + PrecursorCharge  ~ Filename , value.var="PrecursorMZ")
                   return(transMz)
                 },
-                
-                
-                getPrecursorIntensity=function(FUN=sum){
-                  "!!!don't use. work in progress!!!"
-                  transIntensities <- getFragmentIntensities()
-                  key <- paste(transIntensities$ModifiedSequence, ModifiedSequence$z, sep="_")
-                  res <- by(transIntensities,INDICES=key)
-                  return(res)
+
+                getPrecursorIntensitySum=function(){
+                  where <- ""
+                  if(.removeDecoy){
+                    where <- " where Decoy = 0 "
+                  }
+                  
+                  fragmentCols <- paste(.FragmentDefs, collapse=", ")
+                  query <- c("Select Filename, ModifiedSequence, PrecursorCharge, Decoy, count(*) as Freq, sum(FragmentIntensity) as Intensity from LongFormat " ,
+                             where , " group by  Filename, ModifiedSequence, PrecursorCharge")
+                  query <-paste(query,collapse=" ")
+                  print(query)
+                  tmp <- dbGetQuery(.data$con,query)
+                  transPrecInt = dcast(tmp, ModifiedSequence + PrecursorCharge  ~ Filename , value.var="Intensity")
+                  return(transPrecInt)
                 },
                 
                 getGlobalFDR = function(){
