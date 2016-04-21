@@ -111,8 +111,14 @@ msTransitionExperiment <- setRefClass("msTransitionExperiment",
                                }
                              },
                              precursor = function(x){
-#                                if(missing(x)){
+                               pepcols <- paste(.PeptideDefs, collapse=", ")
+                               query <- c("Select", pepcols, ", count(*) as OrigFreq from LongFormat group by ", pepcols)
+                               query <-paste(tt,collapse=" ")
+                               return( dbGetQuery(.data$con,query) ) 
+                               
+                               if(missing(x)){}
 #                                  if( removeDecoy ){
+                               
 #                                    .precursor <- merge(unique(peptide[,c("StrippedSequence","Decoy")]), .data$precursor )
 #                                    .precursor <- .precursor[.precursor$Decoy == 0]
 #                                    return(.data$precursor)
