@@ -28,8 +28,6 @@ Holds Transition level data
 
 \item{\code{getGlobalFDR()}}{compute FDR for dataset}
 
-\item{\code{getPrecursorIntensity(FUN = sum)}}{!!!don't use. work in progress!!!}
-
 \item{\code{getPrecursorMZ()}}{matrix with precursor mz}
 
 \item{\code{getPrecursorRT()}}{matrix with precursor retention times}
@@ -48,21 +46,27 @@ library(dplyr)
 data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
 data <- prepareOpenSwathData(data)
 
-huhu <- msTransitionExperiment()
+huhu <- msTransitionExperiment(path=".", name="mydb1.sql")
 huhu$setData(data)
-data <- huhu$getData() 
-x<-huhu$peptide
-head(x)
-x <- huhu$
-dumm <- msTransitionExperiment(path=".", name="mydb.sql")
-dumm$name
-dumm$setData(data)
-huhu <- dumm
+xx <-huhu$name
+huhu$getFileName()
+
+huhu$finalize()
+
+huhu <- msTransitionExperiment(path=".", name="mydb.sql")
 intTrans <- huhu$getFragmentIntensities()
 dim(intTrans)
+precInt <- huhu$getPrecursorIntensitySum()
+dim(precInt)
+colnames(precInt)
+pairs(precInt[,3:ncol(precInt)], pch='.',log="xy")
 huhu$noDecoy()
 colnames(intTrans)
 intTrans <- huhu$getFragmentIntensities()
+head(intTrans)
+xx <- by(intTrans[,4:ncol(intTrans)], intTrans$ModifiedSequence , FUN = function(x){x})
+length(xx)
+dim(xx[[1]])
 dim(intTrans)
 pairs(intTrans[,5:ncol(intTrans)],log="xy",pch=".")
 precRT <- huhu$getPrecursorRT()

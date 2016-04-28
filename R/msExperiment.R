@@ -73,9 +73,11 @@ setOldClass("src_sqlite")
 #' data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
 #' 
-#' huhu <- msTransitionExperiment(path=".", name="mydb.sql")
+#' huhu <- msTransitionExperiment(path=".", name="mydb1.sql")
 #' huhu$setData(data)
 #' xx <-huhu$name
+#' huhu$getFileName()
+#' 
 #' huhu$finalize()
 #' 
 #' huhu <- msTransitionExperiment(path=".", name="mydb.sql")
@@ -88,6 +90,10 @@ setOldClass("src_sqlite")
 #' huhu$noDecoy()
 #' colnames(intTrans)
 #' intTrans <- huhu$getFragmentIntensities()
+#' head(intTrans)
+#' xx <- by(intTrans[,4:ncol(intTrans)], intTrans$ModifiedSequence , FUN = function(x){x})
+#' length(xx)
+#' dim(xx[[1]])
 #' dim(intTrans)
 #' pairs(intTrans[,5:ncol(intTrans)],log="xy",pch=".")
 #' precRT <- huhu$getPrecursorRT()
@@ -194,11 +200,10 @@ msTransitionExperiment <-
                 },
                 getData = function(){
                   print(dbListTables(.data$con))
-                  
-                  as.data.frame(dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT * FROM LongFormat"))))
+                  (dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT * FROM LongFormat"))))
                 },
-                getFilenames = function(){
-                  as.data.frame(dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT DISTINCT FileName FROM LongFormat"))))
+                getFileName = function(){
+                  dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT DISTINCT FileName FROM LongFormat")))
                 },
                 noDecoy = function(){
                   .removeDecoy <<- TRUE 
