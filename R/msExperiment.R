@@ -22,6 +22,7 @@
                     "PrecursorRT",
                     "PrecursorScore")
 
+#Dia stuff
 .FragmentDefs <-c("FileName",
                   "ModifiedSequence",
                   "PrecursorCharge",
@@ -72,7 +73,7 @@ setOldClass("src_sqlite")
 #' library(dplyr)
 #' data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
-#' 
+#' head(data)
 #' huhu <- msTransitionExperiment(path=".", name="mydb1.sql")
 #' huhu$setData(data)
 #' xx <-huhu$name
@@ -115,7 +116,6 @@ setOldClass("src_sqlite")
 #' huhu$getGlobalFDR()
 #' decs<-huhu$getDecoy()
 #'
-
 msTransitionExperiment <-
   setRefClass("msTransitionExperiment",
               fields = list( .data="src_sqlite",
