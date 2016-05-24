@@ -46,7 +46,7 @@ Holds Transition level data
 
 \item{\code{noDecoy()}}{work in decoy free mode}
 
-\item{\code{plotSampleFDR(log = "")}}{plot FDR versus Score}
+\item{\code{plotFalsePostives(log = "")}}{plot FP versus Score}
 
 \item{\code{setData(data, labelType = "L")}}{set the data (drops all data if already existing)}
 
@@ -57,7 +57,7 @@ rm(list=ls())
 library(imsbInfer2)
 library(readr)
 library(dplyr)
-data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
+data <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),col_names = TRUE)
 data <- prepareOpenSwathData(data)
 dim(data)
 
@@ -79,6 +79,8 @@ pairs(precInt[,3:ncol(precInt)], pch='.',log="xy")
 
 precIntExt <- huhu$getPrecursorIntensity()
 dim(precIntExt)
+head(precInt)
+head(precIntExt)
 
 huhu$noDecoy()
 intTrans <- huhu$getFragmentIntensities()
@@ -101,9 +103,9 @@ huhu$noDecoy()
 length(unique(huhu$peptide$StrippedSequence))
 length(unique(huhu$peptide$ProteinName))
 xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
-dim(xx)
-test <- (huhu$getPrecursorIntensity())
+huhu$withDecoy()
 huhu$getGlobalFDR()
+huhu$plotSampleFDR()
 
 }
 

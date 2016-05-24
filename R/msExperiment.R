@@ -75,7 +75,7 @@ setOldClass("src_sqlite")
 #' library(imsbInfer2)
 #' library(readr)
 #' library(dplyr)
-#' data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
+#' data <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
 #' dim(data)
 #' 
@@ -121,9 +121,9 @@ setOldClass("src_sqlite")
 #' length(unique(huhu$peptide$StrippedSequence))
 #' length(unique(huhu$peptide$ProteinName))
 #' xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
-#' dim(xx)
-#' test <- (huhu$getPrecursorIntensity())
+#' huhu$withDecoy()
 #' huhu$getGlobalFDR()
+#' huhu$plotSampleFDR()
 #'
 msTransitionExperiment <-
   setRefClass("msTransitionExperiment",
@@ -294,17 +294,18 @@ msTransitionExperiment <-
                 getGlobalFDR = function(){
                   'compute FDR for dataset'
                   
-                  tmp <- precursor[, c("ProteinName", "Decoy", "PrecursorScore")]
+                  tmp <- precursor[, c("Decoy", "PrecursorScore")]
                   tmp <- tmp[tmp$PrecursorScore < 2,] # not sure how to treat requant values in this context
-                  fdr <- (sum(tmp$Decoy) / length(tmp$ProteinName))
+                  fdr <- (sum(tmp$Decoy) / nrow(tmp))
                   return(fdr)
                 },
-                plotSampleFDR = function(log=""){
-                  'plot FDR versus Score'
-                  tmp <-data.frame(Protein = precdata$Protein,Decoy = precdata$Decoy,Score = precdata$Score)
-                  tmp <- tmp[tmp$Score < 2,] # not sure how to treat requant values in this context
-                  tmp <- tmp[order(tmp$Score),]
-                  plot(tmp$Score,cumsum(tmp$Decoy) / nrow(tmp) * 100 ,type="l",xlab="Score", ylab="FDR",log=log)
+                
+                plotFalsePostives = function(log=""){
+                  'plot FP versus Score'
+                  tmp <- precursor[, c("Decoy", "PrecursorScore")]
+                  tmp <- tmp[tmp$PrecursorScore < 2,] # not sure how to treat requant values in this context
+                  tmp <- tmp[order(tmp$PrecursorScore),]
+                  plot(tmp$PrecursorScore,cumsum(tmp$Decoy) / nrow(tmp) * 100 ,type="l",xlab="Score", ylab="FP",log=log)
                 }
                 
               ))
