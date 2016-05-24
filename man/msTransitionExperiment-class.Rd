@@ -20,13 +20,23 @@ Holds Transition level data
 \item{\code{precursor}}{precursor data table}
 
 \item{\code{transition}}{required columns for transitiondata}
+
+\item{\code{labelType}}{Stores only one label type}
 }}
 \section{Methods}{
 
 \describe{
+\item{\code{getData()}}{get all the data in long format}
+
+\item{\code{getFileName()}}{get filenames}
+
 \item{\code{getFragmentIntensities()}}{matrix with transitions intensities}
 
 \item{\code{getGlobalFDR()}}{compute FDR for dataset}
+
+\item{\code{getPrecursorIntensity()}}{Selects Fragment intensities given by external software}
+
+\item{\code{getPrecursorIntensitySum()}}{Selects Fragment intensities and aggregates them (sum)}
 
 \item{\code{getPrecursorMZ()}}{matrix with precursor mz}
 
@@ -34,9 +44,13 @@ Holds Transition level data
 
 \item{\code{getPrecursorScore()}}{matrix with precursor scores}
 
+\item{\code{noDecoy()}}{work in decoy free mode}
+
 \item{\code{plotSampleFDR(log = "")}}{plot FDR versus Score}
 
-\item{\code{setData(data, IsotopeLabelType = "L")}}{set the data}
+\item{\code{setData(data, labelType = "L")}}{set the data (drops all data if already existing)}
+
+\item{\code{withDecoy()}}{work with decoys}
 }}
 \examples{
 rm(list=ls())
@@ -45,25 +59,29 @@ library(readr)
 library(dplyr)
 data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
 data <- prepareOpenSwathData(data)
+dim(data)
 
 huhu <- msTransitionExperiment(path=".", name="mydb1.sql")
+head(data)
 huhu$setData(data)
-xx <-huhu$name
+
+huhu$name
 huhu$getFileName()
 
-huhu$finalize()
 
-huhu <- msTransitionExperiment(path=".", name="mydb.sql")
 intTrans <- huhu$getFragmentIntensities()
 dim(intTrans)
+head(intTrans)
 precInt <- huhu$getPrecursorIntensitySum()
 dim(precInt)
 colnames(precInt)
 pairs(precInt[,3:ncol(precInt)], pch='.',log="xy")
+
+precIntExt <- huhu$getPrecursorIntensity()
+dim(precIntExt)
+
 huhu$noDecoy()
-colnames(intTrans)
 intTrans <- huhu$getFragmentIntensities()
-head(intTrans)
 xx <- by(intTrans[,4:ncol(intTrans)], intTrans$ModifiedSequence , FUN = function(x){x})
 length(xx)
 dim(xx[[1]])
@@ -74,7 +92,7 @@ precMZ <- huhu$getPrecursorMZ()
 precScore <- huhu$getPrecursorScore()
 pairs(precScore[,3:ncol(precScore)],log="xy",pch=".")
 colnames(huhu$precursor)
-colnames(huhu$peptide)
+head(huhu$peptide$Freq)
 
 head(huhu$peptide[huhu$peptide$Decoy==1,])
 huhu$withDecoy()
@@ -83,10 +101,9 @@ huhu$noDecoy()
 length(unique(huhu$peptide$StrippedSequence))
 length(unique(huhu$peptide$ProteinName))
 xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
-
+dim(xx)
 test <- (huhu$getPrecursorIntensity())
 huhu$getGlobalFDR()
-decs<-huhu$getDecoy()
 
 }
 
