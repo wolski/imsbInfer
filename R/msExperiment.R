@@ -97,6 +97,8 @@ setOldClass("src_sqlite")
 #' 
 #' precIntExt <- huhu$getPrecursorIntensity()
 #' dim(precIntExt)
+#' head(precInt)
+#' head(precIntExt)
 #' 
 #' huhu$noDecoy()
 #' intTrans <- huhu$getFragmentIntensities()
