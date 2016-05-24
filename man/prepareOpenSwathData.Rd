@@ -13,7 +13,7 @@ Prepare data from OpenSwathOutput
 rm(list=ls())
 library(readr)
 library(imsbInfer2)
-data2 <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
+data2 <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),col_names = TRUE)
 head(data2)
 
 far <- .prepareDF(data2)

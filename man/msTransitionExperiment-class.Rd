@@ -105,7 +105,7 @@ length(unique(huhu$peptide$ProteinName))
 xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
 huhu$withDecoy()
 huhu$getGlobalFDR()
-huhu$plotSampleFDR()
+huhu$plotFalsePostives()
 
 }
 
