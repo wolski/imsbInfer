@@ -16,11 +16,11 @@ library(imsbInfer2)
 data2 <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),col_names = TRUE)
 head(data2)
 
-far <- .prepareDF(data2)
-far \%>\% glimpse
-head(far)
-tmp[1:3]
+#far <- .prepareDF(data2)
+#far \%>\% glimpse
+#head(far)
+#tmp[1:3]
 data3 <- prepareOpenSwathData(data2)
-
+colnames(data3)
 }
 
