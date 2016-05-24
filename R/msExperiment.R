@@ -123,7 +123,7 @@ setOldClass("src_sqlite")
 #' xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
 #' huhu$withDecoy()
 #' huhu$getGlobalFDR()
-#' huhu$plotSampleFDR()
+#' huhu$plotFalsePostives()
 #'
 msTransitionExperiment <-
   setRefClass("msTransitionExperiment",
