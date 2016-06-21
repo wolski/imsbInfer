@@ -33,7 +33,6 @@
 #precursor <- data.frame(unique(data[, .PrecursorDefs]),stringsAsFactors = FALSE)
 #transition <- data.frame(unique(data[, .FragmentDefs]),stringsAsFactors = FALSE)
 
-
 sumtop <- function( x , top=3 ){
   if(nrow(x) > top){
     topN = min(nrow(x),top)
@@ -52,7 +51,6 @@ sumtop <- function( x , top=3 ){
 #'
 #' @exportClass src_sqlite
 setOldClass("src_sqlite")
-
 #' Holds Transition level data
 #' @field name name of experiment
 #' @field path where to store data
