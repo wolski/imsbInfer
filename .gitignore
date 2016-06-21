@@ -21,6 +21,7 @@
 *.dvi
 *.tsv
 *.csv
+*.sql
 .Rproj.user
 .Rbuildignore
 findMFDIA.Rproj

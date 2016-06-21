@@ -1,14 +1,3 @@
-.PrecursorDefs <- c("FileName",
-                    "ProteinName",
-                    "Decoy",
-                    "StrippedSequence",
-                    "ModifiedSequence",
-                    "IsotopeLabelType",
-                    "PrecursorCharge",
-                    "PrecursorMZ",
-                    "PrecursorRT",
-                    "PrecursorScore"
-)
 
 .PeptideDefs <- c("ProteinName",
                   "StrippedSequence",
@@ -20,14 +9,30 @@
                     "PrecursorCharge",
                     "PrecursorMZ",
                     "PrecursorRT",
+                    "LabelType",
+                    "Decoy",
                     "PrecursorScore")
 
+.PrecursorIntensity <- c("FileName",
+                         "StrippedSequence",
+                         "ModifiedSequence",
+                         "PrecursorCharge",
+                         "MS1Intensity", # LFQ
+                         "MS2IntensityAggregated"
+                         )
+
+#Dia stuff
 .FragmentDefs <-c("FileName",
                   "ModifiedSequence",
                   "PrecursorCharge",
                   "FragmentIonType",
                   "FragmentCharge",
+                  "FragmentInterference",
                   "FragmentIntensity")
+
+
+.RequiredColumns <- base::unique(c(.PeptideDefs, .PrecursorDefs,.PrecursorIntensity, .FragmentDefs ))
+.RequiredColumns
 
 #protein <- data.frame(unique(data[, .ProteinDefs]),stringsAsFactors = FALSE)
 #precursor <- data.frame(unique(data[, .PrecursorDefs]),stringsAsFactors = FALSE)
@@ -57,6 +62,7 @@ setOldClass("src_sqlite")
 #' @field peptide transtion data table
 #' @field precursor precursor data table
 #' @field transition required columns for transitiondata
+#' @field labelType Stores only one label type
 #' @import methods
 #' @import dplyr
 #' @import reshape2
@@ -68,27 +74,33 @@ setOldClass("src_sqlite")
 #' library(imsbInfer2)
 #' library(readr)
 #' library(dplyr)
-#' data <- read_tsv("inst/extdata/example.tsv.gz",col_names = TRUE)
+#' data <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
+#' dim(data)
 #' 
 #' huhu <- msTransitionExperiment(path=".", name="mydb1.sql")
+#' head(data)
 #' huhu$setData(data)
-#' xx <-huhu$name
+#' 
+#' huhu$name
 #' huhu$getFileName()
 #' 
-#' huhu$finalize()
 #' 
-#' huhu <- msTransitionExperiment(path=".", name="mydb.sql")
 #' intTrans <- huhu$getFragmentIntensities()
 #' dim(intTrans)
+#' head(intTrans)
 #' precInt <- huhu$getPrecursorIntensitySum()
 #' dim(precInt)
 #' colnames(precInt)
 #' pairs(precInt[,3:ncol(precInt)], pch='.',log="xy")
+#' 
+#' precIntExt <- huhu$getPrecursorIntensity()
+#' dim(precIntExt)
+#' head(precInt)
+#' head(precIntExt)
+#' 
 #' huhu$noDecoy()
-#' colnames(intTrans)
 #' intTrans <- huhu$getFragmentIntensities()
-#' head(intTrans)
 #' xx <- by(intTrans[,4:ncol(intTrans)], intTrans$ModifiedSequence , FUN = function(x){x})
 #' length(xx)
 #' dim(xx[[1]])
@@ -99,7 +111,7 @@ setOldClass("src_sqlite")
 #' precScore <- huhu$getPrecursorScore()
 #' pairs(precScore[,3:ncol(precScore)],log="xy",pch=".")
 #' colnames(huhu$precursor)
-#' colnames(huhu$peptide)
+#' head(huhu$peptide$Freq)
 #'
 #' head(huhu$peptide[huhu$peptide$Decoy==1,])
 #' huhu$withDecoy()
@@ -108,16 +120,14 @@ setOldClass("src_sqlite")
 #' length(unique(huhu$peptide$StrippedSequence))
 #' length(unique(huhu$peptide$ProteinName))
 #' xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
-#' 
-#' test <- (huhu$getPrecursorIntensity())
+#' huhu$withDecoy()
 #' huhu$getGlobalFDR()
-#' decs<-huhu$getDecoy()
+#' huhu$plotFalsePostives()
 #'
-
 msTransitionExperiment <-
   setRefClass("msTransitionExperiment",
               fields = list( .data="src_sqlite",
-                             isotopeLabelType = "character", 
+                             labelType = "character", 
                              name="character",
                              path="character",
                              .removeDecoy='logical',
@@ -166,14 +176,14 @@ msTransitionExperiment <-
                 initialize = function(name=paste( uuid::UUIDgenerate(), ".sqlite",sep=""),
                                       path=".",
                                       .removeDecoy=FALSE,
-                                      isotopeLabelType="L",
+                                      labelType="L",
                                       ...) {
                   print(match.call())
                   require(reshape2)
                   
                   name <<- name
                   path <<- path
-                  isotopeLabelType <<- isotopeLabelType
+                  labelType <<- labelType
                   .removeDecoy <<- .removeDecoy
                   
                   dbfile <- file.path(path , name)
@@ -181,6 +191,7 @@ msTransitionExperiment <-
                   .data <<- src_sqlite(dbfile, create=TRUE)
                   print('done')
                 },
+                
                 finalize  = function(){
                   print("infinalize")
                   require("RSQLite")
@@ -188,32 +199,43 @@ msTransitionExperiment <-
                   print("disconnected")
                 },
                 
-                setData = function(data, IsotopeLabelType = "L"){
-                  'set the data'
+                setData = function(data, labelType = "L"){
+                  'set the data (drops all data if already existing)'
+                  stopifnot(.RequiredColumns %in% colnames(data))
                   library(dplyr)
-                  isotopeLabelType<<-"L"
-                  data<-data[data$IsotopeLabelType=="L",]
-                  tmp <- copy_to(.data, data, "LongFormat", temporary = FALSE)
+                  labelType <<- labelType
+                  data<-data[data$LabelType==labelType,]
+                  print(dim(data))
+                  if(db_has_table(.data$con, "LongFormat")){
+                    dplyr::db_drop_table(.data$con,  "LongFormat", force = FALSE)
+                  }
+                  tmp <- dplyr::copy_to(.data, data, "LongFormat", temporary = FALSE)
+                  print("data inserted")
                   dbListTables(.data$con)
                 },
                 getData = function(){
+                  'get all the data in long format'
                   print(dbListTables(.data$con))
                   (dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT * FROM LongFormat"))))
                 },
                 getFileName = function(){
+                  'get filenames'
                   dplyr::collect(dplyr::tbl(.data,dplyr::sql("SELECT DISTINCT FileName FROM LongFormat")))
                 },
+                
                 noDecoy = function(){
+                  'work in decoy free mode'
                   .removeDecoy <<- TRUE 
                 },
                 withDecoy = function(){
+                  'work with decoys'
                   .removeDecoy <<- FALSE 
                 },
                 getFragmentIntensities = function() {
                   'matrix with transitions intensities'
                   
                   transInt <- dcast(transition,
-                                    ModifiedSequence + PrecursorCharge + FragmentIonType + FragmentCharge ~ Filename ,
+                                    ModifiedSequence + PrecursorCharge + FragmentIonType + FragmentCharge ~ FileName ,
                                     value.var="FragmentIntensity")
                   return(transInt)
                 },
@@ -221,50 +243,68 @@ msTransitionExperiment <-
                 
                 getPrecursorRT = function() {
                   'matrix with precursor retention times'
-                  transRT = dcast(precursor, ModifiedSequence + PrecursorCharge  ~ Filename , value.var="PrecursorRT")
+                  transRT = dcast(precursor, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="PrecursorRT")
                 },
                 
                 getPrecursorScore = function() {
                   'matrix with precursor scores'
-                  transScore = dcast(precursor, ModifiedSequence + PrecursorCharge ~ Filename , value.var="PrecursorScore")
+                  transScore = dcast(precursor, ModifiedSequence + PrecursorCharge ~ FileName , value.var="PrecursorScore")
                   return(transScore)
                 },
                 getPrecursorMZ = function() {
                   'matrix with precursor mz'
-                  transMz = dcast(precursor, ModifiedSequence + PrecursorCharge  ~ Filename , value.var="PrecursorMZ")
+                  transMz = dcast(precursor, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="PrecursorMZ")
                   return(transMz)
                 },
 
                 getPrecursorIntensitySum=function(){
-                  where <- ""
+                  'Selects Fragment intensities and aggregates them (sum)'
+                  
+                  where <- NULL 
                   if(.removeDecoy){
                     where <- " where Decoy = 0 "
                   }
-                  
                   fragmentCols <- paste(.FragmentDefs, collapse=", ")
-                  query <- c("Select Filename, ModifiedSequence, PrecursorCharge, Decoy, count(*) as Freq, sum(FragmentIntensity) as Intensity from LongFormat " ,
-                             where , " group by  Filename, ModifiedSequence, PrecursorCharge")
+                  query <- c("Select FileName, ModifiedSequence, PrecursorCharge, Decoy, count(*) as Freq, sum(FragmentIntensity) as Intensity from LongFormat " ,
+                             where , " group by  FileName, ModifiedSequence, PrecursorCharge")
                   query <-paste(query,collapse=" ")
                   print(query)
                   tmp <- dbGetQuery(.data$con,query)
-                  transPrecInt = dcast(tmp, ModifiedSequence + PrecursorCharge  ~ Filename , value.var="Intensity")
+                  transPrecInt = dcast(tmp, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="Intensity")
+                  return(transPrecInt)
+                },
+                getPrecursorIntensity=function(){
+                  'Selects Fragment intensities given by external software'
+                  
+                  where <- NULL 
+                  if(.removeDecoy){
+                    where <- " where Decoy = 0 "
+                  }
+                  fragmentCols <- paste(.FragmentDefs, collapse=", ")
+                  query <- c("Select Distinct FileName, ModifiedSequence, PrecursorCharge, Decoy, MS2IntensityAggregated as Intensity from LongFormat " ,
+                             where )
+                  query <-paste(query,collapse=" ")
+                  print(query)
+                  tmp <- dbGetQuery(.data$con,query)
+                  transPrecInt = dcast(tmp, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="Intensity")
                   return(transPrecInt)
                 },
                 
                 getGlobalFDR = function(){
                   'compute FDR for dataset'
                   
-                  tmp <- precursor[, c("ProteinName", "Decoy", "PrecursorScore")]
-                  tmp <- tmp[tmp$Score < 2,] # not sure how to treat requant values in this context
-                  fdr <- (sum(tmp$Decoy) / length(tmp$ProteinName))
+                  tmp <- precursor[, c("Decoy", "PrecursorScore")]
+                  tmp <- tmp[tmp$PrecursorScore < 2,] # not sure how to treat requant values in this context
+                  fdr <- (sum(tmp$Decoy) / nrow(tmp))
                   return(fdr)
                 },
-                plotSampleFDR = function(log=""){
-                  'plot FDR versus Score'
-                  tmp <-data.frame(Protein = precdata$Protein,Decoy = precdata$Decoy,Score = precdata$Score)
-                  tmp <- tmp[tmp$Score < 2,] # not sure how to treat requant values in this context
-                  tmp <- tmp[order(tmp$Score),]
-                  plot(tmp$Score,cumsum(tmp$Decoy) / nrow(tmp) * 100 ,type="l",xlab="Score", ylab="FDR",log=log)
+                
+                plotFalsePostives = function(log=""){
+                  'plot FP versus Score'
+                  tmp <- precursor[, c("Decoy", "PrecursorScore")]
+                  tmp <- tmp[tmp$PrecursorScore < 2,] # not sure how to treat requant values in this context
+                  tmp <- tmp[order(tmp$PrecursorScore),]
+                  plot(tmp$PrecursorScore,cumsum(tmp$Decoy) / nrow(tmp) * 100 ,type="l",xlab="Score", ylab="FP",log=log)
                 }
                 
               ))
