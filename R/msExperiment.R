@@ -19,7 +19,7 @@
                          "PrecursorCharge",
                          "MS1Intensity", # LFQ
                          "MS2IntensityAggregated"
-                         )
+)
 
 #Dia stuff
 .FragmentDefs <-c("FileName",
@@ -97,15 +97,13 @@ setOldClass("src_sqlite")
 #' 
 #' precIntExt <- huhu$getPrecursorIntensity()
 #' dim(precIntExt)
-#' head(precInt)
-#' head(precIntExt)
+#' head(precInt) == head(precIntExt)
 #' 
 #' huhu$noDecoy()
 #' intTrans <- huhu$getFragmentIntensities()
-#' xx <- by(intTrans[,4:ncol(intTrans)], intTrans$ModifiedSequence , FUN = function(x){x})
+#' xx <- by(intTrans[,5:ncol(intTrans)], intTrans$ModifiedSequence , FUN = function(x){x})
 #' length(xx)
-#' dim(xx[[1]])
-#' dim(intTrans)
+#' xx[[1]]
 #' pairs(intTrans[,5:ncol(intTrans)],log="xy",pch=".")
 #' precRT <- huhu$getPrecursorRT()
 #' precMZ <- huhu$getPrecursorMZ()
@@ -121,6 +119,8 @@ setOldClass("src_sqlite")
 #' length(unique(huhu$peptide$StrippedSequence))
 #' length(unique(huhu$peptide$ProteinName))
 #' xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
+#' head(xx)
+#' dim(xx)
 #' huhu$withDecoy()
 #' huhu$getGlobalFDR()
 #' huhu$plotFalsePostives()
@@ -188,7 +188,7 @@ msTransitionExperiment <-
                   .removeDecoy <<- .removeDecoy
                   
                   dbfile <- file.path(path , name)
-                  print(dbfile)
+                  
                   .data <<- src_sqlite(dbfile, create=TRUE)
                   print('done')
                 },
@@ -257,7 +257,7 @@ msTransitionExperiment <-
                   transMz = dcast(precursor, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="PrecursorMZ")
                   return(transMz)
                 },
-
+                
                 getPrecursorIntensitySum=function(){
                   'Selects Fragment intensities and aggregates them (sum)'
                   
@@ -290,10 +290,8 @@ msTransitionExperiment <-
                   transPrecInt = dcast(tmp, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="Intensity")
                   return(transPrecInt)
                 },
-                
                 getGlobalFDR = function(){
                   'compute FDR for dataset'
-                  
                   tmp <- precursor[, c("Decoy", "PrecursorScore")]
                   tmp <- tmp[tmp$PrecursorScore < 2,] # not sure how to treat requant values in this context
                   fdr <- (sum(tmp$Decoy) / nrow(tmp))
@@ -307,7 +305,7 @@ msTransitionExperiment <-
                   tmp <- tmp[order(tmp$PrecursorScore),]
                   plot(tmp$PrecursorScore,cumsum(tmp$Decoy) / nrow(tmp) * 100 ,type="l",xlab="Score", ylab="FP",log=log)
                 }
-                
-              ))
+              )
+  )
 
 

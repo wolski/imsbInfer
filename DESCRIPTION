@@ -19,6 +19,7 @@ Depends:
     RSQLite,
     dplyr
 Imports:
+    TargetDecoyFDR
 Suggests:
 RoxygenNote: 5.0.1
 Collate: hello.R msExperiment.R msConditions.R mapOpenSwath.R mapSpectronaut.R

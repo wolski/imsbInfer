@@ -22,5 +22,7 @@ head(data2)
 #tmp[1:3]
 data3 <- prepareOpenSwathData(data2)
 colnames(data3)
+dim(data3)
+
 }
 

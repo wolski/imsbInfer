@@ -44,6 +44,8 @@
 #' #tmp[1:3]
 #' data3 <- prepareOpenSwathData(data2)
 #' colnames(data3)
+#' dim(data3)
+#' 
 prepareOpenSwathData <- function(far){
   far <- .prepareDF(far)
 
