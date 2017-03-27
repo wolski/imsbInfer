@@ -42,9 +42,12 @@
 #' #far %>% glimpse
 #' #head(far)
 #' #tmp[1:3]
-#' data3 <- prepareOpenSwathData(data2)
-#' colnames(data3)
-#' dim(data3)
+#' data3 <- prepareOpenSwathData( data2 )
+#' 
+#' xx <- read_tsv("D:/projects/EvanYibo/dataRequant27032017/E1703211035_feature_alignment_requant_ScienceLivers_Specific.tsv")
+#' xx <- read_tsv("D:/projects/EvanYibo/dataRequant27032017/E1703161049_feature_alignment_requant_PanMouse.tsv")
+#' tmp <- prepareOpenSwathData(xx)
+#' far <- xx
 #' 
 prepareOpenSwathData <- function(far){
   far <- .prepareDF(far)
@@ -57,6 +60,7 @@ prepareOpenSwathData <- function(far){
   message("prepared transition intensity")
   # split transition names
   transids = strsplit(afa,";",fixed=TRUE)
+  
   message("prepared transition ids")
   
   # Fix protein names
@@ -71,7 +75,6 @@ prepareOpenSwathData <- function(far){
   stopifnot(lx == nrow(far))
 
   far <- far[, !(names(far) %in% c("aggr_peak_area","aggr_fragment_annotation"))]
-
   # extend
   lengths <-sapply(transids,length)
   idx <- rep(1:lx, lengths)
@@ -80,9 +83,19 @@ prepareOpenSwathData <- function(far){
   transids <- unlist(transids)
   transids <- gsub("DECOY_","DECOY", transids, fixed=TRUE )
   cnamessplit <- strsplit(as.character(transids),split="_",fixed=TRUE)
-  transids <- do.call("rbind",cnamessplit)
   
-  colnames(transids)<-c("frag_id", "ion_type","frag_charge","pep_sequence","pep_charge")
+  system.time(transids <- do.call("rbind",cnamessplit))
+
+  if(ncol(transids) == 5){
+    colnames(transids)<-c("frag_id", "ion_type","frag_charge","pep_sequence","pep_charge")
+    far <- data.frame(far, aggr_peak_area = as.numeric(unlist(transints)), transids )
+    
+  }else if(ncol(transids) == 3){
+    colnames(transids)<-c("frag_id","pep_sequence","pep_charge")
+    far <- data.frame(far, aggr_peak_area = as.numeric(unlist(transints)), transids )
+    far$ion_type <- NA
+    far$frag_charge <-NA
+  }
   
   far <- data.frame(far, aggr_peak_area = as.numeric(unlist(transints)), transids )
   
