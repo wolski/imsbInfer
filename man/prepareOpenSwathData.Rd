@@ -20,9 +20,12 @@ head(data2)
 #far \%>\% glimpse
 #head(far)
 #tmp[1:3]
-data3 <- prepareOpenSwathData(data2)
-colnames(data3)
-dim(data3)
+data3 <- prepareOpenSwathData( data2 )
+
+xx <- read_tsv("D:/projects/EvanYibo/dataRequant27032017/E1703211035_feature_alignment_requant_ScienceLivers_Specific.tsv")
+xx <- read_tsv("D:/projects/EvanYibo/dataRequant27032017/E1703161049_feature_alignment_requant_PanMouse.tsv")
+tmp <- prepareOpenSwathData(xx)
+far <- xx
 
 }
 

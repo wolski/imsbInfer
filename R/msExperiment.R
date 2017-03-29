@@ -4,6 +4,7 @@
                   "Decoy")
 
 .PrecursorDefs <- c("FileName",
+                    "TransitionGroupID",
                     "StrippedSequence",
                     "ModifiedSequence",
                     "PrecursorCharge",
@@ -23,6 +24,7 @@
 
 #Dia stuff
 .FragmentDefs <-c("FileName",
+                  "FragmentID",
                   "ModifiedSequence",
                   "PrecursorCharge",
                   "FragmentIonType",
@@ -233,27 +235,29 @@ msTransitionExperiment <-
                 },
                 getFragmentIntensities = function() {
                   'matrix with transitions intensities'
-                  
                   transInt <- dcast(transition,
                                     ModifiedSequence + PrecursorCharge + FragmentIonType + FragmentCharge ~ FileName ,
                                     value.var="FragmentIntensity")
                   return(transInt)
                 },
-                
+                dcastPrecursor = function(x, value.var="Intensity"){
+                  message("casting using value.var : ", value.var)
+                  dcast(x, TransitionGroupID + ModifiedSequence + PrecursorCharge + StrippedSequence + Decoy ~ FileName , value.var=value.var, drop=TRUE)
+                },
                 
                 getPrecursorRT = function() {
                   'matrix with precursor retention times'
-                  transRT = dcast(precursor, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="PrecursorRT")
+                  transRT = dcastPrecursor(precursor, value.var="PrecursorRT")
                 },
                 
                 getPrecursorScore = function() {
                   'matrix with precursor scores'
-                  transScore = dcast(precursor, ModifiedSequence + PrecursorCharge ~ FileName , value.var="PrecursorScore")
+                  transScore = dcastPrecursor(precursor,  value.var="PrecursorScore")
                   return(transScore)
                 },
                 getPrecursorMZ = function() {
                   'matrix with precursor mz'
-                  transMz = dcast(precursor, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="PrecursorMZ")
+                  transMz = dcastPrecursor(precursor,  value.var="PrecursorMZ")
                   return(transMz)
                 },
                 
@@ -265,30 +269,29 @@ msTransitionExperiment <-
                     where <- " where Decoy = 0 "
                   }
                   fragmentCols <- paste(.FragmentDefs, collapse=", ")
-                  query <- c("Select FileName, ModifiedSequence, PrecursorCharge, Decoy, count(*) as Freq, sum(FragmentIntensity) as Intensity from LongFormat " ,
-                             where , " group by  FileName, ModifiedSequence, PrecursorCharge")
+                  query <- c("Select TransitionGroupID, FileName, ModifiedSequence, StrippedSequence, PrecursorCharge, Decoy, count(*) as Freq, sum(FragmentIntensity) as Intensity from LongFormat " ,
+                             where , " group by TransitionGroupID, FileName, ModifiedSequence, PrecursorCharge")
                   query <-paste(query,collapse=" ")
                   print(query)
                   tmp <- dbGetQuery(.data$con,query)
-                  transPrecInt = dcast(tmp, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="Intensity")
-                  return(transPrecInt)
+                  #tmp <- dcastPrecursor(tmp, value.var = "Intensity")
+                  return(tmp)
                 },
-                getPrecursorIntensity=function(){
-                  'Selects Fragment intensities given by external software'
-                  
-                  where <- NULL 
-                  if(.removeDecoy){
-                    where <- " where Decoy = 0 "
-                  }
-                  fragmentCols <- paste(.FragmentDefs, collapse=", ")
-                  query <- c("Select Distinct FileName, ModifiedSequence, PrecursorCharge, Decoy, MS2IntensityAggregated as Intensity from LongFormat " ,
-                             where )
-                  query <-paste(query,collapse=" ")
-                  print(query)
-                  tmp <- dbGetQuery(.data$con,query)
-                  transPrecInt = dcast(tmp, ModifiedSequence + PrecursorCharge  ~ FileName , value.var="Intensity")
-                  return(transPrecInt)
-                },
+                # getPrecursorIntensity=function(){
+                #   'DO NOT USE!!! Selects Fragment intensities given by external software'
+                #   
+                #   where <- NULL 
+                #   if(.removeDecoy){
+                #     where <- " where Decoy = 0 "
+                #   }
+                #   fragmentCols <- paste(.FragmentDefs, collapse=", ")
+                #   query <- c("Select Distinct TransitionGroupID, FileName, ModifiedSequence, PrecursorCharge, Decoy, MS2IntensityAggregated as Intensity from LongFormat " ,
+                #              where )
+                #   query <-paste(query,collapse=" ")
+                #   print(query)
+                #   tmp <- dbGetQuery(.data$con,query)
+                #   return(tmp)
+                # },
                 getGlobalFDR = function(){
                   'compute FDR for dataset'
                   tmp <- precursor[, c("Decoy", "PrecursorScore")]

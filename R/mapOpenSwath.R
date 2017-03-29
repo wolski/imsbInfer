@@ -7,11 +7,14 @@
                     "PrecursorMZ"= "mz",
                     "PrecursorRT"="RT",
                     "PrecursorScore"="m_score",
-                    "MS2IntensityAggregated" = "Intensity")
+                    "MS2IntensityAggregated" = "Intensity",
+                    "TransitionGroupID" = "transition_group_id"
+                    )
 
-.OpenMSFragmentDefsMapping <-c("FragmentIonType"="ion_type",
-                  "FragmentCharge"="frag_charge",
-                  "FragmentIntensity"="aggr_Peak_Area")
+.OpenMSFragmentDefsMapping <-c( "FragmentID"="frag_id",
+                                "FragmentIonType"="ion_type",
+                                "FragmentCharge"="frag_charge",
+                                "FragmentIntensity"="aggr_Peak_Area")
 
 .prepareDF <- function (df)
 {
