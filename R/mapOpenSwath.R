@@ -39,7 +39,6 @@
 #' library(readr)
 #' library(imsbInfer2)
 #' data2 <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),col_names = TRUE)
-#' head(data2)
 #' 
 #' #far <- .prepareDF(data2)
 #' #far %>% glimpse
@@ -50,7 +49,8 @@
 #' xx <- read_tsv("D:/projects/EvanYibo/dataRequant27032017/E1703211035_feature_alignment_requant_ScienceLivers_Specific.tsv")
 #' xx <- read_tsv("D:/projects/EvanYibo/dataRequant27032017/E1703161049_feature_alignment_requant_PanMouse.tsv")
 #' tmp <- prepareOpenSwathData(xx)
-#' far <- xx
+#' far <- data2
+#'
 #' 
 prepareOpenSwathData <- function(far){
   far <- .prepareDF(far)
@@ -62,7 +62,7 @@ prepareOpenSwathData <- function(far){
   transints = strsplit(apa,";",fixed=TRUE)
   message("prepared transition intensity")
   # split transition names
-  transids = strsplit(afa,";",fixed=TRUE)
+  transidso = strsplit(afa,";",fixed=TRUE)
   
   message("prepared transition ids")
   
@@ -74,21 +74,20 @@ prepareOpenSwathData <- function(far){
   message("adjusting protein names done")
 
   # prepare output
-  lx = length(transids)
+  lx = length(transidso)
   stopifnot(lx == nrow(far))
 
   far <- far[, !(names(far) %in% c("aggr_peak_area","aggr_fragment_annotation"))]
   # extend
-  lengths <-sapply(transids,length)
+  lengths <-sapply(transidso,length)
   idx <- rep(1:lx, lengths)
   far <- far[idx, ]
   #
-  transids <- unlist(transids)
-  transids <- gsub("DECOY_","DECOY", transids, fixed=TRUE )
-  cnamessplit <- strsplit(as.character(transids),split="_",fixed=TRUE)
+  transidso <- unlist(transidso)
+  transidso <- gsub("DECOY_","DECOY", transidso, fixed=TRUE )
+  cnamessplit <- strsplit(as.character(transidso),split="_",fixed=TRUE)
   
-  system.time(transids <- do.call("rbind",cnamessplit))
-
+  x <- system.time(transids <- do.call("rbind",cnamessplit))
   if(ncol(transids) == 5){
     colnames(transids)<-c("frag_id", "ion_type","frag_charge","pep_sequence","pep_charge")
     far <- data.frame(far, aggr_peak_area = as.numeric(unlist(transints)), transids )
@@ -99,15 +98,12 @@ prepareOpenSwathData <- function(far){
     far$ion_type <- NA
     far$frag_charge <-NA
   }
-  
-  far <- data.frame(far, aggr_peak_area = as.numeric(unlist(transints)), transids )
-  
+  far[,"frag_id"] <- transidso
   
   print(setdiff(tolower(unlist(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping))) , colnames(far)))
   print(setdiff(colnames(far),tolower(unlist(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping)))))
   
   far <-far[,tolower(unlist(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping)))]
-  
   
   colnames(far) <- names(c(.OpenMSPrecursorDefsMapping,.OpenMSFragmentDefsMapping))
   far <- data.frame(far, LabelType = "L", FragmentInterference = NA, MS1Intensity = NA)
