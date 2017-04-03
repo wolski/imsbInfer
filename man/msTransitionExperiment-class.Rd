@@ -60,10 +60,8 @@ data <- prepareOpenSwathData(data)
 dim(data)
 
 huhu <- msTransitionExperiment(path=".", name="mydb2.sql")
-head(data)
-huhu$setData(data)
-
-huhu$name
+tmp <- huhu$getData()
+stopifnot(dim(tmp) == dim(data))
 huhu$getFileName()
 
 intTrans <- huhu$getFragmentIntensities()
@@ -97,6 +95,5 @@ head(xx)
 huhu$withDecoy()
 huhu$getGlobalFDR()
 huhu$plotFalsePostives()
-
 }
 
