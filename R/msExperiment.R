@@ -89,10 +89,8 @@ setOldClass("src_sqlite")
 #' dim(data)
 #' 
 #' huhu <- msTransitionExperiment(path=".", name="mydb2.sql")
-#' head(data)
-#' huhu$setData(data)
-#' 
-#' huhu$name
+#' tmp <- huhu$getData()
+#' stopifnot(dim(tmp) == dim(data))
 #' huhu$getFileName()
 #' 
 #' intTrans <- huhu$getFragmentIntensities()
@@ -126,7 +124,6 @@ setOldClass("src_sqlite")
 #' huhu$withDecoy()
 #' huhu$getGlobalFDR()
 #' huhu$plotFalsePostives()
-#'
 msTransitionExperiment <-
   setRefClass("msTransitionExperiment",
               fields = list( .data="src_sqlite",
@@ -204,7 +201,6 @@ msTransitionExperiment <-
                   .data <<- src_sqlite(dbfile, create=TRUE)
                   message('done')
                 },
-                
                 finalize  = function(){
                   message("infinalize")
                   require("RSQLite")
@@ -227,7 +223,7 @@ msTransitionExperiment <-
                   }
                   tmp <- dplyr::copy_to(.data, fragmentInfo, "FragmentInfo", temporary = FALSE)
 
-                  if(db_has_table(.data$con, "PrecursorInfo")){
+                  if(dplyr::db_has_table(.data$con, "PrecursorInfo")){
                     dplyr::db_drop_table(.data$con,  "PrecursorInfo", force = FALSE)
                   }
                   tmp <- dplyr::copy_to(.data, precursorInfo, "PrecursorInfo", temporary = FALSE)
@@ -238,9 +234,9 @@ msTransitionExperiment <-
                 },
                 getData = function(){
                   'get all the data in long format'
-                  message(dbListTables(.data$con))
-                  (dplyr::collect(dplyr::tbl(.data,dplyr::sql(paste("SELECT * FROM FragmentInfo, PrecursorInfo where ",
-                                                                    "PrecursorInfo.TransitionGroupID = FragmentInfo.TransitionGroupID",sep="")))))
+                  PrecInfo <- DBI::dbGetQuery(.data$con,"Select * from PrecursorInfo")
+                  FragmentInfo <- dbGetQuery(.data$con,"Select * from FragmentInfo")
+                  merge(PrecInfo,FragmentInfo )
                 },
                 getFileName = function(){
                   'get filenames'
