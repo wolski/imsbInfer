@@ -88,7 +88,7 @@ setOldClass("src_sqlite")
 #' data <- prepareOpenSwathData(data)
 #' dim(data)
 #' 
-#' huhu <- msTransitionExperiment(path=".", name="mydb1.sql")
+#' huhu <- msTransitionExperiment(path=".", name="mydb2.sql")
 #' head(data)
 #' huhu$setData(data)
 #' 
@@ -98,38 +98,31 @@ setOldClass("src_sqlite")
 #' intTrans <- huhu$getFragmentIntensities()
 #' dim(intTrans)
 #' head(intTrans)
-#' precInt <- huhu$getPrecursorIntensitySum()
-#' dim(precInt)
-#' colnames(precInt)
-#' pairs(precInt[,3:ncol(precInt)], pch='.',log="xy")
 #' 
 #' precIntExt <- huhu$getPrecursorIntensity()
+#' head(precIntExt)
 #' dim(precIntExt)
-#' head(precInt) == head(precIntExt)
-#' 
 #' huhu$noDecoy()
-#' intTrans <- huhu$getFragmentIntensities()
-#' xx <- by(intTrans[,5:ncol(intTrans)], intTrans$ModifiedSequence , FUN = function(x){x})
-#' length(xx)
-#' xx[[1]]
-#' pairs(intTrans[,5:ncol(intTrans)],log="xy",pch=".")
+#' 
 #' precRT <- huhu$getPrecursorRT()
 #' precMZ <- huhu$getPrecursorMZ()
 #' precScore <- huhu$getPrecursorScore()
-#' pairs(precScore[,3:ncol(precScore)],log="xy",pch=".")
-#' colnames(huhu$precursor)
-#' colnames(huhu$precursorID)
-#' head(huhu$peptide$Freq)
+#' head(precScore)
+#' pairs(precScore[,6:ncol(precScore)],log="xy",pch=".")
+#' dim(huhu$precursor)
+#' dim(huhu$precursorId)
+#' table(huhu$peptide$Freq)
 #'
 #' head(huhu$peptide[huhu$peptide$Decoy==1,])
 #' huhu$withDecoy()
 #' head(huhu$peptide[huhu$peptide$Decoy==1,])
+#' dim(huhu$precursor)
+#' dim(huhu$precursorId)
 #' huhu$noDecoy()
 #' length(unique(huhu$peptide$StrippedSequence))
 #' length(unique(huhu$peptide$ProteinName))
 #' xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
 #' head(xx)
-#' dim(xx)
 #' huhu$withDecoy()
 #' huhu$getGlobalFDR()
 #' huhu$plotFalsePostives()
@@ -177,7 +170,7 @@ msTransitionExperiment <-
                                    where <- " where Decoy = 0 "
                                  }
                                  
-                                 precursorCols <- paste(.PrecursorDefs, collapse=", ")
+                                 precursorCols <- paste(.PrecursorColumns, collapse=", ")
                                  query <- c("Select", precursorCols, ", count(*) as Freq from PrecursorInfo " , where , " group by ", precursorCols)
                                  query <-paste(query,collapse=" ")
                                  return( dbGetQuery(.data$con,query) ) 
@@ -185,13 +178,8 @@ msTransitionExperiment <-
                              },
                              transition = function(x){
                                if(missing(x)){
-                                 where <- ""
-                                 if(.removeDecoy){
-                                   where <- " where Decoy = 0 "
-                                 }
-                                 
                                  fragmentCols <- paste(.FragmentDefs, collapse=", ")
-                                 query <- c("Select", fragmentCols, ", count(*) as Freq from FragmentInfo " , where , " group by ", fragmentCols)
+                                 query <- c("Select", fragmentCols, ", count(*) as Freq from FragmentInfo group by ", fragmentCols)
                                  query <-paste(query,collapse=" ")
                                  return( dbGetQuery(.data$con,query) ) 
                                }
@@ -229,17 +217,16 @@ msTransitionExperiment <-
                   library(dplyr)
                   labelType <<- labelType
                   data<-data[data$LabelType==labelType,]
-                  message(dim(data))
+                  message(nrow(data), " ", ncol(data))
                   
-                  precursorInfo <- unique(select(data, .PrecursorColumns))
-                  fragmentInfo <- unique(select(data, .FragmentDefs))
+                  precursorInfo <- unique(data[, .PrecursorColumns])
+                  fragmentInfo <- unique(data[, .FragmentDefs])
                   
                   if(db_has_table(.data$con, "FragmentInfo")){
                     dplyr::db_drop_table(.data$con,  "FragmentInfo", force = FALSE)
                   }
                   tmp <- dplyr::copy_to(.data, fragmentInfo, "FragmentInfo", temporary = FALSE)
-                  
-                  
+
                   if(db_has_table(.data$con, "PrecursorInfo")){
                     dplyr::db_drop_table(.data$con,  "PrecursorInfo", force = FALSE)
                   }
@@ -271,7 +258,7 @@ msTransitionExperiment <-
                 getFragmentIntensities = function() {
                   'matrix with transitions intensities'
                   transInt <- dcast(transition,
-                                    ModifiedSequence + PrecursorCharge + FragmentIonType + FragmentCharge ~ FileName ,
+                                    TransitionGroupID + FragmentID + ModifiedSequence + PrecursorCharge + FragmentIonType + FragmentCharge ~ FileName ,
                                     value.var="FragmentIntensity")
                   return(transInt)
                 },
@@ -299,23 +286,23 @@ msTransitionExperiment <-
                   transMz = dcastPrecursor(precursor,  value.var="PrecursorMZ")
                   return(transMz)
                 },
-                getPrecursorIntensitySum=function(){
-                  'Selects Fragment intensities and aggregates them (sum)'
-                  where <- NULL 
-                  if(.removeDecoy){
-                    where <- " where Decoy = 0 "
-                  }
-                  fragmentCols <- paste(.FragmentDefs, collapse=", ")
-                  query <- c("Select TransitionGroupID, FileName, ModifiedSequence, StrippedSequence, PrecursorCharge, Decoy, count(*) as Freq, sum(FragmentIntensity) as Intensity from LongFormat " ,
-                             where , 
-                             " group by TransitionGroupID, FileName, ModifiedSequence, PrecursorCharge")
-                  query <-paste(query,collapse=" ")
-                  message(query)
-                  tmp <- dbGetQuery(.data$con,query)
-                  #tmp <- dcastPrecursor(tmp, value.var = "Intensity")
-                  return(tmp)
-                },
-                getPrecursorIntensity=function(){
+                # getPrecursorIntensitySum=function(){
+                #   'Selects Fragment intensities and aggregates them (sum)'
+                #   where <- NULL 
+                #   if(.removeDecoy){
+                #     where <- " where Decoy = 0 "
+                #   }
+                #   fragmentCols <- paste(.FragmentDefs, collapse=", ")
+                #   query <- c("Select TransitionGroupID, FileName, ModifiedSequence, StrippedSequence, PrecursorCharge, Decoy, count(*) as Freq, sum(FragmentIntensity) as Intensity from FragmentInfo " ,
+                #              where , 
+                #              " group by TransitionGroupID, FileName, ModifiedSequence, PrecursorCharge")
+                #   query <-paste(query,collapse=" ")
+                #   message(query)
+                #   tmp <- dbGetQuery(.data$con,query)
+                #   #tmp <- dcastPrecursor(tmp, value.var = "Intensity")
+                #   return(tmp)
+                # },
+                getPrecursorIntensity = function(){
                   #TODO(WEW): check why different result than getPrecursorIntensitySum
                   'DO NOT USE!!! Selects Fragment intensities given by external software, '
                   where <- NULL
@@ -323,19 +310,7 @@ msTransitionExperiment <-
                     where <- " where Decoy = 0 "
                   }
                   fragmentCols <- paste(.PrecursorIntensity , collapse=", ")
-                  query <- c("Select",fragmentCols  ,  " from LongFormat " , where, "group by", fragmentCols  )
-                  query <-paste(query,collapse=" ")
-                  message(query)
-                  tmp <- dbGetQuery(.data$con,query)
-                  return(tmp)
-                },
-                getAllPrecursorInformation = function(){
-                  where <- NULL
-                  if(.removeDecoy){
-                    where <- " where Decoy = 0 "
-                  }
-                  fragmentCols <- paste(.PrecursorColumns , collapse=", ")
-                  query <- c("Select",fragmentCols  ,  " from LongFormat " , where, "group by", fragmentCols  )
+                  query <- c("Select",fragmentCols  ,  " from PrecursorInfo " , where, "group by", fragmentCols  )
                   query <-paste(query,collapse=" ")
                   message(query)
                   tmp <- dbGetQuery(.data$con,query)

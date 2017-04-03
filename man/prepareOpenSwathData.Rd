@@ -14,7 +14,6 @@ rm(list=ls())
 library(readr)
 library(imsbInfer2)
 data2 <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),col_names = TRUE)
-head(data2)
 
 #far <- .prepareDF(data2)
 #far \%>\% glimpse
@@ -25,7 +24,8 @@ data3 <- prepareOpenSwathData( data2 )
 xx <- read_tsv("D:/projects/EvanYibo/dataRequant27032017/E1703211035_feature_alignment_requant_ScienceLivers_Specific.tsv")
 xx <- read_tsv("D:/projects/EvanYibo/dataRequant27032017/E1703161049_feature_alignment_requant_PanMouse.tsv")
 tmp <- prepareOpenSwathData(xx)
-far <- xx
+far <- data2
+
 
 }
 

@@ -34,9 +34,7 @@ Holds Transition level data
 
 \item{\code{getGlobalFDR()}}{compute FDR for dataset}
 
-\item{\code{getPrecursorIntensity()}}{Selects Fragment intensities given by external software}
-
-\item{\code{getPrecursorIntensitySum()}}{Selects Fragment intensities and aggregates them (sum)}
+\item{\code{getPrecursorIntensity()}}{DO NOT USE!!! Selects Fragment intensities given by external software, }
 
 \item{\code{getPrecursorMZ()}}{matrix with precursor mz}
 
@@ -61,48 +59,41 @@ data <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),
 data <- prepareOpenSwathData(data)
 dim(data)
 
-huhu <- msTransitionExperiment(path=".", name="mydb1.sql")
+huhu <- msTransitionExperiment(path=".", name="mydb2.sql")
 head(data)
 huhu$setData(data)
 
 huhu$name
 huhu$getFileName()
 
-
 intTrans <- huhu$getFragmentIntensities()
 dim(intTrans)
 head(intTrans)
-precInt <- huhu$getPrecursorIntensitySum()
-dim(precInt)
-colnames(precInt)
-pairs(precInt[,3:ncol(precInt)], pch='.',log="xy")
 
 precIntExt <- huhu$getPrecursorIntensity()
+head(precIntExt)
 dim(precIntExt)
-head(precInt) == head(precIntExt)
-
 huhu$noDecoy()
-intTrans <- huhu$getFragmentIntensities()
-xx <- by(intTrans[,5:ncol(intTrans)], intTrans$ModifiedSequence , FUN = function(x){x})
-length(xx)
-xx[[1]]
-pairs(intTrans[,5:ncol(intTrans)],log="xy",pch=".")
+
 precRT <- huhu$getPrecursorRT()
 precMZ <- huhu$getPrecursorMZ()
 precScore <- huhu$getPrecursorScore()
-pairs(precScore[,3:ncol(precScore)],log="xy",pch=".")
-colnames(huhu$precursor)
-head(huhu$peptide$Freq)
+head(precScore)
+pairs(precScore[,6:ncol(precScore)],log="xy",pch=".")
+dim(huhu$precursor)
+dim(huhu$precursorId)
+table(huhu$peptide$Freq)
 
 head(huhu$peptide[huhu$peptide$Decoy==1,])
 huhu$withDecoy()
 head(huhu$peptide[huhu$peptide$Decoy==1,])
+dim(huhu$precursor)
+dim(huhu$precursorId)
 huhu$noDecoy()
 length(unique(huhu$peptide$StrippedSequence))
 length(unique(huhu$peptide$ProteinName))
 xx <-merge(huhu$peptide[,c("StrippedSequence","Decoy")], huhu$precursor )
 head(xx)
-dim(xx)
 huhu$withDecoy()
 huhu$getGlobalFDR()
 huhu$plotFalsePostives()
