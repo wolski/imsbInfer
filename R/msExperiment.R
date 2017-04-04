@@ -86,9 +86,9 @@ setOldClass("src_sqlite")
 #' library(dplyr)
 #' data <- read_tsv(file.path(path.package("imsbInfer2"),"extdata/example.tsv.gz"),col_names = TRUE)
 #' data <- prepareOpenSwathData(data)
-#' dim(data)
 #' 
 #' huhu <- msTransitionExperiment(path=".", name="mydb2.sql")
+#' huhu$setData(data)
 #' tmp <- huhu$getData()
 #' stopifnot(dim(tmp) == dim(data))
 #' huhu$getFileName()
@@ -310,6 +310,7 @@ msTransitionExperiment <-
                   query <-paste(query,collapse=" ")
                   message(query)
                   tmp <- dbGetQuery(.data$con,query)
+                  plyr::rename(tmp, c("MS2IntensityAggregated" = "Intensity"))
                   return(tmp)
                 },
                 getGlobalFDR = function(){
