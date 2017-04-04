@@ -9,5 +9,6 @@ r_packages :
   - RColorBrewer
   - scales
 r_github_packages: 
-  - wolski/quantable
+  - protViz/quantable
+  - protViz/TargetDecoyFDR
 warnings_are_errors: false
