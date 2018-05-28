@@ -1,13 +1,16 @@
-[![Build Status](https://travis-ci.org/wolski/imsbInfer.svg?branch=master)](https://travis-ci.org/wolski/imsbInfer)
-[![Project Stats](https://www.ohloh.net/p/imsbInfer/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/imsbInfer)
-
-## R-package for the quantitative analysis of SWATH-MS data.
-
 This project is __DISCONTINUED__. 
 
 New and related work can be found here:
 
 https://github.com/protviz/
+
+
+
+[![Build Status](https://travis-ci.org/wolski/imsbInfer.svg?branch=master)](https://travis-ci.org/wolski/imsbInfer)
+[![Project Stats](https://www.ohloh.net/p/imsbInfer/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/imsbInfer)
+
+## R-package for the quantitative analysis of SWATH-MS data.
+
 
 Overwiev
 
