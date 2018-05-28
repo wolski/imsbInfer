@@ -3,6 +3,10 @@
 
 ## R-package for the quantitative analysis of SWATH-MS data.
 
+This project is DISCONTINUED. newer related work can be found here:
+
+https://github.com/protviz/
+
 Overwiev
 
 - data import, filtering, transfromations, normalization,  scaling
