@@ -1,7 +1,7 @@
 This project is __DISCONTINUED__.
-New and related work can be found here: 
+New, extended and substantially improved functionality is available here:
 
-https://github.com/protviz/
+https://github.com/wolski/prolfqua
 
 
 
